@@ -1,6 +1,6 @@
 // src/components/dashboard/FleetMap.tsx
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -13,6 +13,27 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
+function MapGuard() {
+  const map = useMap();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 720);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
+  useEffect(() => {
+    if (isMobile) {
+      map.dragging.disable();
+      map.scrollWheelZoom.disable();
+    }
+  }, [isMobile, map]);
+
+  return null;
+}
+
 export function FleetMap() {
   return (
     <div className="bg-surface border border-outline rounded-lg overflow-hidden h-[320px] md:h-full min-h-[240px]">
@@ -22,6 +43,7 @@ export function FleetMap() {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        <MapGuard />
       </MapContainer>
     </div>
   );
