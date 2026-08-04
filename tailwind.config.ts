@@ -16,6 +16,7 @@ const config: Config = {
         "on-surface-variant": "var(--color-on-surface-variant)",
         outline: "var(--color-outline)",
         "outline-variant": "var(--color-outline-variant)",
+        scaffold: "var(--color-scaffold)",
         error: "var(--color-error)",
         "error-container": "var(--color-error-container)",
         warning: "var(--color-warning)",
