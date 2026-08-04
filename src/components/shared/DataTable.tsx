@@ -15,21 +15,35 @@ interface Pagination {
 }
 
 export function DataTable<T extends { id: string }>({
-  columns, data, pagination, onRowClick
+  columns, data, pagination, onRowClick, selectedIds, onToggleSelect, onToggleSelectAll
 }: {
   columns: Column<T>[];
   data: T[];
   pagination?: Pagination;
   onRowClick?: (row: T) => void;
+  selectedIds?: Set<string>;
+  onToggleSelect?: (id: string) => void;
+  onToggleSelectAll?: () => void;
 }) {
   const totalPages = pagination ? Math.ceil(pagination.total / pagination.limit) : 0;
   const currentPage = pagination ? Math.floor(pagination.offset / pagination.limit) + 1 : 0;
+  const allSelected = selectedIds !== undefined && data.length > 0 && selectedIds.size === data.length;
 
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-outline-variant">
+            {selectedIds && (
+              <th className="w-10 px-3 py-2" scope="col">
+                <input
+                  type="checkbox"
+                  checked={allSelected}
+                  onChange={onToggleSelectAll}
+                  aria-label="Select all rows"
+                />
+              </th>
+            )}
             {columns.map(col => (
               <th key={col.key} className={`text-left text-2xs uppercase text-on-surface-variant tracking-wider font-semibold px-3 py-2 ${col.className ?? ''}`}>
                 {col.header}
@@ -42,6 +56,16 @@ export function DataTable<T extends { id: string }>({
             <tr key={row.id}
               onClick={() => onRowClick?.(row)}
               className={`border-b border-outline-variant min-h-[48px] ${onRowClick ? 'cursor-pointer hover:bg-surface-container' : ''}`}>
+              {selectedIds && (
+                <td className="px-3 py-2.5" onClick={e => e.stopPropagation()}>
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(row.id)}
+                    onChange={() => onToggleSelect?.(row.id)}
+                    aria-label={`Select row ${row.id}`}
+                  />
+                </td>
+              )}
               {columns.map(col => (
                 <td key={col.key} className={`px-3 py-2.5 ${col.className ?? ''}`}>
                   {col.render(row)}

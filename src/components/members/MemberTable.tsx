@@ -8,11 +8,14 @@ function statusFromTrips(trips: number): Status {
   return 'offline';
 }
 
-export function MemberTable({ members, total, offset, limit, onOffsetChange, onRowClick }: {
+export function MemberTable({ members, total, offset, limit, onOffsetChange, onRowClick, selectedIds, onToggleSelect, onToggleSelectAll }: {
   members: CrewMember[];
   total: number; offset: number; limit: number;
   onOffsetChange: (o: number) => void;
   onRowClick: (m: CrewMember) => void;
+  selectedIds?: Set<string>;
+  onToggleSelect?: (id: string) => void;
+  onToggleSelectAll?: () => void;
 }) {
   const columns = [
     {
@@ -62,6 +65,9 @@ export function MemberTable({ members, total, offset, limit, onOffsetChange, onR
       data={members}
       pagination={{ offset, limit, total, onPageChange: onOffsetChange }}
       onRowClick={onRowClick}
+      selectedIds={selectedIds}
+      onToggleSelect={onToggleSelect}
+      onToggleSelectAll={onToggleSelectAll}
     />
   );
 }

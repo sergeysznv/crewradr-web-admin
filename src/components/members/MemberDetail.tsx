@@ -1,7 +1,7 @@
 // src/components/members/MemberDetail.tsx
 'use client';
 import type { CrewMember } from '@/types/rpc';
-import { useUpdateMemberRole } from '@/hooks/queries/useMutations';
+import { useUpdateMemberRole, useRemoveMember } from '@/hooks/queries/useMutations';
 import { useCrew } from '@/hooks/useCrew';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { useState } from 'react';
@@ -9,7 +9,12 @@ import { useState } from 'react';
 export function MemberDetail({ member, onClose }: { member: CrewMember; onClose: () => void }) {
   const { crewId } = useCrew();
   const updateRole = useUpdateMemberRole(crewId!);
+  const removeMember = useRemoveMember(crewId!);
   const [showRemove, setShowRemove] = useState(false);
+
+  function handleRemove() {
+    removeMember.mutate(member.id, { onSuccess: () => { setShowRemove(false); onClose(); } });
+  }
 
   return (
     <div className="space-y-lg">
@@ -53,24 +58,28 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
       </div>
 
       <div className="pt-lg border-t border-outline-variant">
-        <button onClick={() => setShowRemove(true)} title="Coming soon"
+        <button onClick={() => setShowRemove(true)}
           className="w-full px-4 py-2 rounded-xl border border-error/30 text-error text-sm font-semibold hover:bg-error-container">
           Remove from Crew
         </button>
       </div>
 
-      {/* Removal is not wired up yet (requires remove_member RPC migration):
-          the dialog stays open and the confirm button is disabled, so the
-          user sees feedback instead of a silent no-op. onConfirm is
-          unreachable while confirmDisabled. */}
+      {/* Removal requires typing the member's exact name; keyed per-open so
+          the verify input resets every time the dialog is shown. */}
       <ConfirmDialog
+        key={showRemove ? 'remove-open' : 'remove-closed'}
         open={showRemove}
         title="Remove Member"
         message={`Remove ${member.display_name ?? member.email} from the crew? This action cannot be undone.`}
-        confirmLabel="Coming Soon"
+        confirmLabel="Remove"
         destructive
-        confirmDisabled
-        onConfirm={() => {}}
+        pending={removeMember.isPending}
+        verifyText={{
+          match: member.display_name ?? member.email ?? '',
+          placeholder: member.display_name ?? member.email ?? '',
+          label: `Type ${member.display_name ?? 'the member name'} to confirm`,
+        }}
+        onConfirm={handleRemove}
         onCancel={() => setShowRemove(false)}
       />
     </div>

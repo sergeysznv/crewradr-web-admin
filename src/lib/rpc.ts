@@ -109,3 +109,8 @@ function hexToArgb(hex: string): number {
   const cleaned = hex.replace('#', '');
   return parseInt('FF' + cleaned, 16);
 }
+
+export async function removeMember(supabase: SupabaseClient, memberId: string): Promise<void> {
+  const { error } = await supabase.rpc('remove_member', { p_member_id: memberId });
+  if (error) throw error;
+}

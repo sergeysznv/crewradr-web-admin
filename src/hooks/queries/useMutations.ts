@@ -1,7 +1,7 @@
 'use client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSupabase } from '@/hooks/useSupabase';
-import { updateMemberRole, bulkImportMembers } from '@/lib/rpc';
+import { updateMemberRole, bulkImportMembers, removeMember } from '@/lib/rpc';
 import { useSnackbar } from '@/components/shared/Snackbar';
 
 export function useUpdateMemberRole(crewId: string) {
@@ -15,6 +15,21 @@ export function useUpdateMemberRole(crewId: string) {
     onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: ['crewMembers', crewId] });
       showSuccess(`Role changed to ${data.new_role}`);
+    },
+    onError: (err: Error) => showError(err.message),
+  });
+}
+
+export function useRemoveMember(crewId: string) {
+  const supabase = useSupabase();
+  const qc = useQueryClient();
+  const { showSuccess, showError } = useSnackbar();
+
+  return useMutation({
+    mutationFn: (memberId: string) => removeMember(supabase, memberId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['crewMembers', crewId] });
+      showSuccess('Member removed');
     },
     onError: (err: Error) => showError(err.message),
   });

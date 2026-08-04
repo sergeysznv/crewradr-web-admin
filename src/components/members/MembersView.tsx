@@ -4,13 +4,19 @@ import { useState } from 'react';
 import { useCrew } from '@/hooks/useCrew';
 import { useCrewMembers } from '@/hooks/queries/useCrewMembers';
 import { useRealtimeInvalidation } from '@/hooks/useRealtimeRefresh';
+import { useUpdateMemberRole } from '@/hooks/queries/useMutations';
+import { useSupabase } from '@/hooks/useSupabase';
+import { useSnackbar } from '@/components/shared/Snackbar';
+import { removeMember } from '@/lib/rpc';
 import { MemberTable } from '@/components/members/MemberTable';
 import { MemberCard } from '@/components/members/MemberCard';
 import { MemberDetail } from '@/components/members/MemberDetail';
 import { CsvImportModal } from '@/components/members/CsvImportModal';
+import { BulkActionBar } from '@/components/members/BulkActionBar';
 import { SlideOverPanel } from '@/components/shared/SlideOverPanel';
 import { FilterChips } from '@/components/shared/FilterChips';
 import { EmptyState } from '@/components/shared/EmptyState';
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { Search, Upload, Users } from 'lucide-react';
 import type { CrewMember } from '@/types/rpc';
 
@@ -25,10 +31,16 @@ type RoleFilter = 'all' | 'captain' | 'co-captain' | 'member';
 
 export function MembersView() {
   const { crewId } = useCrew();
+  const supabase = useSupabase();
+  const { showSuccess, showError } = useSnackbar();
+  const updateRole = useUpdateMemberRole(crewId!);
   const { data, search, setSearch, offset, setOffset, limit, isLoading } = useCrewMembers(crewId);
   const [selected, setSelected] = useState<CrewMember | null>(null);
   const [roleFilter, setRoleFilter] = useState<RoleFilter>('all');
   const [showImport, setShowImport] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [showBulkRemove, setShowBulkRemove] = useState(false);
+  const [working, setWorking] = useState(false);
 
   // Realtime — reload members when crew membership changes.
   useRealtimeInvalidation(
@@ -40,6 +52,60 @@ export function MembersView() {
 
   const members = data?.members ?? [];
   const filtered = roleFilter === 'all' ? members : members.filter(m => m.role === roleFilter);
+
+  function toggleSelect(id: string) {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleSelectAll() {
+    setSelectedIds(prev =>
+      prev.size === filtered.length && filtered.length > 0
+        ? new Set()
+        : new Set(filtered.map(m => m.id)),
+    );
+  }
+
+  function changeFilter(v: RoleFilter) {
+    setRoleFilter(v);
+    setSelectedIds(new Set());
+  }
+
+  async function bulkRemove() {
+    const ids = [...selectedIds];
+    setWorking(true);
+    try {
+      const results = await Promise.allSettled(ids.map(id => removeMember(supabase, id)));
+      const failures = results.filter(r => r.status === 'rejected').length;
+      const removed = ids.length - failures;
+      if (failures > 0) showError(`${failures} removal${failures === 1 ? '' : 's'} failed`);
+      if (removed > 0) showSuccess(`${removed} member${removed === 1 ? '' : 's'} removed`);
+    } catch (err) {
+      showError(err instanceof Error ? err.message : 'Bulk removal failed');
+    }
+    setWorking(false);
+    setSelectedIds(new Set());
+    setShowBulkRemove(false);
+  }
+
+  async function bulkRoleChange(role: string) {
+    const ids = [...selectedIds];
+    setWorking(true);
+    try {
+      const results = await Promise.allSettled(
+        ids.map(id => updateRole.mutateAsync({ memberId: id, newRole: role })),
+      );
+      const failures = results.filter(r => r.status === 'rejected').length;
+      if (failures > 0) showError(`${failures} role change${failures === 1 ? '' : 's'} failed`);
+    } catch (err) {
+      showError(err instanceof Error ? err.message : 'Bulk role change failed');
+    }
+    setWorking(false);
+    setSelectedIds(new Set());
+  }
 
   return (
     <div className="space-y-lg">
@@ -58,7 +124,7 @@ export function MembersView() {
           </button>
         </div>
 
-        <FilterChips options={ROLE_FILTERS} selected={roleFilter} onSelect={setRoleFilter} />
+        <FilterChips options={ROLE_FILTERS} selected={roleFilter} onSelect={changeFilter} />
 
         {/* Desktop table */}
         <div className="hidden md:block bg-surface border border-outline rounded-lg overflow-hidden">
@@ -73,6 +139,9 @@ export function MembersView() {
               offset={offset} limit={limit}
               onOffsetChange={setOffset}
               onRowClick={setSelected}
+              selectedIds={selectedIds}
+              onToggleSelect={toggleSelect}
+              onToggleSelectAll={toggleSelectAll}
             />
           )}
         </div>
@@ -86,9 +155,27 @@ export function MembersView() {
           {selected && <MemberDetail member={selected} onClose={() => setSelected(null)} />}
         </SlideOverPanel>
 
-        {/* BulkActionBar is intentionally not rendered: bulk selection has no
-            checkboxes yet. The component is kept as a reserved component. */}
         <CsvImportModal open={showImport} onClose={() => setShowImport(false)} />
+
+        <BulkActionBar
+          count={selectedIds.size}
+          working={working}
+          onRemove={() => setShowBulkRemove(true)}
+          onRoleChange={bulkRoleChange}
+          onClear={() => setSelectedIds(new Set())}
+        />
+
+        <ConfirmDialog
+          key={showBulkRemove ? 'bulk-open' : 'bulk-closed'}
+          open={showBulkRemove}
+          title="Remove Members"
+          message={`Remove ${selectedIds.size} selected member${selectedIds.size === 1 ? '' : 's'} from the crew? This action cannot be undone.`}
+          confirmLabel="Remove"
+          destructive
+          pending={working}
+          onConfirm={bulkRemove}
+          onCancel={() => setShowBulkRemove(false)}
+        />
       </div>
   );
 }
