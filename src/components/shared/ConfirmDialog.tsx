@@ -2,9 +2,9 @@
 'use client';
 import { AlertTriangle } from 'lucide-react';
 
-export function ConfirmDialog({ open, title, message, confirmLabel, destructive = false, onConfirm, onCancel }: {
+export function ConfirmDialog({ open, title, message, confirmLabel, destructive = false, confirmDisabled = false, onConfirm, onCancel }: {
   open: boolean; title: string; message: string; confirmLabel: string;
-  destructive?: boolean; onConfirm: () => void; onCancel: () => void;
+  destructive?: boolean; confirmDisabled?: boolean; onConfirm: () => void; onCancel: () => void;
 }) {
   if (!open) return null;
   return (
@@ -19,9 +19,11 @@ export function ConfirmDialog({ open, title, message, confirmLabel, destructive 
               className="px-4 py-2 rounded-xl border border-outline text-sm font-semibold text-on-surface-variant hover:bg-surface-container">
               Cancel
             </button>
-            <button onClick={onConfirm}
+            <button onClick={onConfirm} disabled={confirmDisabled} title={confirmDisabled ? 'Coming soon' : undefined}
               className={`px-4 py-2 rounded-xl text-sm font-semibold text-white
-                ${destructive ? 'bg-error hover:opacity-90' : 'bg-primary hover:opacity-90'}`}>
+                ${confirmDisabled
+                  ? `${destructive ? 'bg-error' : 'bg-primary'} opacity-40 cursor-not-allowed`
+                  : destructive ? 'bg-error hover:opacity-90' : 'bg-primary hover:opacity-90'}`}>
               {confirmLabel}
             </button>
           </div>

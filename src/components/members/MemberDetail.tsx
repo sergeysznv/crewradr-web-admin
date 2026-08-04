@@ -53,19 +53,24 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
       </div>
 
       <div className="pt-lg border-t border-outline-variant">
-        <button onClick={() => setShowRemove(true)}
+        <button onClick={() => setShowRemove(true)} title="Coming soon"
           className="w-full px-4 py-2 rounded-xl border border-error/30 text-error text-sm font-semibold hover:bg-error-container">
           Remove from Crew
         </button>
       </div>
 
+      {/* Removal is not wired up yet (requires remove_member RPC migration):
+          the dialog stays open and the confirm button is disabled, so the
+          user sees feedback instead of a silent no-op. onConfirm is
+          unreachable while confirmDisabled. */}
       <ConfirmDialog
         open={showRemove}
         title="Remove Member"
         message={`Remove ${member.display_name ?? member.email} from the crew? This action cannot be undone.`}
-        confirmLabel="Remove"
+        confirmLabel="Coming Soon"
         destructive
-        onConfirm={() => { setShowRemove(false); /* Out of scope: requires remove_member RPC migration. The confirm dialog closes; actual removal is a follow-up task. */ }}
+        confirmDisabled
+        onConfirm={() => {}}
         onCancel={() => setShowRemove(false)}
       />
     </div>

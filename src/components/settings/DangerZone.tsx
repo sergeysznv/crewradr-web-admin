@@ -17,7 +17,7 @@ export function DangerZone() {
           <div className="text-sm font-semibold text-on-surface">Transfer Ownership</div>
           <div className="text-xs text-on-surface-variant">Transfer captaincy to another member</div>
         </div>
-        <button onClick={() => setShowTransfer(true)}
+        <button onClick={() => setShowTransfer(true)} title="Coming soon"
           className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-outline text-on-surface-variant hover:bg-surface-container">
           Transfer
         </button>
@@ -28,7 +28,7 @@ export function DangerZone() {
           <div className="text-sm font-semibold text-on-surface">Leave Crew</div>
           <div className="text-xs text-on-surface-variant">Remove yourself from this crew</div>
         </div>
-        <button onClick={() => setShowLeave(true)}
+        <button onClick={() => setShowLeave(true)} title="Coming soon"
           className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-error/30 text-error hover:bg-error-container">
           Leave
         </button>
@@ -39,15 +39,18 @@ export function DangerZone() {
           <div className="text-sm font-semibold text-on-surface">Delete Crew</div>
           <div className="text-xs text-on-surface-variant">Permanently delete this crew and all its data</div>
         </div>
-        <button onClick={() => setShowDelete(true)}
+        <button onClick={() => setShowDelete(true)} title="Coming soon"
           className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-error text-white hover:opacity-90">
           Delete
         </button>
       </div>
 
-      <ConfirmDialog open={showTransfer} title="Transfer Ownership" message="Select a new captain. You will become a member." confirmLabel="Transfer" destructive onConfirm={() => setShowTransfer(false)} onCancel={() => setShowTransfer(false)} />
-      <ConfirmDialog open={showLeave} title="Leave Crew" message="Are you sure you want to leave this crew?" confirmLabel="Leave" destructive onConfirm={() => setShowLeave(false)} onCancel={() => setShowLeave(false)} />
-      <ConfirmDialog open={showDelete} title="Delete Crew" message="This permanently deletes the crew and all its data. This cannot be undone." confirmLabel="Delete Crew" destructive onConfirm={() => setShowDelete(false)} onCancel={() => setShowDelete(false)} />
+      {/* Destructive actions are not wired up yet: the dialog stays open and
+          the confirm button is disabled, so the user sees feedback instead of
+          a silent no-op. onConfirm is unreachable while confirmDisabled. */}
+      <ConfirmDialog open={showTransfer} title="Transfer Ownership" message="Select a new captain. You will become a member." confirmLabel="Coming Soon" destructive confirmDisabled onConfirm={() => {}} onCancel={() => setShowTransfer(false)} />
+      <ConfirmDialog open={showLeave} title="Leave Crew" message="Are you sure you want to leave this crew?" confirmLabel="Coming Soon" destructive confirmDisabled onConfirm={() => {}} onCancel={() => setShowLeave(false)} />
+      <ConfirmDialog open={showDelete} title="Delete Crew" message="This permanently deletes the crew and all its data. This cannot be undone." confirmLabel="Coming Soon" destructive confirmDisabled onConfirm={() => {}} onCancel={() => setShowDelete(false)} />
     </div>
   );
 }
