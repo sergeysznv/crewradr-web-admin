@@ -14,6 +14,8 @@ const config: Config = {
         "surface-container-high": "var(--color-surface-container-high)",
         "on-surface": "var(--color-on-surface)",
         "on-surface-variant": "var(--color-on-surface-variant)",
+        outline: "var(--color-outline)",
+        "outline-variant": "var(--color-outline-variant)",
         error: "var(--color-error)",
         "error-container": "var(--color-error-container)",
         warning: "var(--color-warning)",
