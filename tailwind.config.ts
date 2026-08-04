@@ -20,6 +20,8 @@ const config: Config = {
         error: "var(--color-error)",
         "error-container": "var(--color-error-container)",
         warning: "var(--color-warning)",
+        "warning-container": "var(--color-warning-container)",
+        success: "var(--color-success)",
       },
       borderRadius: {
         sm: "8px",
