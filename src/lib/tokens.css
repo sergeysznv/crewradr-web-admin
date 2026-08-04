@@ -1,0 +1,107 @@
+/*
+ * CrewRadr Admin design tokens (Task 2).
+ * Canonical source for all CSS custom properties consumed by components:
+ * colors, typography, radii, spacing, sidebar metrics.
+ * Dual-theme: `:root` = light (default), `[data-theme="dark"]` = dark.
+ * Fonts are self-hosted OFL-licensed PT Sans / PT Sans Caption from public/fonts.
+ */
+
+/* PT Sans — body text (400/700), OFL-licensed, self-hosted from public/fonts */
+@font-face {
+  font-family: "PT Sans";
+  src: url("/fonts/PT_Sans-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "PT Sans";
+  src: url("/fonts/PT_Sans-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* PT Sans Caption — headings (400/700) */
+@font-face {
+  font-family: "PT Sans Caption";
+  src: url("/fonts/PT_Sans_Caption-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "PT Sans Caption";
+  src: url("/fonts/PT_Sans_Caption-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Light palette */
+  --color-primary: #8EA595;
+  --color-primary-container: rgba(142, 165, 149, 0.12);
+  --color-secondary: #DDCFB5;
+  --color-secondary-container: rgba(221, 207, 181, 0.18);
+  --color-surface: #FFFFFF;
+  --color-surface-container: #F3F0E9;
+  --color-surface-container-low: #FAF8F5;
+  --color-surface-container-high: #EBE7DC;
+  --color-surface-container-highest: #E0DACE;
+  --color-on-surface: #2B302C;
+  --color-on-surface-variant: #888888;
+  --color-outline: rgba(43, 48, 44, 0.12);
+  --color-outline-variant: rgba(43, 48, 44, 0.08);
+  --color-error: #D9534F;
+  --color-error-container: rgba(217, 83, 79, 0.08);
+  --color-warning: #E68A00;
+  --color-warning-container: rgba(230, 138, 0, 0.08);
+  --color-success: #8EA595;
+  --color-scaffold: #F3F0E9;
+
+  /* Typography */
+  --font-heading: 'PT Sans Caption', sans-serif;
+  --font-body: 'PT Sans', sans-serif;
+
+  /* Radii (matching Flutter) */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-xxl: 32px;
+  --radius-full: 9999px;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-xxl: 48px;
+
+  /* Sidebar */
+  --sidebar-width: 56px;
+}
+
+[data-theme="dark"] {
+  --color-primary: #6E8679;
+  --color-primary-container: rgba(110, 134, 121, 0.15);
+  --color-secondary: rgba(221, 207, 181, 0.85);
+  --color-secondary-container: rgba(221, 207, 181, 0.12);
+  --color-surface: #242F35;
+  --color-surface-container: #1E222D;
+  --color-surface-container-low: #1A2028;
+  --color-surface-container-high: #353C4B;
+  --color-surface-container-highest: #3F4859;
+  --color-on-surface: #E3E8E4;
+  --color-on-surface-variant: #8A95A5;
+  --color-outline: rgba(227, 232, 228, 0.10);
+  --color-outline-variant: rgba(227, 232, 228, 0.06);
+  --color-error: #EF4444;
+  --color-error-container: rgba(239, 68, 68, 0.08);
+  --color-warning: #F59E0B;
+  --color-warning-container: rgba(245, 158, 11, 0.08);
+  --color-success: #34D399;
+  --color-scaffold: #1A2327;
+}
