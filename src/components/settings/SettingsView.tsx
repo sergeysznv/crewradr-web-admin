@@ -1,7 +1,6 @@
 // src/components/settings/SettingsView.tsx
 'use client';
 import { useState } from 'react';
-import { AppShell } from '@/components/shell/AppShell';
 import { useCrew } from '@/hooks/useCrew';
 import { useCrewSettings } from '@/hooks/queries/useCrewSettings';
 import { GeneralTab } from '@/components/settings/GeneralTab';
@@ -26,15 +25,13 @@ export function SettingsView() {
   const [tab, setTab] = useState<Tab>('general');
 
   return (
-    <AppShell title="Settings">
-      <div className="max-w-[720px] space-y-lg">
-        <FilterChips options={TABS} selected={tab} onSelect={setTab} />
-        <div className="bg-surface border border-outline rounded-lg p-lg md:p-xl">
-          {tab === 'general' && <GeneralTab />}
-          {tab === 'branding' && <BrandingTab seedColor={settings?.branding?.seed_color ?? null} />}
-          {tab === 'danger' && <DangerZone />}
-        </div>
+    <div className="max-w-[720px] space-y-lg">
+      <FilterChips options={TABS} selected={tab} onSelect={setTab} />
+      <div className="bg-surface border border-outline rounded-lg p-lg md:p-xl">
+        {tab === 'general' && <GeneralTab />}
+        {tab === 'branding' && <BrandingTab seedColor={settings?.branding?.seed_color ?? null} />}
+        {tab === 'danger' && <DangerZone />}
       </div>
-    </AppShell>
+    </div>
   );
 }

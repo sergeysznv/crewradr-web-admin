@@ -1,7 +1,6 @@
 // src/components/members/MembersView.tsx
 'use client';
 import { useState } from 'react';
-import { AppShell } from '@/components/shell/AppShell';
 import { useCrew } from '@/hooks/useCrew';
 import { useCrewMembers } from '@/hooks/queries/useCrewMembers';
 import { MemberTable } from '@/components/members/MemberTable';
@@ -34,8 +33,7 @@ export function MembersView() {
   const filtered = roleFilter === 'all' ? members : members.filter(m => m.role === roleFilter);
 
   return (
-    <AppShell title="Members">
-      <div className="space-y-lg">
+    <div className="space-y-lg">
         {/* Controls */}
         <div className="flex flex-col md:flex-row gap-3 items-start md:items-center justify-between">
           <div className="flex items-center gap-2 flex-1 max-w-md">
@@ -83,6 +81,5 @@ export function MembersView() {
             checkboxes yet. The component is kept as a reserved component. */}
         <CsvImportModal open={showImport} onClose={() => setShowImport(false)} />
       </div>
-    </AppShell>
   );
 }

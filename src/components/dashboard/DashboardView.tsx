@@ -1,7 +1,6 @@
 // src/components/dashboard/DashboardView.tsx
 'use client';
 import nextDynamic from 'next/dynamic';
-import { AppShell } from '@/components/shell/AppShell';
 import { useCrew } from '@/hooks/useCrew';
 import { useFleetDashboard } from '@/hooks/queries/useFleetDashboard';
 import { KpiStrip } from '@/components/dashboard/KpiStrip';
@@ -20,7 +19,7 @@ export function DashboardView() {
   const dashboard = useFleetDashboard(crewId);
 
   return (
-    <AppShell title="Fleet Dashboard">
+    <>
       {dashboard.isLoading ? (
         <div className="space-y-lg">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3"><Skeleton className="h-20" /><Skeleton className="h-20" /><Skeleton className="h-20" /><Skeleton className="h-20" /></div>
@@ -36,6 +35,6 @@ export function DashboardView() {
           <ActivityTimeline />
         </div>
       ) : null}
-    </AppShell>
+    </>
   );
 }
