@@ -6,7 +6,9 @@ import { useState } from 'react';
 
 export function useAuditLogs(crewId: string | null) {
   const supabase = useSupabase();
-  const [dateFrom, setDateFrom] = useState<string | null>(null);
+  // Default matches the '30d' date preset selected in AuditLogView, so the
+  // initial query is filtered the same way the UI shows it.
+  const [dateFrom, setDateFrom] = useState<string | null>(() => new Date(Date.now() - 30 * 86400000).toISOString());
   const [dateTo, setDateTo] = useState<string | null>(null);
   const [action, setAction] = useState<string | null>(null);
   const [offset, setOffset] = useState(0);
