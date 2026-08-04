@@ -7,7 +7,6 @@ import { useCrewMembers } from '@/hooks/queries/useCrewMembers';
 import { MemberTable } from '@/components/members/MemberTable';
 import { MemberCard } from '@/components/members/MemberCard';
 import { MemberDetail } from '@/components/members/MemberDetail';
-import { BulkActionBar } from '@/components/members/BulkActionBar';
 import { CsvImportModal } from '@/components/members/CsvImportModal';
 import { SlideOverPanel } from '@/components/shared/SlideOverPanel';
 import { FilterChips } from '@/components/shared/FilterChips';
@@ -28,7 +27,6 @@ export function MembersView() {
   const { crewId } = useCrew();
   const { data, search, setSearch, offset, setOffset, limit, isLoading } = useCrewMembers(crewId);
   const [selected, setSelected] = useState<CrewMember | null>(null);
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [roleFilter, setRoleFilter] = useState<RoleFilter>('all');
   const [showImport, setShowImport] = useState(false);
 
@@ -81,7 +79,8 @@ export function MembersView() {
           {selected && <MemberDetail member={selected} onClose={() => setSelected(null)} />}
         </SlideOverPanel>
 
-        <BulkActionBar count={selectedIds.size} onClear={() => setSelectedIds(new Set())} />
+        {/* BulkActionBar is intentionally not rendered: bulk selection has no
+            checkboxes yet. The component is kept as a reserved component. */}
         <CsvImportModal open={showImport} onClose={() => setShowImport(false)} />
       </div>
     </AppShell>
