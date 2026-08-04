@@ -1,10 +1,8 @@
 // src/components/dashboard/DashboardView.tsx
 'use client';
-import { useEffect } from 'react';
 import nextDynamic from 'next/dynamic';
 import { AppShell } from '@/components/shell/AppShell';
 import { useCrew } from '@/hooks/useCrew';
-import { useAccountProfile } from '@/hooks/queries/useAccountProfile';
 import { useFleetDashboard } from '@/hooks/queries/useFleetDashboard';
 import { KpiStrip } from '@/components/dashboard/KpiStrip';
 import { AlertFeed } from '@/components/dashboard/AlertFeed';
@@ -17,18 +15,9 @@ const FleetMap = nextDynamic(() => import('@/components/dashboard/FleetMap').the
 });
 
 export function DashboardView() {
-  const { crewId, setCrew, setCrews } = useCrew();
-  const account = useAccountProfile();
+  // Crew seeding happens once at app mount in CrewLoader — not per page.
+  const { crewId } = useCrew();
   const dashboard = useFleetDashboard(crewId);
-
-  // Sync crews from account profile on first load
-  useEffect(() => {
-    if (account.data?.crews && !crewId) {
-      const crews = account.data.crews.map(c => ({ crew_id: c.crew_id, crew_name: c.crew_name, tier: c.tier, role: c.role }));
-      setCrews(crews);
-      if (crews.length > 0) setCrew(crews[0]);
-    }
-  }, [account.data, crewId, setCrew, setCrews]);
 
   return (
     <AppShell title="Fleet Dashboard">
