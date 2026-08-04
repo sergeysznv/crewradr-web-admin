@@ -12,6 +12,10 @@ function resolveTheme(t: Theme): ResolvedTheme {
 
 export function useTheme() {
   const [theme, setThemeState] = useState<Theme>('system');
+  // Bumped when the matchMedia query fires in system mode. theme stays
+  // 'system' (same state -> React bails), so the counter forces a re-render
+  // that re-computes `resolved` from the fresh matchMedia value.
+  const [version, setVersion] = useState(0);
 
   useEffect(() => {
     const stored = localStorage.getItem('crewradr-theme') as Theme | null;
@@ -30,7 +34,7 @@ export function useTheme() {
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    const handler = () => { if (theme === 'system') setThemeState('system'); };
+    const handler = () => { if (theme === 'system') setVersion(v => v + 1); };
     mq.addEventListener('change', handler);
     return () => mq.removeEventListener('change', handler);
   }, [theme]);
