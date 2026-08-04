@@ -1,15 +1,15 @@
-import type { Metadata } from "next";
-import "./globals.css";
+import type { Metadata } from 'next';
+import { AppProviders } from '@/components/AppProviders';
+import '@/app/globals.css';
 
-export const metadata: Metadata = {
-  title: "CrewRadr Admin",
-  description: "Fleet management dashboard",
-};
+export const metadata: Metadata = { title: 'CrewRadr Admin', description: 'Fleet management dashboard' };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="h-full antialiased">
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en" data-theme="light">
+      <body className="font-body text-on-surface bg-scaffold antialiased">
+        <AppProviders>{children}</AppProviders>
+      </body>
     </html>
   );
 }
