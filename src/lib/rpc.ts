@@ -78,3 +78,34 @@ export async function getLivePositions(supabase: SupabaseClient, crewId: string)
   // The RPC returns { positions: [...], crew_name } — return the array.
   return (data as { positions?: LivePosition[] } | null)?.positions ?? [];
 }
+
+/**
+ * Persists crew branding. There is no authenticated branding RPC
+ * (save_crew_branding is service-role only), so — like the production web
+ * admin and the mobile app — we upsert the crew_branding row directly.
+ * The captain-write RLS policy gates this client-side.
+ */
+export async function updateCrewBranding(
+  supabase: SupabaseClient,
+  crewId: string,
+  seedColor: string,
+  logoUrl?: string | null,
+): Promise<void> {
+  const { error } = await supabase
+    .from('crew_branding')
+    .upsert(
+      {
+        crew_id: crewId,
+        seed_color: hexToArgb(seedColor),
+        ...(logoUrl ? { logo_url: logoUrl } : {}),
+      },
+      { onConflict: 'crew_id' },
+    );
+  if (error) throw error;
+}
+
+/** '#RRGGBB' → 0xFFRRGGBB (crew_branding stores ARGB bigint values). */
+function hexToArgb(hex: string): number {
+  const cleaned = hex.replace('#', '');
+  return parseInt('FF' + cleaned, 16);
+}

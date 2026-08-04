@@ -35,7 +35,9 @@ export interface BulkImportResult {
 }
 
 export interface CrewSettings {
-  branding: { seed_color: string | null; logo_url: string | null } | null;
+  // seed_color arrives as an ARGB bigint (JSON number) from the RPC; hex
+  // strings are tolerated for legacy rows.
+  branding: { seed_color: string | number | null; logo_url: string | null } | null;
   subscription: { tier: string; status: string; current_period_end: string | null } | null;
   // Reserved: the backend returns sso_enabled: true when SSO is available
   // for this crew. The Settings UI keeps the SSO tab hidden until then.
