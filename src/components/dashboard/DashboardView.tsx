@@ -3,6 +3,7 @@
 import nextDynamic from 'next/dynamic';
 import { useCrew } from '@/hooks/useCrew';
 import { useFleetDashboard } from '@/hooks/queries/useFleetDashboard';
+import { useRealtimeInvalidation } from '@/hooks/useRealtimeRefresh';
 import { KpiStrip } from '@/components/dashboard/KpiStrip';
 import { AlertFeed } from '@/components/dashboard/AlertFeed';
 import { ActivityTimeline } from '@/components/dashboard/ActivityTimeline';
@@ -17,6 +18,17 @@ export function DashboardView() {
   // Crew seeding happens once at app mount in CrewLoader — not per page.
   const { crewId } = useCrew();
   const dashboard = useFleetDashboard(crewId);
+
+  // Realtime — silent background refresh on trip session / safety alert changes.
+  useRealtimeInvalidation(
+    crewId,
+    'fleet-dashboard',
+    [
+      { table: 'crew_trip_sessions', filter: `crew_id=eq.${crewId}` },
+      { table: 'safety_alerts', event: 'INSERT', filter: `crew_id=eq.${crewId}` },
+    ],
+    ['fleetDashboard'],
+  );
 
   return (
     <>

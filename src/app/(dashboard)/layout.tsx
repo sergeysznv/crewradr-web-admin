@@ -8,6 +8,7 @@ import { useBranding } from '@/hooks/use-branding';
 import { useSessionTimeout } from '@/hooks/use-session-timeout';
 import { useTheme } from '@/hooks/useTheme';
 import { useVersionCheck } from '@/hooks/use-version-check';
+import { useVisibilityRefetch } from '@/hooks/useRealtimeRefresh';
 import { useCrew } from '@/hooks/useCrew';
 import { IdleWarningOverlay, SignedOutOverlay } from '@/components/session-locked-overlay';
 import { supabase } from '@/lib/supabase/client';
@@ -79,6 +80,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const palette = useBranding(activeCrewId, userTier);
   const { idleWarning, staySignedIn, handleSignOut } = useSessionTimeout();
+
+  // Refetch all queries when the tab becomes visible again.
+  useVisibilityRefetch();
 
   const loadCrews = useCallback(async () => {
     setLoadError(false);

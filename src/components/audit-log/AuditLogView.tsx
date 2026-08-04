@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useCrew } from '@/hooks/useCrew';
 import { useAuditLogs } from '@/hooks/queries/useAuditLogs';
+import { useRealtimeInvalidation } from '@/hooks/useRealtimeRefresh';
 import { AuditLogTable } from '@/components/audit-log/AuditLogTable';
 import { AuditLogCard } from '@/components/audit-log/AuditLogCard';
 import { AuditLogFilters, type DatePreset } from '@/components/audit-log/AuditLogFilters';
@@ -20,6 +21,14 @@ export function AuditLogView() {
   const { crewId } = useCrew();
   const { data, isLoading, setDateFrom, setDateTo, action, setAction, offset, setOffset, limit } = useAuditLogs(crewId);
   const [datePreset, setDatePreset] = useState<DatePreset>('30d');
+
+  // Realtime — append new audit events as they are written.
+  useRealtimeInvalidation(
+    crewId,
+    'admin-audit',
+    [{ table: 'enterprise_audit_log', event: 'INSERT' }],
+    ['auditLogs', crewId!],
+  );
 
   const logs = data?.logs ?? [];
 

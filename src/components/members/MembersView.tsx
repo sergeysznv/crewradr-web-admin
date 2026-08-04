@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useCrew } from '@/hooks/useCrew';
 import { useCrewMembers } from '@/hooks/queries/useCrewMembers';
+import { useRealtimeInvalidation } from '@/hooks/useRealtimeRefresh';
 import { MemberTable } from '@/components/members/MemberTable';
 import { MemberCard } from '@/components/members/MemberCard';
 import { MemberDetail } from '@/components/members/MemberDetail';
@@ -28,6 +29,14 @@ export function MembersView() {
   const [selected, setSelected] = useState<CrewMember | null>(null);
   const [roleFilter, setRoleFilter] = useState<RoleFilter>('all');
   const [showImport, setShowImport] = useState(false);
+
+  // Realtime — reload members when crew membership changes.
+  useRealtimeInvalidation(
+    crewId,
+    'admin-members',
+    [{ table: 'crew_members' }],
+    ['crewMembers', crewId!],
+  );
 
   const members = data?.members ?? [];
   const filtered = roleFilter === 'all' ? members : members.filter(m => m.role === roleFilter);

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useCrew } from '@/hooks/useCrew';
 import { useCrewSettings } from '@/hooks/queries/useCrewSettings';
+import { useRealtimeInvalidation } from '@/hooks/useRealtimeRefresh';
 import { GeneralTab } from '@/components/settings/GeneralTab';
 import { BrandingTab } from '@/components/settings/BrandingTab';
 import { DangerZone } from '@/components/settings/DangerZone';
@@ -23,6 +24,14 @@ export function SettingsView() {
   const { crewId } = useCrew();
   const { data: settings } = useCrewSettings(crewId);
   const [tab, setTab] = useState<Tab>('general');
+
+  // Realtime — refresh settings when branding changes.
+  useRealtimeInvalidation(
+    crewId,
+    'settings-branding',
+    [{ table: 'crew_branding', filter: `crew_id=eq.${crewId}` }],
+    ['crewSettings', crewId!],
+  );
 
   return (
     <div className="max-w-[720px] space-y-lg">
