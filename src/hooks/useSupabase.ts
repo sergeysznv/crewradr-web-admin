@@ -1,7 +1,8 @@
 'use client';
-import { createClient } from '@/lib/supabase/client';
-import { useMemo } from 'react';
+import { supabase } from '@/lib/supabase/client';
 
+// Singleton client — no factory. Returned directly so callers keep the
+// same call shape (supabase.auth, supabase.rpc, ...).
 export function useSupabase() {
-  return useMemo(() => createClient(), []);
+  return supabase;
 }
