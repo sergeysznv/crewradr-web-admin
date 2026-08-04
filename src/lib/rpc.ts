@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
   AccountProfile, FleetDashboard, CrewMembersResponse,
-  BulkImportResult, CrewSettings, AuditLogsResponse, UpdateMemberRoleResult
+  BulkImportResult, CrewSettings, AuditLogsResponse, UpdateMemberRoleResult, LivePosition
 } from '@/types/rpc';
 
 type RpcFn = SupabaseClient['rpc'];
@@ -70,4 +70,11 @@ export async function updateMemberRole(
   }).single<UpdateMemberRoleResult>();
   if (error) throw error;
   return data;
+}
+
+export async function getLivePositions(supabase: SupabaseClient, crewId: string): Promise<LivePosition[]> {
+  const { data, error } = await supabase.rpc('get_web_live_positions', { p_crew_id: crewId });
+  if (error) throw error;
+  // The RPC returns { positions: [...], crew_name } — return the array.
+  return (data as { positions?: LivePosition[] } | null)?.positions ?? [];
 }

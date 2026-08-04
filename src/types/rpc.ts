@@ -65,3 +65,12 @@ export interface UpdateMemberRoleResult {
   old_role: string;
   new_role: string;
 }
+
+export interface LivePosition {
+  user_id: string;
+  display_name: string | null;
+  profile_emoji: string | null;
+  latitude: number;
+  longitude: number;
+  created_at: string;
+}

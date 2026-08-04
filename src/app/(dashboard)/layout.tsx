@@ -13,7 +13,7 @@ import { IdleWarningOverlay, SignedOutOverlay } from '@/components/session-locke
 import { supabase } from '@/lib/supabase/client';
 import { tierColor, tierLabel } from '@/lib/utils';
 import {
-  LayoutDashboard, Users, Settings, ShieldCheck, FileText, LogOut,
+  LayoutDashboard, Users, Settings, ShieldCheck, FileText, MapPin, LogOut,
   Loader2, ChevronLeft, ChevronRight, WifiOff, Menu, X,
 } from 'lucide-react';
 import type { CrewSummary } from '@/types';
@@ -22,6 +22,7 @@ import type { CrewSummary } from '@/types';
 // 2 captain, 3 admiral.
 const NAV_ITEMS = [
   { href: '/fleet', label: 'webNavFleet', icon: LayoutDashboard, minTier: 0 }, // home
+  { href: '/map', label: 'webNavLiveMap', icon: MapPin, minTier: 3 },
   { href: '/members', label: 'webNavMembers', icon: Users, minTier: 2 },
   { href: '/settings', label: 'webNavCrewSettings', icon: Settings, minTier: 2 },
   { href: '/audit-log', label: 'webNavAuditLog', icon: FileText, minTier: 3 },
