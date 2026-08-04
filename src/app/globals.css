@@ -8,6 +8,13 @@
  */
 @config "../../tailwind.config.ts";
 
+/*
+ * The redesign themes via the `data-theme` attribute (tokens.css), not the
+ * `.dark` class. Map Tailwind's `dark:` variant to that attribute so
+ * ported components keep working without class-based theming.
+ */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 body {
   font-family: "PT Sans", sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -15,3 +22,29 @@ body {
 
 @keyframes slide-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
 .animate-slide-in { animation: slide-in 200ms ease-out; }
+
+/*
+ * Brand CSS vars consumed by the ported auth/dashboard shell
+ * (var(--brand-surface), var(--brand-glow)). Values mirror the
+ * CrewBeacon tokens: light scaffold + primary seed.
+ */
+:root {
+  --brand-surface: #F3F0E9;
+  --brand-glow: rgba(142, 165, 149, 0.25);
+}
+[data-theme="dark"] {
+  --brand-surface: #1A2327;
+  --brand-glow: rgba(142, 165, 149, 0.12);
+}
+
+/* Brand radial glow (matches landing page .glow) */
+.brand-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 500px;
+  height: 500px;
+  pointer-events: none;
+  background: radial-gradient(ellipse, var(--brand-glow) 0%, transparent 60%);
+}
