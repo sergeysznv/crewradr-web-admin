@@ -14,7 +14,7 @@ import { IdleWarningOverlay, SignedOutOverlay } from '@/components/session-locke
 import { supabase } from '@/lib/supabase/client';
 import { tierColor, tierLabel } from '@/lib/utils';
 import {
-  LayoutDashboard, Users, Settings, ShieldCheck, FileText, MapPin, LogOut,
+  LayoutDashboard, Users, Settings, ShieldCheck, FileText, Link, MapPin, LogOut,
   Loader2, ChevronLeft, ChevronRight, WifiOff, Menu, X,
 } from 'lucide-react';
 import type { CrewSummary } from '@/types';
@@ -27,6 +27,8 @@ const NAV_ITEMS = [
   { href: '/members', label: 'webNavMembers', icon: Users, minTier: 2 },
   { href: '/settings', label: 'webNavCrewSettings', icon: Settings, minTier: 2 },
   { href: '/audit-log', label: 'webNavAuditLog', icon: FileText, minTier: 3 },
+  { href: '/compliance', label: 'webNavCompliance', icon: ShieldCheck, minTier: 3 },
+  { href: '/provisioning', label: 'webNavProvisioning', icon: Link, minTier: 3 },
 ];
 
 // ── Shared nav items renderer (module scope: never create components
@@ -297,7 +299,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
           <div className="border-t border-zinc-200 p-2 dark:border-zinc-700">
             <div className={`flex items-center gap-2 rounded-lg px-2 py-1.5 ${collapsed ? 'justify-center' : ''}`}>
-              <button onClick={() => window.location.href = '/settings'} className="shrink-0 transition-opacity hover:opacity-80" title={t('webNavCrewSettings')}>
+              <button onClick={() => window.location.href = '/account'} className="shrink-0 transition-opacity hover:opacity-80" title={t('webNavMyAccount')}>
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="" className="h-7 w-7 shrink-0 rounded-full object-cover" />
                 ) : (
@@ -306,7 +308,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </button>
               {!collapsed && (
                 <>
-                  <button onClick={() => window.location.href = '/settings'} className="flex-1 truncate text-left text-xs text-zinc-600 hover:text-[var(--brand-seed)] dark:text-zinc-400" title={t('webNavCrewSettings')}>
+                  <button onClick={() => window.location.href = '/account'} className="flex-1 truncate text-left text-xs text-zinc-600 hover:text-[var(--brand-seed)] dark:text-zinc-400" title={t('webNavMyAccount')}>
                     {displayName || user.email}
                   </button>
                   <button onClick={signOut} className="shrink-0 text-zinc-400 hover:text-red-500" title={t('webSignOut')}><LogOut className="h-3.5 w-3.5" /></button>

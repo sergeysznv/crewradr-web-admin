@@ -76,3 +76,13 @@ export interface LivePosition {
   longitude: number;
   created_at: string;
 }
+
+export interface ProvisioningLink {
+  id: string;
+  code: string;
+  status: string;
+  usage_count: number;
+  max_uses?: number;
+  expires_at?: string;
+  created_at: string;
+}
