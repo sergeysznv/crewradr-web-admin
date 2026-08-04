@@ -87,8 +87,9 @@ export function MapView() {
   }, [crewId, isAdmiral, supabase, queryClient]);
 
   // Refetch on tab focus — skip if refreshed recently to prevent double-fetch.
-  const lastFocusRef = useRef(Date.now());
+  const lastFocusRef = useRef<number>(0);
   useEffect(() => {
+    if (lastFocusRef.current === 0) lastFocusRef.current = Date.now();
     const onFocus = () => {
       if (Date.now() - lastFocusRef.current > 5000) {
         lastFocusRef.current = Date.now();
@@ -148,8 +149,11 @@ export function MapView() {
     );
   }
 
+  // Staleness uses the query's dataUpdatedAt as "now" (refreshes with the
+  // 30s refetchInterval) so render stays pure.
   const selectedIsStale =
-    selected && Date.now() - new Date(selected.created_at).getTime() > STALE_AFTER_MS;
+    selected && positionsQuery.dataUpdatedAt > 0 &&
+    positionsQuery.dataUpdatedAt - new Date(selected.created_at).getTime() > STALE_AFTER_MS;
 
   return (
     <div className="flex h-full flex-col animate-fade-in">

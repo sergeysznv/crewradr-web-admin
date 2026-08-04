@@ -67,58 +67,8 @@ export default function LiveMap({ positions, selectedUserId, onSelect }: LiveMap
   const didFitRef = useRef(false);
   const pendingMarkersRef = useRef<LivePosition[]>([]);
 
-  // Init map
-  useEffect(() => {
-    if (!containerRef.current || mapRef.current) return;
-    let cancelled = false;
-
-    const loader = new Loader({
-      apiKey: GOOGLE_MAPS_API_KEY,
-      version: 'weekly',
-    });
-
-    loader.load().then(() => {
-      if (cancelled || !containerRef.current) return;
-      const map = new google.maps.Map(containerRef.current, {
-        center: { lat: 39.8, lng: -98.5 },
-        zoom: 4,
-        disableDefaultUI: false,
-        zoomControl: true,
-        mapTypeControl: true,
-        streetViewControl: false,
-        fullscreenControl: false,
-      });
-
-      map.addListener('click', () => onSelect(null));
-      mapRef.current = map;
-
-      if (pendingMarkersRef.current.length > 0) {
-        syncMarkers(map, pendingMarkersRef.current);
-        pendingMarkersRef.current = [];
-      }
-    });
-
-    return () => { cancelled = true; };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Sync click handler
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map) return;
-    google.maps.event.clearListeners(map, 'click');
-    map.addListener('click', () => onSelect(null));
-  }, [onSelect]);
-
-  // Sync markers
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map) {
-      pendingMarkersRef.current = positions;
-      return;
-    }
-    syncMarkers(map, positions);
-  }, [positions, selectedUserId]);
-
+  // Declared before use so the purity lint sees a stable binding (runtime
+  // behavior identical — function declarations are hoisted).
   function syncMarkers(map: google.maps.Map, positions: LivePosition[]) {
     const markers = markersRef.current;
     const currentIds = new Set(positions.map((p) => p.user_id));
@@ -171,6 +121,58 @@ export default function LiveMap({ positions, selectedUserId, onSelect }: LiveMap
       }
     }
   }
+
+  // Init map
+  useEffect(() => {
+    if (!containerRef.current || mapRef.current) return;
+    let cancelled = false;
+
+    const loader = new Loader({
+      apiKey: GOOGLE_MAPS_API_KEY,
+      version: 'weekly',
+    });
+
+    loader.load().then(() => {
+      if (cancelled || !containerRef.current) return;
+      const map = new google.maps.Map(containerRef.current, {
+        center: { lat: 39.8, lng: -98.5 },
+        zoom: 4,
+        disableDefaultUI: false,
+        zoomControl: true,
+        mapTypeControl: true,
+        streetViewControl: false,
+        fullscreenControl: false,
+      });
+
+      map.addListener('click', () => onSelect(null));
+      mapRef.current = map;
+
+      if (pendingMarkersRef.current.length > 0) {
+        syncMarkers(map, pendingMarkersRef.current);
+        pendingMarkersRef.current = [];
+      }
+    });
+
+    return () => { cancelled = true; };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Sync click handler
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    google.maps.event.clearListeners(map, 'click');
+    map.addListener('click', () => onSelect(null));
+  }, [onSelect]);
+
+  // Sync markers
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) {
+      pendingMarkersRef.current = positions;
+      return;
+    }
+    syncMarkers(map, positions);
+  }, [positions, selectedUserId]);
 
   return <div ref={containerRef} style={{ width: '100%', height: '100%' }} />;
 }

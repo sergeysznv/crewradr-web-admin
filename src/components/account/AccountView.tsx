@@ -1,6 +1,6 @@
 // src/components/account/AccountView.tsx
 'use client';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useT, useLocale } from '@/hooks/use-translations';
 import { useAuth } from '@/hooks/use-auth';
@@ -31,14 +31,13 @@ export function AccountView() {
   const profile = account.data?.profile ?? null;
   const crews = account.data?.crews ?? [];
 
-  const [displayName, setDisplayName] = useState('');
+  // Draft = null until the user edits; the input shows the profile value
+  // otherwise. No effect needed to sync — avoids setState-in-effect.
+  const [displayName, setDisplayName] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  // Sync form from profile once loaded.
-  useEffect(() => {
-    if (profile) setDisplayName(profile.display_name ?? '');
-  }, [profile]);
+  const displayNameValue = displayName ?? profile?.display_name ?? '';
 
   async function saveProfile() {
     if (!profile?.user_id) return;
@@ -46,8 +45,9 @@ export function AccountView() {
     try {
       await supabase.from('profiles').upsert({
         user_id: profile.user_id,
-        display_name: displayName.trim(),
+        display_name: displayNameValue.trim(),
       });
+      setDisplayName(null);
       queryClient.invalidateQueries({ queryKey: ['accountProfile'] });
       setSaved(true);
       showSuccess(t('webAccountProfileSaved'));
@@ -73,7 +73,7 @@ export function AccountView() {
   }
 
   const email = profile?.email ?? '';
-  const initial = (displayName || email).charAt(0).toUpperCase() || '?';
+  const initial = (displayNameValue || email).charAt(0).toUpperCase() || '?';
 
   return (
     <div className="max-w-3xl space-y-lg animate-fade-in">
@@ -87,7 +87,7 @@ export function AccountView() {
           </div>
           <div className="flex-1 space-y-4">
             <div>
-              <h2 className="font-semibold text-on-surface">{displayName || email}</h2>
+              <h2 className="font-semibold text-on-surface">{displayNameValue || email}</h2>
               <p className="text-sm text-on-surface-variant">{email}</p>
             </div>
             <div>
@@ -97,7 +97,7 @@ export function AccountView() {
               <input
                 id="display-name"
                 name="display-name"
-                value={displayName}
+                value={displayNameValue}
                 onChange={(e) => setDisplayName(e.target.value)}
                 className="w-full rounded-xl border border-outline bg-surface px-3 py-2 text-sm text-on-surface"
                 autoComplete="name"
