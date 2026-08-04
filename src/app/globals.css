@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+/*
+ * Tailwind v4 loads JS configs via @config; without this directive the
+ * theme extensions in tailwind.config.ts (CrewBeacon tokens) are ignored.
+ * Path is relative to this CSS file (src/app/globals.css).
+ */
+@config "../../tailwind.config.ts";
+
+/* PT Sans — body text (400/700), OFL-licensed, self-hosted from public/fonts */
+@font-face {
+  font-family: "PT Sans";
+  src: url("/fonts/PT_Sans-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "PT Sans";
+  src: url("/fonts/PT_Sans-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* PT Sans Caption — headings (400/700) */
+@font-face {
+  font-family: "PT Sans Caption";
+  src: url("/fonts/PT_Sans_Caption-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "PT Sans Caption";
+  src: url("/fonts/PT_Sans_Caption-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/*
+ * Design tokens (--color-*, --font-*, --radius-*, --space-*) live in
+ * src/lib/tokens.css, created in Task 2 (CSS custom properties).
+ * Import it here once it exists:
+ *   @import "../lib/tokens.css";
+ */
+
+body {
+  font-family: "PT Sans", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
