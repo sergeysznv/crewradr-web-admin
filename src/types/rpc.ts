@@ -37,6 +37,9 @@ export interface BulkImportResult {
 export interface CrewSettings {
   branding: { seed_color: string | null; logo_url: string | null } | null;
   subscription: { tier: string; status: string; current_period_end: string | null } | null;
+  // Reserved: the backend returns sso_enabled: true when SSO is available
+  // for this crew. The Settings UI keeps the SSO tab hidden until then.
+  sso_enabled?: boolean;
 }
 
 export interface AuditLogEntry {

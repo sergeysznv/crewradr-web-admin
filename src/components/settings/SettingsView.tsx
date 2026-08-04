@@ -9,6 +9,9 @@ import { BrandingTab } from '@/components/settings/BrandingTab';
 import { DangerZone } from '@/components/settings/DangerZone';
 import { FilterChips } from '@/components/shared/FilterChips';
 
+// The SSO tab slot is reserved: it stays hidden until the backend returns
+// `sso_enabled: true` in crew settings (CrewSettings.sso_enabled). Do not
+// add an SSO tab here before that flag exists.
 const TABS = [
   { value: 'general' as const, label: 'General' },
   { value: 'branding' as const, label: 'Branding' },
