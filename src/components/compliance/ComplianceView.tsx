@@ -75,7 +75,7 @@ export function ComplianceView() {
         .eq('crew_id', crewId)
         .gte('created_at', since.toISOString())
         .order('created_at', { ascending: false });
-      if (error) { showError(error.message); return; }
+      if (error) { showError(t('webComplianceOshaFailed')); return; }
       const rows = incidents ?? [];
       setOshaData(rows as SafetyAlert[]);
       setShowOshaPreview(true);
@@ -115,15 +115,25 @@ export function ComplianceView() {
   }
 
   function downloadOsha() {
+    const csvEscape = (v: unknown) => {
+      let s = String(v).replace(/"/g, '""');
+      if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+      return `"${s}"`;
+    };
     const csv = ['Date,Type,Severity,Description,Subject',
-      ...oshaRows.map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(','))
+      ...oshaRows.map((r) => r.map(csvEscape).join(','))
     ].join('\n');
     download(`osha-300-crew-${new Date().toISOString().split('T')[0]}.csv`, csv);
   }
 
   function downloadEld() {
+    const csvEscape = (v: unknown) => {
+      let s = String(v).replace(/"/g, '""');
+      if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+      return `"${s}"`;
+    };
     const csv = ['Driver,Date,DrivingHours,DistanceKm,FatigueWarnings',
-      ...eldRows.map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(','))
+      ...eldRows.map((r) => r.map(csvEscape).join(','))
     ].join('\n');
     download(`eld-report-crew-${new Date().toISOString().split('T')[0]}.csv`, csv);
   }

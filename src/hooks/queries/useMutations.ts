@@ -16,7 +16,7 @@ export function useUpdateMemberRole(crewId: string) {
       qc.invalidateQueries({ queryKey: ['crewMembers', crewId] });
       showSuccess(`Role changed to ${data.new_role}`); // matches webMutationRoleChanged
     },
-    onError: (err: Error) => showError(err.message),
+    onError: () => showError('Failed to change role'),
   });
 }
 
@@ -31,7 +31,7 @@ export function useRemoveMember(crewId: string) {
       qc.invalidateQueries({ queryKey: ['crewMembers', crewId] });
       showSuccess('Member removed'); // matches webMutationMemberRemoved
     },
-    onError: (err: Error) => showError(err.message),
+    onError: () => showError('Failed to remove member'),
   });
 }
 
@@ -47,6 +47,6 @@ export function useBulkImport(crewId: string) {
       qc.invalidateQueries({ queryKey: ['crewMembers', crewId] });
       showSuccess(`${data.added} members imported${data.errors.length ? `, ${data.errors.length} errors` : ''}`); // matches webMutationMembersImported
     },
-    onError: (err: Error) => showError(err.message),
+    onError: () => showError('Import failed'),
   });
 }

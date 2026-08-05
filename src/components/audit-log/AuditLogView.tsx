@@ -43,7 +43,7 @@ export function AuditLogView() {
   useRealtimeInvalidation(
     crewId,
     'admin-audit',
-    [{ table: 'enterprise_audit_log', event: 'INSERT' }],
+    [{ table: 'enterprise_audit_log', event: 'INSERT', filter: `crew_id=eq.${crewId}` }],
     ['auditLogs', crewId!],
   );
 
@@ -74,9 +74,14 @@ export function AuditLogView() {
         <button
           onClick={() => {
             if (logs.length === 0) return;
+            const csvEscape = (v: unknown) => {
+              let s = String(v).replace(/"/g, '""');
+              if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+              return `"${s}"`;
+            };
             const rows = logs.map((l) =>
               [l.created_at, l.actor_name ?? l.actor_email ?? 'System', l.action, `${l.target_type}: ${l.target_id}`, JSON.stringify(l.metadata)]
-                .map((v) => `"${String(v).replace(/"/g, '""')}"`)
+                .map(csvEscape)
                 .join(','),
             );
             const csv = ['Timestamp,Actor,Action,Target,Details', ...rows].join('\n');

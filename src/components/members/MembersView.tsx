@@ -62,7 +62,7 @@ export function MembersView() {
   useRealtimeInvalidation(
     crewId,
     'admin-members',
-    [{ table: 'crew_members' }],
+    [{ table: 'crew_members', filter: `crew_id=eq.${crewId}` }],
     ['crewMembers', crewId!],
   );
 

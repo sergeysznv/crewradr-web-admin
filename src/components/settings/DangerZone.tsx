@@ -61,8 +61,8 @@ export function DangerZone() {
       setTransferTarget(null);
       queryClient.invalidateQueries({ queryKey: ['crewMembers', crewId] });
       router.refresh();
-    } catch (err) {
-      showError(err instanceof Error ? err.message : 'Transfer failed');
+    } catch {
+      showError('Transfer failed');
     }
     setWorking(false);
   }
@@ -83,8 +83,8 @@ export function DangerZone() {
       showSuccess('You have left the crew.');
       queryClient.invalidateQueries({ queryKey: ['crewMembers', crewId] });
       router.push('/fleet');
-    } catch (err) {
-      showError(err instanceof Error ? err.message : 'Failed to leave crew');
+    } catch {
+      showError('Failed to leave crew');
     }
     setWorking(false);
     setShowLeave(false);
@@ -97,8 +97,8 @@ export function DangerZone() {
       await dissolveCrew(supabase, crewId);
       showSuccess('Crew deleted.');
       router.push('/');
-    } catch (err) {
-      showError(err instanceof Error ? err.message : 'Failed to delete crew');
+    } catch {
+      showError('Failed to delete crew');
     }
     setWorking(false);
     setShowDelete(false);

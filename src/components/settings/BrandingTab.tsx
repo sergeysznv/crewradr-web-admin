@@ -13,7 +13,7 @@ import { normalizeSeedColor } from '@/hooks/use-branding';
 
 const PRESETS = ['#8EA595', '#6E8679', '#DDCFB5', '#4A90D9', '#E68A00', '#D9534F'];
 const MAX_LOGO_SIZE = 2 * 1024 * 1024; // 2MB
-const ALLOWED_TYPES = ['image/png', 'image/svg+xml'];
+const ALLOWED_TYPES = ['image/png'];
 
 export function BrandingTab({ seedColor = null, logoUrl = null }: { seedColor?: string | number | null; logoUrl?: string | null }) {
   const { t } = useT();
@@ -48,7 +48,7 @@ export function BrandingTab({ seedColor = null, logoUrl = null }: { seedColor?: 
     if (!file || !crewId) return;
 
     if (!ALLOWED_TYPES.includes(file.type)) {
-      showError(t('webCrewSettingsLogoType'));
+      showError(t('webCrewSettingsLogoType')); // PNG only
       return;
     }
     if (file.size > MAX_LOGO_SIZE) {
@@ -149,7 +149,7 @@ export function BrandingTab({ seedColor = null, logoUrl = null }: { seedColor?: 
         <input
           ref={fileRef}
           type="file"
-          accept="image/png,image/svg+xml"
+          accept="image/png"
           onChange={handleLogoUpload}
           className="hidden"
           aria-label={t('webSettingsLogoUploadAria')}
