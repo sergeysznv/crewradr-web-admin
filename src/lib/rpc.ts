@@ -114,3 +114,14 @@ export async function removeMember(supabase: SupabaseClient, memberId: string): 
   const { error } = await supabase.rpc('remove_member', { p_member_id: memberId });
   if (error) throw error;
 }
+
+export async function transferCaptaincy(supabase: SupabaseClient, crewId: string, newCaptainUserId: string): Promise<void> {
+  const { error } = await supabase.rpc('transfer_crew_captaincy', { p_crew_id: crewId, p_new_captain_id: newCaptainUserId });
+  if (error) throw error;
+}
+
+export async function dissolveCrew(supabase: SupabaseClient, crewId: string): Promise<boolean> {
+  const { data, error } = await supabase.rpc('dissolve_crew', { crew_id: crewId });
+  if (error) throw error;
+  return data as boolean;
+}

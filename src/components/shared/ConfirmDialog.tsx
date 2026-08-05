@@ -1,7 +1,7 @@
 // src/components/shared/ConfirmDialog.tsx
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, type ReactNode } from 'react';
 import { AlertTriangle, Loader2 } from 'lucide-react';
 import { useT } from '@/hooks/use-translations';
 
@@ -20,6 +20,7 @@ interface ConfirmDialogProps {
   pending?: boolean;
   confirmDisabled?: boolean;
   verifyText?: VerifyTextConfig;
+  children?: ReactNode;
   onConfirm: () => void;
   onCancel: () => void;
 }
@@ -33,6 +34,7 @@ export function ConfirmDialog({
   pending = false,
   confirmDisabled = false,
   verifyText,
+  children,
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
@@ -100,6 +102,8 @@ export function ConfirmDialog({
             />
           </div>
         )}
+
+        {children}
 
         <div className="mt-5 flex gap-3 justify-end">
           <button
