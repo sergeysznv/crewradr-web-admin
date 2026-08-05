@@ -13,6 +13,7 @@ import { useCrew } from '@/hooks/useCrew';
 import { IdleWarningOverlay, SignedOutOverlay } from '@/components/session-locked-overlay';
 import { ShellErrorBoundary } from '@/components/shared/ErrorBoundary';
 import { OfflineBanner } from '@/components/shared/OfflineBanner';
+import { MultiCrewSwitcher } from '@/components/shared/MultiCrewSwitcher';
 import { useTabFocus } from '@/hooks/useTabFocus';
 import { supabase } from '@/lib/supabase/client';
 import { tierColor, tierLabel } from '@/lib/utils';
@@ -198,7 +199,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <Menu className="h-5 w-5" />
         </button>
         <img src="/logo-32.png" alt="CrewRadr" className="h-7 w-7 shrink-0 rounded-lg" width={28} height={28} />
-        <span className="text-sm font-bold truncate">{activeCrew?.crew_name ?? t('webAdminTitle')}</span>
+        {crews.length > 1 ? (
+          <MultiCrewSwitcher crews={crews} activeCrewId={activeCrewId} onSelect={switchCrew} />
+        ) : (
+          <span className="text-sm font-bold truncate">{activeCrew?.crew_name ?? t('webAdminTitle')}</span>
+        )}
         <div className="ml-auto flex items-center gap-1">
           <button onClick={toggleTheme} className="flex h-8 w-8 items-center justify-center rounded-lg text-sm" title={resolved === 'dark' ? t('webShellLightMode') : t('webShellDarkMode')}>
             {resolved === 'dark' ? '\u{2600}\u{FE0F}' : '\u{1F319}'}
@@ -352,13 +357,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <main className="flex flex-1 flex-col overflow-hidden">
           {/* Desktop top bar */}
           <header className="hidden h-14 shrink-0 items-center gap-3 border-b border-zinc-200 bg-white px-4 dark:border-zinc-700 dark:bg-zinc-900 md:flex">
-            {activeCrew && (
-              <span className="text-sm font-medium">
-                {activeCrew.crew_name}
-                <span className="ml-2 inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold" style={{ backgroundColor: `${tierColor(activeCrew.tier)}20`, color: tierColor(activeCrew.tier) }}>
-                  {tierLabel(activeCrew.tier)}
+            {crews.length > 1 ? (
+              <MultiCrewSwitcher crews={crews} activeCrewId={activeCrewId} onSelect={switchCrew} />
+            ) : (
+              activeCrew && (
+                <span className="text-sm font-medium">
+                  {activeCrew.crew_name}
+                  <span className="ml-2 inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold" style={{ backgroundColor: `${tierColor(activeCrew.tier)}20`, color: tierColor(activeCrew.tier) }}>
+                    {tierLabel(activeCrew.tier)}
+                  </span>
                 </span>
-              </span>
+              )
             )}
             <div className="ml-auto flex items-center gap-1">
               <button onClick={toggleTheme}
