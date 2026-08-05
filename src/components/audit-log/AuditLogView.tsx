@@ -5,11 +5,12 @@ import { useT } from '@/hooks/use-translations';
 import { useCrew } from '@/hooks/useCrew';
 import { useAuditLogs } from '@/hooks/queries/useAuditLogs';
 import { useRealtimeInvalidation } from '@/hooks/useRealtimeRefresh';
+import { tierRank } from '@/lib/utils';
 import { AuditLogTable } from '@/components/audit-log/AuditLogTable';
 import { AuditLogCard } from '@/components/audit-log/AuditLogCard';
 import { AuditLogFilters, type DatePreset } from '@/components/audit-log/AuditLogFilters';
 import { EmptyState } from '@/components/shared/EmptyState';
-import { ScrollText, Download } from 'lucide-react';
+import { ScrollText, Download, Lock } from 'lucide-react';
 
 const PRESET_DAYS: Record<DatePreset, number | null> = {
   '7d': 7,
@@ -20,7 +21,21 @@ const PRESET_DAYS: Record<DatePreset, number | null> = {
 
 export function AuditLogView() {
   const { t } = useT();
-  const { crewId } = useCrew();
+  const { crewId, tier } = useCrew();
+
+  // Tier gate — admiral only (tier >= 3)
+  if (tierRank(tier) < 3) {
+    return (
+      <div className="flex flex-1 items-center justify-center py-24" role="status">
+        <div className="text-center max-w-sm">
+          <Lock className="mx-auto h-10 w-10 text-on-surface-variant opacity-50" aria-hidden="true" />
+          <h1 className="mt-4 text-xl font-bold text-on-surface">{t('webAuditTitle')}</h1>
+          <p className="mt-2 text-sm text-on-surface-variant">{t('webUpgradeRequired')}</p>
+        </div>
+      </div>
+    );
+  }
+
   const { data, isLoading, isError, refetch, setDateFrom, setDateTo, action, setAction, offset, setOffset, limit } = useAuditLogs(crewId);
   const [datePreset, setDatePreset] = useState<DatePreset>('30d');
 

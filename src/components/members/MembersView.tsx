@@ -9,6 +9,7 @@ import { useUpdateMemberRole } from '@/hooks/queries/useMutations';
 import { useSupabase } from '@/hooks/useSupabase';
 import { useSnackbar } from '@/components/shared/Snackbar';
 import { removeMember } from '@/lib/rpc';
+import { tierRank } from '@/lib/utils';
 import { MemberTable } from '@/components/members/MemberTable';
 import { MemberCard } from '@/components/members/MemberCard';
 import { MemberDetail } from '@/components/members/MemberDetail';
@@ -18,20 +19,34 @@ import { SlideOverPanel } from '@/components/shared/SlideOverPanel';
 import { FilterChips } from '@/components/shared/FilterChips';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
-import { Search, Upload, Users } from 'lucide-react';
+import { Search, Upload, Users, Lock } from 'lucide-react';
 import type { CrewMember } from '@/types/rpc';
 
 type RoleFilter = 'all' | 'captain' | 'co-captain' | 'member';
 
 export function MembersView() {
   const { t } = useT();
+  const { crewId, tier } = useCrew();
+
+  // Tier gate — captain+ (tier >= 2)
+  if (tierRank(tier) < 2) {
+    return (
+      <div className="flex flex-1 items-center justify-center py-24" role="status">
+        <div className="text-center max-w-sm">
+          <Lock className="mx-auto h-10 w-10 text-on-surface-variant opacity-50" aria-hidden="true" />
+          <h1 className="mt-4 text-xl font-bold text-on-surface">{t('webMembersTitle')}</h1>
+          <p className="mt-2 text-sm text-on-surface-variant">{t('webUpgradeRequired')}</p>
+        </div>
+      </div>
+    );
+  }
+
   const ROLE_FILTERS = [
     { value: 'all' as const, label: t('webMembersRoleAll') },
     { value: 'captain' as const, label: t('webMembersRoleCaptainLabel') },
     { value: 'co-captain' as const, label: t('webMembersRoleCoCaptainLabel') },
     { value: 'member' as const, label: t('webMembersRoleMemberLabel') },
   ];
-  const { crewId } = useCrew();
   const supabase = useSupabase();
   const { showSuccess, showError } = useSnackbar();
   const updateRole = useUpdateMemberRole(crewId!);

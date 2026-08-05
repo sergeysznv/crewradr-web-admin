@@ -5,10 +5,12 @@ import { useT } from '@/hooks/use-translations';
 import { useCrew } from '@/hooks/useCrew';
 import { useCrewSettings } from '@/hooks/queries/useCrewSettings';
 import { useRealtimeInvalidation } from '@/hooks/useRealtimeRefresh';
+import { tierRank } from '@/lib/utils';
 import { GeneralTab } from '@/components/settings/GeneralTab';
 import { BrandingTab } from '@/components/settings/BrandingTab';
 import { DangerZone } from '@/components/settings/DangerZone';
 import { FilterChips } from '@/components/shared/FilterChips';
+import { Lock } from 'lucide-react';
 
 // The SSO tab slot is reserved: it stays hidden until the backend returns
 // `sso_enabled: true` in crew settings (CrewSettings.sso_enabled). Do not
@@ -23,7 +25,21 @@ type Tab = typeof TABS[number]['value'];
 
 export function SettingsView() {
   const { t } = useT();
-  const { crewId } = useCrew();
+  const { crewId, tier } = useCrew();
+
+  // Tier gate — captain+ (tier >= 2)
+  if (tierRank(tier) < 2) {
+    return (
+      <div className="flex flex-1 items-center justify-center py-24" role="status">
+        <div className="text-center max-w-sm">
+          <Lock className="mx-auto h-10 w-10 text-on-surface-variant opacity-50" aria-hidden="true" />
+          <h1 className="mt-4 text-xl font-bold text-on-surface">{t('webCrewSettingsTitle')}</h1>
+          <p className="mt-2 text-sm text-on-surface-variant">{t('webUpgradeRequired')}</p>
+        </div>
+      </div>
+    );
+  }
+
   const { data: settings } = useCrewSettings(crewId);
   const [tab, setTab] = useState<Tab>('general');
 
