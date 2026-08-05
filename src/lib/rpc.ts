@@ -3,7 +3,7 @@ import type {
   AccountProfile, FleetDashboard, CrewMembersResponse,
   BulkImportResult, CrewSettings, AuditLogsResponse, UpdateMemberRoleResult, LivePosition
 } from '@/types/rpc';
-import type { TripDetail, TrendDataPoint } from '@/types/tier';
+import type { TripDetail, TrendDataPoint, ReportTemplate, ReportWidget } from '@/types/tier';
 
 type RpcFn = SupabaseClient['rpc'];
 
@@ -148,4 +148,23 @@ export async function dissolveCrew(supabase: SupabaseClient, crewId: string): Pr
   const { data, error } = await supabase.rpc('dissolve_crew', { crew_id: crewId });
   if (error) throw error;
   return data as boolean;
+}
+
+export async function getReportTemplates(supabase: SupabaseClient, crewId: string): Promise<ReportTemplate[]> {
+  const { data, error } = await supabase.rpc('get_report_templates', { p_crew_id: crewId });
+  if (error) throw error;
+  return (data as ReportTemplate[]) ?? [];
+}
+
+export async function saveReportTemplate(
+  supabase: SupabaseClient,
+  crewId: string,
+  template: { name: string; widgets: ReportWidget[] },
+): Promise<string> {
+  const { data, error } = await supabase.rpc('save_report_template', {
+    p_crew_id: crewId,
+    p_template: template,
+  });
+  if (error) throw error;
+  return data as string;
 }

@@ -4,6 +4,7 @@
 import { useT } from '@/hooks/use-translations';
 import { TierGateGuard } from '@/components/tier/TierGateGuard';
 import { ExportPresets } from '@/components/reports/ExportPresets';
+import { ReportBuilder } from '@/components/reports/ReportBuilder';
 
 export default function ReportsPage() {
   const { t } = useT();
@@ -14,11 +15,15 @@ export default function ReportsPage() {
 
       <ExportPresets />
 
-      {/* Captain+: Report Builder — placeholder for Phase 4 */}
+      {/* Captain+: Report Builder */}
       <TierGateGuard minTier="captain" fallback={null}>
-        <div className="rounded-lg border border-outline bg-surface p-6">
-          <p className="text-sm text-on-surface-variant">{t('webReportsBuilderPlaceholder')}</p>
-        </div>
+        <section className="space-y-md">
+          <div>
+            <h2 className="font-heading text-base font-bold text-on-surface">{t('webReportsBuilderTitle')}</h2>
+            <p className="mt-1 text-xs text-on-surface-variant">{t('webReportsBuilderDesc')}</p>
+          </div>
+          <ReportBuilder />
+        </section>
       </TierGateGuard>
 
       {/* Admiral: Scheduled Reports — placeholder for Phase 5 */}
