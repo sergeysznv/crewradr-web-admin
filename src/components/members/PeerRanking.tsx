@@ -4,29 +4,25 @@
 import { useQuery } from '@tanstack/react-query';
 import { useSupabase } from '@/hooks/useSupabase';
 import { useT } from '@/hooks/use-translations';
-import type { MemberScorecard } from '@/types/tier';
+import type { CrewRanking } from '@/types/tier';
 
-export function PeerRanking({ memberIds, crewId }: { memberIds: string[]; crewId: string }) {
+export function PeerRanking({ crewId }: { crewId: string }) {
   const { t } = useT();
   const supabase = useSupabase();
 
-  // Fetch scorecards for all crew members and sort by overallScore desc
+  // Crew-wide leaderboard: get_web_crew_rankings scores every member in a
+  // single RPC (captain+ tier gated server-side) and returns them sorted by
+  // overallScore desc with rank attached.
   const { data: rankings = [] } = useQuery({
     queryKey: ['peer_rankings', crewId],
-    enabled: memberIds.length > 0,
+    enabled: !!crewId,
     queryFn: async () => {
-      const results = await Promise.all(
-        memberIds.map(async (mid) => {
-          const { data } = await supabase.rpc('get_web_member_scorecard', {
-            p_member_id: mid,
-            p_days: 90,
-          });
-          return data as MemberScorecard | null;
-        })
-      );
-      return results
-        .filter((r): r is MemberScorecard => r !== null)
-        .sort((a, b) => b.overallScore - a.overallScore);
+      const { data, error } = await supabase.rpc('get_web_crew_rankings', {
+        p_crew_id: crewId,
+        p_days: 90,
+      });
+      if (error) throw error;
+      return (data ?? []) as CrewRanking[];
     },
   });
 
@@ -38,10 +34,10 @@ export function PeerRanking({ memberIds, crewId }: { memberIds: string[]; crewId
         {t('webLeaderboardTitle')}
       </h3>
       <div className="space-y-2">
-        {rankings.map((r, i) => (
+        {rankings.map((r) => (
           <div key={r.memberId} className="flex items-center gap-3 rounded-lg bg-surface-container px-3 py-2">
             <span className="w-6 text-center text-sm font-bold text-on-surface-variant">
-              {i + 1}
+              {r.rank}
             </span>
             <span className="flex-1 truncate text-sm text-on-surface">{r.memberName}</span>
             <span className={`text-lg font-bold ${r.overallScore >= 80 ? 'text-success' : r.overallScore >= 60 ? 'text-warning' : 'text-error'}`}>

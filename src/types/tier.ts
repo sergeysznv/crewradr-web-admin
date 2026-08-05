@@ -50,6 +50,13 @@ export interface MemberScorecard {
   periodDays: number;
 }
 
+export interface CrewRanking {
+  memberId: string;
+  memberName: string;
+  overallScore: number;
+  rank: number;
+}
+
 export type AnomalyType = 'route_deviation' | 'unexpected_stop' | 'time_anomaly' | 'speed_anomaly';
 export type AnomalySeverity = 'low' | 'medium' | 'high';
 
@@ -110,6 +117,21 @@ export interface ReportWidget {
   dateRange?: number;
 }
 
+export interface ScheduledReport {
+  id: string;
+  crewId: string;
+  templateId: string;
+  templateName: string;
+  schedule: string; // cron
+  format: 'pdf' | 'csv';
+  recipients: string[];
+  enabled: boolean;
+  lastRanAt: string | null;
+  nextRunAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface TrendDataPoint {
   date: string;
   value: number;
@@ -126,4 +148,16 @@ export interface TripDetail {
   speedSamples: { timestamp: string; speedMph: number }[];
   stops: { lat: number; lng: number; durationMin: number; timestamp: string }[];
   alerts: { type: string; timestamp: string; description: string }[];
+}
+
+/** One row of get_web_trip_list (snake_case keys mirror the RPC payload). */
+export interface TripListItem {
+  id: string;
+  member_id: string;
+  member_name: string;
+  started_at: string;
+  ended_at: string | null;
+  distance_miles: number;
+  duration_min: number;
+  alert_count: number;
 }

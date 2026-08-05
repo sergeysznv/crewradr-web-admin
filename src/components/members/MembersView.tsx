@@ -185,9 +185,9 @@ export function MembersView() {
           {filtered.map(m => <MemberCard key={m.id} member={m} onClick={() => setSelected(m)} />)}
         </div>
 
-        {/* Captain tier: crew leaderboard */}
+        {/* Captain tier: crew-wide leaderboard (RPC ranks every member) */}
         <TierGateGuard minTier="captain" fallback={null}>
-          {members.length > 0 && <PeerRanking memberIds={members.map(m => m.id)} crewId={crewId!} />}
+          {members.length > 0 && <PeerRanking crewId={crewId!} />}
         </TierGateGuard>
 
         <SlideOverPanel open={!!selected} onClose={() => setSelected(null)}>
