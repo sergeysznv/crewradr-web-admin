@@ -257,7 +257,6 @@ export function ExportPresets() {
                   key={opt.id}
                   option={opt}
                   busy={exporting === opt.id}
-                  soon={opt.format === 'pdf'}
                   disabled={!crewId}
                   onExport={handleFleetExport}
                 />
