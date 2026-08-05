@@ -30,6 +30,7 @@ export function TierProvider({ children }: { children: ReactNode }) {
 
   const fetchSettings = useCallback(async () => {
     try {
+      setError(null);
       const { data, error: rpcErr } = await supabase.rpc('get_web_crew_settings');
       if (rpcErr) throw rpcErr;
       setSettings(data as WebCrewSettings);
