@@ -3,6 +3,7 @@ import type {
   AccountProfile, FleetDashboard, CrewMembersResponse,
   BulkImportResult, CrewSettings, AuditLogsResponse, UpdateMemberRoleResult, LivePosition
 } from '@/types/rpc';
+import type { TripDetail } from '@/types/tier';
 
 type RpcFn = SupabaseClient['rpc'];
 
@@ -68,6 +69,12 @@ export async function updateMemberRole(
   const { data, error } = await supabase.rpc('update_member_role', {
     p_member_id: memberId, p_new_role: newRole
   }).single<UpdateMemberRoleResult>();
+  if (error) throw error;
+  return data;
+}
+
+export async function getTripDetail(supabase: SupabaseClient, tripId: string): Promise<TripDetail> {
+  const { data, error } = await supabase.rpc('get_web_trip_detail', { p_trip_id: tripId }).single<TripDetail>();
   if (error) throw error;
   return data;
 }
