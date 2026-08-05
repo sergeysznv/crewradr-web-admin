@@ -515,5 +515,6 @@
   "webAlertsRulesEmptyDesc": "Créez votre première règle ci-dessus",
   "webAlertsRulesSaved": "Règle enregistrée",
   "webAlertsRulesSaveFailed": "Échec de l'enregistrement de la règle",
-  "webAlertsRulesToggleFailed": "Échec de la mise à jour de la règle"
+  "webAlertsRulesToggleFailed": "Échec de la mise à jour de la règle",
+  "webNavIntegrations": "Intégrations"
 }

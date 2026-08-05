@@ -19,7 +19,7 @@ import { supabase } from '@/lib/supabase/client';
 import { tierColor, tierLabel } from '@/lib/utils';
 import {
   LayoutDashboard, Users, Settings, ShieldCheck, FileText, Link, MapPin, LogOut,
-  Loader2, ChevronLeft, ChevronRight, Menu, X, Sparkles, Crown, ArrowUp,
+  Loader2, ChevronLeft, ChevronRight, Menu, X, Sparkles, Crown, ArrowUp, Plug,
 } from 'lucide-react';
 import type { CrewSummary } from '@/types';
 
@@ -33,6 +33,7 @@ const NAV_ITEMS = [
   { href: '/audit-log', label: 'webNavAuditLog', icon: FileText, minTier: 3 },
   { href: '/compliance', label: 'webNavCompliance', icon: ShieldCheck, minTier: 3 },
   { href: '/provisioning', label: 'webNavProvisioning', icon: Link, minTier: 3 },
+  { href: '/integrations', label: 'webNavIntegrations', icon: Plug, minTier: 3 },
 ];
 
 // ── Shared nav items renderer (module scope: never create components

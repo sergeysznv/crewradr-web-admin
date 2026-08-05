@@ -515,5 +515,6 @@
   "webAlertsRulesEmptyDesc": "Создайте первое правило выше",
   "webAlertsRulesSaved": "Правило сохранено",
   "webAlertsRulesSaveFailed": "Не удалось сохранить правило",
-  "webAlertsRulesToggleFailed": "Не удалось обновить правило"
+  "webAlertsRulesToggleFailed": "Не удалось обновить правило",
+  "webNavIntegrations": "Интеграции"
 }

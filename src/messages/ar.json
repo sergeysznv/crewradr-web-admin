@@ -515,5 +515,6 @@
   "webAlertsRulesEmptyDesc": "أنشئ قاعدتك الأولى أعلاه",
   "webAlertsRulesSaved": "تم حفظ القاعدة",
   "webAlertsRulesSaveFailed": "تعذر حفظ القاعدة",
-  "webAlertsRulesToggleFailed": "تعذر تحديث القاعدة"
+  "webAlertsRulesToggleFailed": "تعذر تحديث القاعدة",
+  "webNavIntegrations": "التكاملات"
 }

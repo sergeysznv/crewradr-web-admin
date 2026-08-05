@@ -515,5 +515,6 @@
   "webAlertsRulesEmptyDesc": "Create your first rule above",
   "webAlertsRulesSaved": "Rule saved",
   "webAlertsRulesSaveFailed": "Failed to save rule",
-  "webAlertsRulesToggleFailed": "Failed to update rule"
+  "webAlertsRulesToggleFailed": "Failed to update rule",
+  "webNavIntegrations": "Integrations"
 }
