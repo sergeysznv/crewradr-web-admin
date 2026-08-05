@@ -168,18 +168,18 @@ export function ComplianceView() {
               <button onClick={generateOsha} disabled={genOsha}
                 className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-on-primary hover:opacity-90 disabled:opacity-50">
                 {genOsha ? <Loader2 className="h-4 w-4 animate-spin" /> : <Eye className="h-4 w-4" />}
-                {genOsha ? t('webComplianceGenerating') : 'Generate Report'}
+                {genOsha ? t('webComplianceGenerating') : t('webComplianceGenerateReport')}
               </button>
               {oshaData && (
                 <>
                   <button onClick={() => setShowOshaPreview(!showOshaPreview)}
                     className="inline-flex items-center gap-1.5 rounded-xl border border-outline px-4 py-2 text-sm font-medium text-on-surface hover:bg-surface-container">
                     {showOshaPreview ? <X className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                    {showOshaPreview ? 'Hide' : `Preview (${oshaData.length} records)`}
+                    {showOshaPreview ? t('webComplianceHide') : t('webCompliancePreview', { count: oshaData.length })}
                   </button>
                   <button onClick={downloadOsha}
                     className="inline-flex items-center gap-2 rounded-xl border border-outline px-4 py-2 text-sm font-semibold text-on-surface-variant hover:bg-surface-container">
-                    <Download className="h-4 w-4" /> Download CSV
+                    <Download className="h-4 w-4" /> {t('webComplianceDownloadCsv')}
                   </button>
                 </>
               )}
@@ -192,10 +192,10 @@ export function ComplianceView() {
             <table className="w-full text-xs">
               <thead>
                 <tr className="border-b border-outline-variant bg-surface-container">
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">Date</th>
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">Type</th>
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">Severity</th>
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">Description</th>
+                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">{t('webComplianceColDate')}</th>
+                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">{t('webComplianceColType')}</th>
+                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">{t('webComplianceColSeverity')}</th>
+                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">{t('webComplianceColDescription')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant">
@@ -211,7 +211,7 @@ export function ComplianceView() {
             </table>
             {oshaRows.length > 25 && (
               <p className="px-3 py-2 text-xs text-on-surface-variant border-t border-outline-variant">
-                Showing 25 of {oshaRows.length} records. Download CSV for full report.
+                {t('webComplianceShowingN', { shown: 25, total: oshaRows.length })}
               </p>
             )}
           </div>
@@ -231,18 +231,18 @@ export function ComplianceView() {
               <button onClick={generateEld} disabled={genEld}
                 className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-on-primary hover:opacity-90 disabled:opacity-50">
                 {genEld ? <Loader2 className="h-4 w-4 animate-spin" /> : <Eye className="h-4 w-4" />}
-                {genEld ? t('webComplianceGenerating') : 'Generate Report'}
+                {genEld ? t('webComplianceGenerating') : t('webComplianceGenerateReport')}
               </button>
               {eldData && (
                 <>
                   <button onClick={() => setShowEldPreview(!showEldPreview)}
                     className="inline-flex items-center gap-1.5 rounded-xl border border-outline px-4 py-2 text-sm font-medium text-on-surface hover:bg-surface-container">
                     {showEldPreview ? <X className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                    {showEldPreview ? 'Hide' : `Preview (${eldData.length} records)`}
+                    {showEldPreview ? t('webComplianceHide') : t('webCompliancePreview', { count: eldData.length })}
                   </button>
                   <button onClick={downloadEld}
                     className="inline-flex items-center gap-2 rounded-xl border border-outline px-4 py-2 text-sm font-semibold text-on-surface-variant hover:bg-surface-container">
-                    <Download className="h-4 w-4" /> Download CSV
+                    <Download className="h-4 w-4" /> {t('webComplianceDownloadCsv')}
                   </button>
                 </>
               )}
@@ -255,11 +255,11 @@ export function ComplianceView() {
             <table className="w-full text-xs">
               <thead>
                 <tr className="border-b border-outline-variant bg-surface-container">
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">Driver</th>
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">Date</th>
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">Hours</th>
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">Distance</th>
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">Fatigue</th>
+                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">{t('webComplianceColDriver')}</th>
+                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">{t('webComplianceColDate')}</th>
+                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">{t('webComplianceColHours')}</th>
+                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">{t('webComplianceColDistance')}</th>
+                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">{t('webComplianceColFatigue')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant">
@@ -268,7 +268,7 @@ export function ComplianceView() {
                     <td className="px-3 py-1.5 text-on-surface font-mono text-xs">{row[0].slice(0, 8)}</td>
                     <td className="px-3 py-1.5 text-on-surface whitespace-nowrap">{new Date(row[1]).toLocaleDateString()}</td>
                     <td className="px-3 py-1.5 text-on-surface">{row[2]}</td>
-                    <td className="px-3 py-1.5 text-on-surface">{row[3]} km</td>
+                    <td className="px-3 py-1.5 text-on-surface">{row[3]} {t('webComplianceKm')}</td>
                     <td className="px-3 py-1.5 text-on-surface">{row[4]}</td>
                   </tr>
                 ))}
@@ -276,7 +276,7 @@ export function ComplianceView() {
             </table>
             {eldRows.length > 25 && (
               <p className="px-3 py-2 text-xs text-on-surface-variant border-t border-outline-variant">
-                Showing 25 of {eldRows.length} records. Download CSV for full report.
+                {t('webComplianceShowingN', { shown: 25, total: eldRows.length })}
               </p>
             )}
           </div>

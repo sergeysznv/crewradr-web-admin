@@ -1,6 +1,7 @@
 // src/components/audit-log/AuditLogView.tsx
 'use client';
 import { useState } from 'react';
+import { useT } from '@/hooks/use-translations';
 import { useCrew } from '@/hooks/useCrew';
 import { useAuditLogs } from '@/hooks/queries/useAuditLogs';
 import { useRealtimeInvalidation } from '@/hooks/useRealtimeRefresh';
@@ -18,6 +19,7 @@ const PRESET_DAYS: Record<DatePreset, number | null> = {
 };
 
 export function AuditLogView() {
+  const { t } = useT();
   const { crewId } = useCrew();
   const { data, isLoading, isError, refetch, setDateFrom, setDateTo, action, setAction, offset, setOffset, limit } = useAuditLogs(crewId);
   const [datePreset, setDatePreset] = useState<DatePreset>('30d');
@@ -73,20 +75,20 @@ export function AuditLogView() {
           }}
           className="flex items-center gap-2 px-4 py-2 rounded-xl border border-outline text-sm font-semibold text-on-surface-variant hover:bg-surface-container"
         >
-          <Download size={14} /> Export
+          <Download size={14} /> {t('webAuditExport')}
         </button>
       </div>
 
       <div className="hidden md:block bg-surface border border-outline rounded-lg overflow-hidden">
         {isLoading ? (
-          <div className="p-lg text-sm text-on-surface-variant">Loading...</div>
+          <div className="p-lg text-sm text-on-surface-variant">{t('webAuditLoading')}</div>
         ) : isError ? (
           <div className="p-lg text-center">
-            <p className="text-sm text-on-surface-variant">Failed to load audit logs</p>
-            <button onClick={() => refetch()} className="mt-2 rounded-lg bg-primary px-4 py-1.5 text-sm font-semibold text-on-primary">Retry</button>
+            <p className="text-sm text-on-surface-variant">{t('webAuditFailedToLoad')}</p>
+            <button onClick={() => refetch()} className="mt-2 rounded-lg bg-primary px-4 py-1.5 text-sm font-semibold text-on-primary">{t('webRetry')}</button>
           </div>
         ) : logs.length === 0 ? (
-          <EmptyState icon={<ScrollText size={40} />} title="No audit events" message="No events match your current filters." />
+          <EmptyState icon={<ScrollText size={40} />} title={t('webAuditNoEvents')} message={t('webAuditNoEventsHint')} />
         ) : (
           <AuditLogTable logs={logs} total={data?.total ?? 0} offset={offset} limit={limit} onOffsetChange={setOffset} />
         )}
@@ -94,7 +96,7 @@ export function AuditLogView() {
 
       <div className="md:hidden space-y-2">
         {isLoading ? (
-          <div className="p-lg text-sm text-on-surface-variant">Loading...</div>
+          <div className="p-lg text-sm text-on-surface-variant">{t('webAuditLoading')}</div>
         ) : isError ? null : (
           logs.map(log => <AuditLogCard key={log.id} log={log} />)
         )}
