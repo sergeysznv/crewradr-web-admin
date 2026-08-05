@@ -2,17 +2,21 @@
 'use client';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { useCrew } from '@/hooks/useCrew';
+import { useT } from '@/hooks/use-translations';
 import { useFleetDashboard } from '@/hooks/queries/useFleetDashboard';
 import { useRealtimeInvalidation } from '@/hooks/useRealtimeRefresh';
 import { KpiStrip } from '@/components/dashboard/KpiStrip';
 import { AlertFeed } from '@/components/dashboard/AlertFeed';
 import { ActivityTimeline } from '@/components/dashboard/ActivityTimeline';
 import { FleetOverview } from '@/components/dashboard/FleetOverview';
+import { CalendarHeatmap } from '@/components/overview/CalendarHeatmap';
+import { TrendChart } from '@/components/overview/TrendChart';
 import { Skeleton } from '@/components/shared/Skeleton';
 
 export function DashboardView() {
   // Crew seeding happens once at app mount in CrewLoader — not per page.
   const { crewId } = useCrew();
+  const { t } = useT();
   const dashboard = useFleetDashboard(crewId);
 
   // Realtime — silent background refresh on trip session / safety alert changes.
@@ -36,10 +40,18 @@ export function DashboardView() {
       ) : dashboard.data ? (
         <div className="space-y-lg">
           <KpiStrip data={dashboard.data} />
+          {/* Trends — one card per metric, tier-clamped history window */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-lg">
-            <div className="md:col-span-2"><FleetOverview dashboard={dashboard.data} /></div>
-            <div className="md:col-span-1"><AlertFeed alerts={dashboard.data.recent_alerts} /></div>
+            <TrendChart metric="miles" crewId={crewId!} label={t('webOverviewTrendMiles')} />
+            <TrendChart metric="hours" crewId={crewId!} label={t('webOverviewTrendHours')} />
+            <TrendChart metric="alerts" crewId={crewId!} label={t('webOverviewTrendAlerts')} />
           </div>
+          {/* Weekly activity + live map */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-lg">
+            <div className="md:col-span-1"><CalendarHeatmap crewId={crewId!} /></div>
+            <div className="md:col-span-2"><FleetOverview dashboard={dashboard.data} /></div>
+          </div>
+          <AlertFeed alerts={dashboard.data.recent_alerts} />
           <ActivityTimeline />
         </div>
       ) : dashboard.isError ? (

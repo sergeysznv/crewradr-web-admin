@@ -3,7 +3,7 @@ import type {
   AccountProfile, FleetDashboard, CrewMembersResponse,
   BulkImportResult, CrewSettings, AuditLogsResponse, UpdateMemberRoleResult, LivePosition
 } from '@/types/rpc';
-import type { TripDetail } from '@/types/tier';
+import type { TripDetail, TrendDataPoint } from '@/types/tier';
 
 type RpcFn = SupabaseClient['rpc'];
 
@@ -77,6 +77,23 @@ export async function getTripDetail(supabase: SupabaseClient, tripId: string): P
   const { data, error } = await supabase.rpc('get_web_trip_detail', { p_trip_id: tripId }).single<TripDetail>();
   if (error) throw error;
   return data;
+}
+
+export type TrendMetric = 'miles' | 'hours' | 'alerts';
+
+export async function getWebTrendData(
+  supabase: SupabaseClient,
+  crewId: string,
+  metric: TrendMetric,
+  days: number,
+): Promise<TrendDataPoint[]> {
+  const { data, error } = await supabase.rpc('get_web_trend_data', {
+    p_crew_id: crewId,
+    p_metric: metric,
+    p_days: days,
+  });
+  if (error) throw error;
+  return (data as TrendDataPoint[]) ?? [];
 }
 
 export async function getLivePositions(supabase: SupabaseClient, crewId: string): Promise<LivePosition[]> {
