@@ -13,6 +13,8 @@ import { useCrew } from '@/hooks/useCrew';
 import { IdleWarningOverlay, SignedOutOverlay } from '@/components/session-locked-overlay';
 import { ShellErrorBoundary } from '@/components/shared/ErrorBoundary';
 import { OfflineBanner } from '@/components/shared/OfflineBanner';
+import { DowngradeBanner } from '@/components/tier/DowngradeBanner';
+import { LockoutBanner } from '@/components/tier/LockoutBanner';
 import { MultiCrewSwitcher } from '@/components/shared/MultiCrewSwitcher';
 import { useTabFocus } from '@/hooks/useTabFocus';
 import { supabase } from '@/lib/supabase/client';
@@ -193,6 +195,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <div className="flex h-screen flex-col overflow-hidden bg-[var(--brand-surface)] text-zinc-900 dark:text-zinc-100">
       {/* ── Offline status bar ── */}
       <OfflineBanner />
+
+      {/* ── Tier status banners (downgrade grace / lockout) ── */}
+      <ShellErrorBoundary>
+        <LockoutBanner />
+        <DowngradeBanner />
+      </ShellErrorBoundary>
 
       {/* ── Mobile top bar ── */}
       <header className="flex h-14 shrink-0 items-center gap-3 border-b border-zinc-200 bg-white px-4 dark:border-zinc-700 dark:bg-zinc-900 md:hidden">
