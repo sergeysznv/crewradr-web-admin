@@ -115,6 +115,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       // Defer to a task so setState doesn't run synchronously inside the
       // effect (react-hooks/set-state-in-effect).
       const t = setTimeout(async () => {
+        // Enforce AAL2: if the user doesn't have MFA verified, redirect to login.
+        try {
+          const isAal2Ok = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+          if (isAal2Ok.data?.currentLevel !== 'aal2') {
+            await supabase.auth.signOut();
+            sessionStorage.setItem('crewradr-signed-out-reason', 'inactivity');
+            router.replace('/');
+            return;
+          }
+        } catch { /* proceed — if the check fails, the RPCs will reject anyway */ }
         await loadCrews();
         setChecking(false);
       }, 0);
