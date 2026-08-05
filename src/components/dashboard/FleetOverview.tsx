@@ -43,7 +43,7 @@ export function FleetOverview({ dashboard }: FleetOverviewProps) {
 
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div>
-            <p className="text-[10px] uppercase tracking-wider text-on-surface-variant">Online</p>
+            <p className="text-[10px] uppercase tracking-wider text-on-surface-variant">{t('webFleetOnline')}</p>
             <p className="text-2xl font-bold text-on-surface">
               {isAdmiral
                 ? onlineCount !== null
@@ -53,7 +53,7 @@ export function FleetOverview({ dashboard }: FleetOverviewProps) {
             </p>
           </div>
           <div>
-            <p className="text-[10px] uppercase tracking-wider text-on-surface-variant">Alerts</p>
+            <p className="text-[10px] uppercase tracking-wider text-on-surface-variant">{t('webFleetAlertsLabel')}</p>
             <p className={`text-2xl font-bold ${alertCount > 0 ? 'text-red-500' : 'text-on-surface'}`}>
               {alertCount}
               {alertCount > 0 && (

@@ -3,6 +3,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { AlertTriangle, Loader2 } from 'lucide-react';
+import { useT } from '@/hooks/use-translations';
 
 interface VerifyTextConfig {
   match: string;
@@ -35,6 +36,7 @@ export function ConfirmDialog({
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
+  const { t } = useT();
   const [verifyInput, setVerifyInput] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -105,7 +107,7 @@ export function ConfirmDialog({
             disabled={pending}
             className="rounded-xl border border-outline px-4 py-2 text-sm font-semibold text-on-surface-variant hover:bg-surface-container disabled:opacity-50"
           >
-            Cancel
+            {t('webSharedCancel')}
           </button>
           <button
             onClick={onConfirm}

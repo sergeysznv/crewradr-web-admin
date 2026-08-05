@@ -1,5 +1,6 @@
 // src/components/members/MemberCard.tsx
 import { StatusDot, type Status } from '@/components/shared/StatusDot';
+import { useT } from '@/hooks/use-translations';
 import type { CrewMember } from '@/types/rpc';
 
 function statusFromTrips(trips: number): Status {
@@ -7,6 +8,7 @@ function statusFromTrips(trips: number): Status {
 }
 
 export function MemberCard({ member, onClick }: { member: CrewMember; onClick: () => void }) {
+  const { t } = useT();
   return (
     <div onClick={onClick}
       className="bg-surface border border-outline rounded-lg p-md flex items-center gap-3 cursor-pointer hover:bg-surface-container transition-colors">
@@ -18,7 +20,7 @@ export function MemberCard({ member, onClick }: { member: CrewMember; onClick: (
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <div className="font-semibold text-sm text-on-surface truncate">{member.display_name ?? 'Unknown'}</div>
+        <div className="font-semibold text-sm text-on-surface truncate">{member.display_name ?? t('webFleetUnknown')}</div>
         <div className="text-2xs text-on-surface-variant truncate">{member.email}</div>
       </div>
       <div className="flex items-center gap-2 flex-shrink-0">

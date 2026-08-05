@@ -31,14 +31,14 @@ export default function LoginPage() {
   useEffect(() => {
     // Defer so the sessionStorage read + setState don't run synchronously
     // inside the effect (react-hooks/set-state-in-effect).
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       const reason = sessionStorage.getItem('crewradr-signed-out-reason');
       if (reason === 'inactivity') {
-        setSignedOutMsg('You were signed out due to inactivity. Please sign in again.');
+        setSignedOutMsg(t('webLoginSignedOutInactivity'));
         sessionStorage.removeItem('crewradr-signed-out-reason');
       }
     }, 0);
-    return () => clearTimeout(t);
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -91,7 +91,7 @@ export default function LoginPage() {
     try {
       await signInWithPasskey();
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Passkey sign-in failed');
+      setError(e instanceof Error ? e.message : t('webLoginPasskeyFailed'));
       setBusy(false);
       return;
     }
@@ -172,12 +172,12 @@ export default function LoginPage() {
               <>
                 <div className="my-4 flex items-center gap-3 text-xs text-zinc-400 dark:text-zinc-500">
                   <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-700" />
-                  or
+                  {t('webLoginOr')}
                   <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-700" />
                 </div>
                 <button type="button" onClick={handlePasskeySignIn} disabled={busy}
                   className="w-full rounded-lg border border-zinc-300 px-4 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800 disabled:opacity-50">
-                  Sign in with passkey
+                  {t('webLoginSignInPasskey')}
                 </button>
               </>
             )}
@@ -209,17 +209,17 @@ export default function LoginPage() {
           <div className="rounded-xl border-2 border-amber-200 bg-white p-8 shadow-sm dark:border-amber-800 dark:bg-zinc-900">
             <div className="text-center">
               <Shield className="mx-auto h-12 w-12 text-amber-600" />
-              <h2 className="mt-3 text-lg font-bold text-zinc-900 dark:text-zinc-100">2FA Required</h2>
-              <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">Two-factor authentication is required for web portal access.</p>
+              <h2 className="mt-3 text-lg font-bold text-zinc-900 dark:text-zinc-100">{t('webLogin2faRequiredTitle')}</h2>
+              <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">{t('webLogin2faRequiredDesc')}</p>
               <div className="mt-6 space-y-3 rounded-lg bg-zinc-50 p-4 text-left text-sm dark:bg-zinc-800">
-                <p className="font-medium text-zinc-900 dark:text-zinc-100">Set up 2FA in the mobile app:</p>
+                <p className="font-medium text-zinc-900 dark:text-zinc-100">{t('webLogin2faSetupSteps')}</p>
                 <ol className="list-decimal space-y-2 pl-5 text-zinc-600 dark:text-zinc-400">
-                  <li>Open CrewRadr on your phone</li>
-                  <li>Go to Settings → Account &amp; Security → Protect Your Account with MFA</li>
-                  <li>Link your authenticator app and return here</li>
+                  <li>{t('webLogin2faStep1')}</li>
+                  <li>{t('webLogin2faStep2')}</li>
+                  <li>{t('webLogin2faStep3')}</li>
                 </ol>
               </div>
-              <button onClick={signOut} className="mt-6 w-full rounded-lg border border-zinc-300 px-4 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800">Sign Out</button>
+              <button onClick={signOut} className="mt-6 w-full rounded-lg border border-zinc-300 px-4 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800">{t('webLoginSignOut')}</button>
             </div>
           </div>
         )}
@@ -228,9 +228,9 @@ export default function LoginPage() {
           <div className="rounded-xl border-2 border-red-200 bg-white p-8 shadow-sm dark:border-red-800 dark:bg-zinc-900">
             <div className="text-center">
               <Shield className="mx-auto h-12 w-12 text-red-400" />
-              <h2 className="mt-3 text-lg font-bold text-zinc-900 dark:text-zinc-100">No Crew Found</h2>
-              <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">Join or create a crew in the CrewRadr mobile app first.</p>
-              <button onClick={signOut} className="mt-6 w-full rounded-lg border border-zinc-300 px-4 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800">Sign Out</button>
+              <h2 className="mt-3 text-lg font-bold text-zinc-900 dark:text-zinc-100">{t('webLoginNoCrewTitle')}</h2>
+              <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">{t('webLoginNoCrewFoundDesc')}</p>
+              <button onClick={signOut} className="mt-6 w-full rounded-lg border border-zinc-300 px-4 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800">{t('webLoginSignOut')}</button>
             </div>
           </div>
         )}

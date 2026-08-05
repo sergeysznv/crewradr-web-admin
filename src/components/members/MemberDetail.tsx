@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useUpdateMemberRole, useRemoveMember } from '@/hooks/queries/useMutations';
 import { useCrew } from '@/hooks/useCrew';
 import { useSupabase } from '@/hooks/useSupabase';
+import { useT } from '@/hooks/use-translations';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { useState } from 'react';
 import { Route, Clock, AlertTriangle } from 'lucide-react';
@@ -17,6 +18,7 @@ interface MemberTrip {
 }
 
 export function MemberDetail({ member, onClose }: { member: CrewMember; onClose: () => void }) {
+  const { t } = useT();
   const { crewId } = useCrew();
   const supabase = useSupabase();
   const updateRole = useUpdateMemberRole(crewId!);
@@ -58,22 +60,22 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
           )}
         </div>
         <div>
-          <h2 className="font-heading font-extrabold text-lg text-on-surface">{member.display_name ?? 'Unknown'}</h2>
+          <h2 className="font-heading font-extrabold text-lg text-on-surface">{member.display_name ?? t('webFleetUnknown')}</h2>
           <p className="text-sm text-on-surface-variant">{member.email}</p>
         </div>
       </div>
 
       <div className="bg-surface-container rounded-lg p-lg space-y-3">
         <div className="flex justify-between items-center">
-          <span className="text-sm text-on-surface-variant">Role</span>
+          <span className="text-sm text-on-surface-variant">{t('webMembersDetailRole')}</span>
           <span className="text-sm font-semibold text-on-surface">{member.role}</span>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-sm text-on-surface-variant">Joined</span>
+          <span className="text-sm text-on-surface-variant">{t('webMembersDetailJoined')}</span>
           <span className="text-sm text-on-surface">{new Date(member.joined_at).toLocaleDateString()}</span>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-sm text-on-surface-variant">Trips (30d)</span>
+          <span className="text-sm text-on-surface-variant">{t('webMembersDetailTrips')}</span>
           <span className="text-sm text-on-surface">{member.trips_30d}</span>
         </div>
       </div>
@@ -82,7 +84,7 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
       <div>
         <h3 className="flex items-center gap-2 text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">
           <Route className="h-3.5 w-3.5" />
-          Recent Trips
+          {t('webMembersDetailRecentTrips')}
         </h3>
         {tripsQuery.isLoading ? (
           <div className="space-y-2">
@@ -91,7 +93,7 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
             ))}
           </div>
         ) : trips.length === 0 ? (
-          <p className="text-xs text-on-surface-variant py-2">No recent trips</p>
+          <p className="text-xs text-on-surface-variant py-2">{t('webMembersDetailNoTrips')}</p>
         ) : (
           <div className="divide-y divide-outline-variant">
             {trips.map((trip, i) => (
@@ -103,8 +105,8 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
                   </span>
                 </div>
                 <div className="flex items-center gap-3 text-xs text-on-surface-variant">
-                  <span>{Math.round(trip.driving_seconds / 60)} min</span>
-                  {trip.distance_m > 0 && <span>{(trip.distance_m / 1000).toFixed(1)} km</span>}
+                  <span>{Math.round(trip.driving_seconds / 60)} {t('webMembersDetailMin')}</span>
+                  {trip.distance_m > 0 && <span>{(trip.distance_m / 1000).toFixed(1)} {t('webMembersDetailKm')}</span>}
                 </div>
               </div>
             ))}
@@ -113,7 +115,7 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
       </div>
 
       <div className="space-y-2">
-        <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Change Role</label>
+        <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">{t('webMembersDetailChangeRole')}</label>
         <div className="flex gap-2">
           {['member', 'co-captain'].map(role => (
             <button key={role} disabled={role === member.role}
@@ -129,22 +131,22 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
       <div className="pt-lg border-t border-outline-variant">
         <button onClick={() => setShowRemove(true)}
           className="w-full px-4 py-2 rounded-xl border border-error/30 text-error text-sm font-semibold hover:bg-error-container">
-          Remove from Crew
+          {t('webMembersRemoveFromCrew')}
         </button>
       </div>
 
       <ConfirmDialog
         key={showRemove ? 'remove-open' : 'remove-closed'}
         open={showRemove}
-        title="Remove Member"
-        message={`Remove ${member.display_name ?? member.email} from the crew? This action cannot be undone.`}
-        confirmLabel="Remove"
+        title={t('webMembersRemoveDialogTitle')}
+        message={t('webMembersRemoveDialogMessage', { name: member.display_name ?? member.email ?? '' })}
+        confirmLabel={t('webMembersRemove')}
         destructive
         pending={removeMember.isPending}
         verifyText={{
           match: member.display_name ?? member.email ?? '',
           placeholder: member.display_name ?? member.email ?? '',
-          label: `Type ${member.display_name ?? 'the member name'} to confirm`,
+          label: t('webMembersVerifyHint', { name: member.display_name ?? member.email ?? '' }),
         }}
         onConfirm={handleRemove}
         onCancel={() => setShowRemove(false)}

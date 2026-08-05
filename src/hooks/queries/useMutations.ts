@@ -14,7 +14,7 @@ export function useUpdateMemberRole(crewId: string) {
       updateMemberRole(supabase, memberId, newRole),
     onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: ['crewMembers', crewId] });
-      showSuccess(`Role changed to ${data.new_role}`); // matches webMembersRoleChanged
+      showSuccess(`Role changed to ${data.new_role}`); // matches webMutationRoleChanged
     },
     onError: (err: Error) => showError(err.message),
   });
@@ -29,7 +29,7 @@ export function useRemoveMember(crewId: string) {
     mutationFn: (memberId: string) => removeMember(supabase, memberId),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['crewMembers', crewId] });
-      showSuccess('Member removed');
+      showSuccess('Member removed'); // matches webMutationMemberRemoved
     },
     onError: (err: Error) => showError(err.message),
   });
@@ -45,7 +45,7 @@ export function useBulkImport(crewId: string) {
       bulkImportMembers(supabase, crewId, members),
     onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: ['crewMembers', crewId] });
-      showSuccess(`${data.added} members imported${data.errors.length ? `, ${data.errors.length} errors` : ''}`);
+      showSuccess(`${data.added} members imported${data.errors.length ? `, ${data.errors.length} errors` : ''}`); // matches webMutationMembersImported
     },
     onError: (err: Error) => showError(err.message),
   });

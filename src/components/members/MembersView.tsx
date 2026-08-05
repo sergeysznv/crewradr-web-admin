@@ -21,17 +21,16 @@ import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { Search, Upload, Users } from 'lucide-react';
 import type { CrewMember } from '@/types/rpc';
 
-const ROLE_FILTERS = [
-  { value: 'all' as const, label: 'All Roles' },
-  { value: 'captain' as const, label: 'Captain' },
-  { value: 'co-captain' as const, label: 'Co-Captain' },
-  { value: 'member' as const, label: 'Member' },
-];
-
 type RoleFilter = 'all' | 'captain' | 'co-captain' | 'member';
 
 export function MembersView() {
   const { t } = useT();
+  const ROLE_FILTERS = [
+    { value: 'all' as const, label: t('webMembersRoleAll') },
+    { value: 'captain' as const, label: t('webMembersRoleCaptainLabel') },
+    { value: 'co-captain' as const, label: t('webMembersRoleCoCaptainLabel') },
+    { value: 'member' as const, label: t('webMembersRoleMemberLabel') },
+  ];
   const { crewId } = useCrew();
   const supabase = useSupabase();
   const { showSuccess, showError } = useSnackbar();
@@ -117,12 +116,12 @@ export function MembersView() {
             <div className="relative flex-1">
               <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
               <input value={search} onChange={e => { setSearch(e.target.value); setOffset(0); }}
-                placeholder="Search members..." className="w-full pl-9 pr-4 py-2 rounded-xl border border-outline bg-surface text-sm" />
+                placeholder={t('webMembersSearchPlaceholder')} className="w-full pl-9 pr-4 py-2 rounded-xl border border-outline bg-surface text-sm" />
             </div>
           </div>
           <button onClick={() => setShowImport(true)}
             className="flex items-center gap-2 px-4 py-2 rounded-xl border border-outline text-sm font-semibold text-on-surface-variant hover:bg-surface-container">
-            <Upload size={14} /> Import CSV
+            <Upload size={14} /> {t('webMembersImportButton')}
           </button>
         </div>
 
@@ -131,14 +130,14 @@ export function MembersView() {
         {/* Desktop table */}
         <div className="hidden md:block bg-surface border border-outline rounded-lg overflow-hidden">
           {isLoading ? (
-            <div className="p-lg text-sm text-on-surface-variant">Loading...</div>
+            <div className="p-lg text-sm text-on-surface-variant">{t('webMembersLoading')}</div>
           ) : isError ? (
             <div className="p-lg text-center">
-              <p className="text-sm text-on-surface-variant">Failed to load members</p>
-              <button onClick={() => refetch()} className="mt-2 rounded-lg bg-primary px-4 py-1.5 text-sm font-semibold text-on-primary">Retry</button>
+              <p className="text-sm text-on-surface-variant">{t('webMembersFailedToLoad')}</p>
+              <button onClick={() => refetch()} className="mt-2 rounded-lg bg-primary px-4 py-1.5 text-sm font-semibold text-on-primary">{t('webSharedRetry')}</button>
             </div>
           ) : filtered.length === 0 ? (
-            <EmptyState icon={<Users size={40} />} title="No members found" message="Try adjusting your search or filters." />
+            <EmptyState icon={<Users size={40} />} title={t('webMembersNoMembersFound')} message={t('webMembersNoMembersHint')} />
           ) : (
             <MemberTable
               members={filtered}
@@ -175,9 +174,9 @@ export function MembersView() {
         <ConfirmDialog
           key={showBulkRemove ? 'bulk-open' : 'bulk-closed'}
           open={showBulkRemove}
-          title="Remove Members"
-          message={`Remove ${selectedIds.size} selected member${selectedIds.size === 1 ? '' : 's'} from the crew? This action cannot be undone.`}
-          confirmLabel="Remove"
+          title={t('webMembersRemoveDialogTitle')}
+          message={t('webMembersRemoveDialogMessage', { name: `${selectedIds.size} selected member${selectedIds.size === 1 ? '' : 's'}` })}
+          confirmLabel={t('webMembersRemove')}
           destructive
           pending={working}
           onConfirm={bulkRemove}

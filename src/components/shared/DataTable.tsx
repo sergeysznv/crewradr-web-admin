@@ -3,6 +3,7 @@
 
 import type { ReactNode } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useT } from '@/hooks/use-translations';
 
 interface Column<T> {
   key: string;
@@ -36,6 +37,7 @@ export function DataTable<T extends { id: string }>({
   onToggleSelect,
   onToggleSelectAll,
 }: DataTableProps<T>) {
+  const { t } = useT();
   const showCheckbox = !!onToggleSelect && !!onToggleSelectAll;
   const currentPage = pagination
     ? Math.floor(pagination.offset / pagination.limit) + 1
@@ -60,7 +62,7 @@ export function DataTable<T extends { id: string }>({
                     }
                     onChange={onToggleSelectAll}
                     className="rounded border-outline"
-                    aria-label="Select all"
+                    aria-label={t('webSharedSelectAll')}
                   />
                 </th>
               )}
@@ -92,7 +94,7 @@ export function DataTable<T extends { id: string }>({
                         checked={isSelected}
                         onChange={() => onToggleSelect?.(row.id)}
                         className="rounded border-outline"
-                        aria-label={`Select ${row.id}`}
+                        aria-label={t('webSharedSelectItem', { id: row.id })}
                       />
                     </td>
                   )}
@@ -111,15 +113,18 @@ export function DataTable<T extends { id: string }>({
       {pagination && totalPages > 1 && (
         <div className="flex items-center justify-between border-t border-outline-variant px-4 py-2">
           <p className="text-xs text-on-surface-variant">
-            Showing {pagination.offset + 1}–{Math.min(pagination.offset + pagination.limit, pagination.total)}{' '}
-            of {pagination.total}
+            {t('webSharedShowing', {
+              from: pagination.offset + 1,
+              to: Math.min(pagination.offset + pagination.limit, pagination.total),
+              total: pagination.total,
+            })}
           </p>
           <div className="flex items-center gap-1">
             <button
               onClick={() => pagination.onPageChange(Math.max(0, pagination.offset - pagination.limit))}
               disabled={pagination.offset === 0}
               className="rounded-lg p-1.5 text-on-surface-variant hover:bg-surface-container disabled:opacity-30"
-              aria-label="Previous page"
+              aria-label={t('webSharedPrevPage')}
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
@@ -136,7 +141,7 @@ export function DataTable<T extends { id: string }>({
               }
               disabled={pagination.offset + pagination.limit >= pagination.total}
               className="rounded-lg p-1.5 text-on-surface-variant hover:bg-surface-container disabled:opacity-30"
-              aria-label="Next page"
+              aria-label={t('webSharedNextPage')}
             >
               <ChevronRight className="h-4 w-4" />
             </button>

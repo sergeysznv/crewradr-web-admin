@@ -1,4 +1,6 @@
 // src/components/audit-log/AuditLogTable.tsx
+'use client';
+import { useT } from '@/hooks/use-translations';
 import { DataTable } from '@/components/shared/DataTable';
 import type { AuditLogEntry } from '@/types/rpc';
 
@@ -14,9 +16,10 @@ export function AuditLogTable({ logs, total, offset, limit, onOffsetChange }: {
   total: number; offset: number; limit: number;
   onOffsetChange: (o: number) => void;
 }) {
+  const { t } = useT();
   const columns = [
     {
-      key: 'time', header: 'Timestamp',
+      key: 'time', header: t('webAuditColTimestamp'),
       render: (l: AuditLogEntry) => (
         <span className="text-xs text-on-surface-variant" title={new Date(l.created_at).toISOString()}>
           {new Date(l.created_at).toLocaleString()}
@@ -24,13 +27,13 @@ export function AuditLogTable({ logs, total, offset, limit, onOffsetChange }: {
       ),
     },
     {
-      key: 'actor', header: 'Actor',
+      key: 'actor', header: t('webAuditColActor'),
       render: (l: AuditLogEntry) => (
-        <span className="text-sm text-on-surface">{l.actor_name ?? l.actor_email ?? 'System'}</span>
+        <span className="text-sm text-on-surface">{l.actor_name ?? l.actor_email ?? t('webAuditSystem')}</span>
       ),
     },
     {
-      key: 'action', header: 'Action',
+      key: 'action', header: t('webAuditColAction'),
       render: (l: AuditLogEntry) => (
         <span className={`px-2 py-0.5 rounded-xl text-2xs font-semibold ${ACTION_COLORS[l.action] ?? 'bg-surface-container text-on-surface-variant'}`}>
           {l.action}
@@ -38,13 +41,13 @@ export function AuditLogTable({ logs, total, offset, limit, onOffsetChange }: {
       ),
     },
     {
-      key: 'target', header: 'Target',
+      key: 'target', header: t('webAuditColTarget'),
       render: (l: AuditLogEntry) => (
         <span className="text-sm text-on-surface">{l.target_type}: {l.target_id.slice(0, 8)}...</span>
       ),
     },
     {
-      key: 'details', header: 'Details',
+      key: 'details', header: t('webAuditColDetails'),
       render: (l: AuditLogEntry) => (
         <span className="text-xs text-on-surface-variant font-mono max-w-[200px] truncate block">
           {JSON.stringify(l.metadata)}

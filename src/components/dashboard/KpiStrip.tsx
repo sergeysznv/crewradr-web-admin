@@ -4,12 +4,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { useCrew } from '@/hooks/useCrew';
 import { useSupabase } from '@/hooks/useSupabase';
+import { useT } from '@/hooks/use-translations';
 import { StatTile } from '@/components/shared/StatTile';
 import type { FleetDashboard } from '@/types/rpc';
 
 export function KpiStrip({ data }: { data: FleetDashboard }) {
   const { crewId } = useCrew();
   const supabase = useSupabase();
+  const { t } = useT();
 
   // Trips started today
   const todayQuery = useQuery({
@@ -36,22 +38,22 @@ export function KpiStrip({ data }: { data: FleetDashboard }) {
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-lg">
-      <StatTile label="Fleet Size" value={data.member_count} />
-      <StatTile label="Active Now" value={data.active_trips} />
+      <StatTile label={t('webFleetFleetSize')} value={data.member_count} />
+      <StatTile label={t('webFleetActiveNow')} value={data.active_trips} />
       <StatTile
-        label="Alerts (24h)"
+        label={t('webFleetAlerts24h')}
         value={data.recent_alerts.length}
-        trend={data.recent_alerts.length > 0 ? `${data.recent_alerts.length} open` : 'All clear'}
+        trend={data.recent_alerts.length > 0 ? t('webFleetAlertsCount', { count: data.recent_alerts.length, plural: 's' }) : t('webFleetAllClear')}
         trendUp={data.recent_alerts.length > 0 ? false : undefined}
       />
       <StatTile
-        label="Trips Today"
+        label={t('webFleetTripsToday')}
         value={todayQuery.isLoading ? '…' : todayQuery.data ?? '—'}
       />
       <StatTile
-        label="Safety Score"
+        label={t('webFleetSafetyScore')}
         value={safetyScore}
-        trend={safetyScore >= 80 ? 'Good' : safetyScore >= 50 ? 'Fair' : 'Poor'}
+        trend={safetyScore >= 80 ? t('webFleetGood') : safetyScore >= 50 ? t('webFleetFair') : t('webFleetPoor')}
         trendUp={safetyScore >= 80 ? true : safetyScore >= 50 ? undefined : false}
       />
     </div>

@@ -3,6 +3,7 @@
 
 import { useEffect, type ReactNode } from 'react';
 import { X } from 'lucide-react';
+import { useT } from '@/hooks/use-translations';
 
 interface SlideOverPanelProps {
   open: boolean;
@@ -11,6 +12,7 @@ interface SlideOverPanelProps {
 }
 
 export function SlideOverPanel({ open, onClose, children }: SlideOverPanelProps) {
+  const { t } = useT();
   // Close on Escape
   useEffect(() => {
     if (!open) return;
@@ -34,7 +36,7 @@ export function SlideOverPanel({ open, onClose, children }: SlideOverPanelProps)
           <span className="font-heading font-bold text-sm text-on-surface" />
           <button
             onClick={onClose}
-            aria-label="Close panel"
+            aria-label={t('webSharedClosePanel')}
             className="rounded-lg p-1.5 text-on-surface-variant hover:bg-surface-container"
           >
             <X className="h-5 w-5" />

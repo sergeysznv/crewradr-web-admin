@@ -4,6 +4,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useCrew } from '@/hooks/useCrew';
 import { useSupabase } from '@/hooks/useSupabase';
+import { useT } from '@/hooks/use-translations';
 import { Clock, Route, Car } from 'lucide-react';
 
 interface TripSession {
@@ -17,6 +18,7 @@ interface TripSession {
 export function ActivityTimeline() {
   const { crewId } = useCrew();
   const supabase = useSupabase();
+  const { t } = useT();
 
   const tripsQuery = useQuery({
     queryKey: ['recentTrips', crewId],
@@ -66,7 +68,7 @@ export function ActivityTimeline() {
     <div className="bg-surface border border-outline rounded-lg p-lg">
       <div className="flex items-center gap-2 mb-3">
         <Clock className="h-4 w-4 text-[var(--brand-seed)]" aria-hidden="true" />
-        <h2 className="font-heading font-bold text-sm text-on-surface">Recent Activity</h2>
+        <h2 className="font-heading font-bold text-sm text-on-surface">{t('webFleetRecentActivity')}</h2>
       </div>
 
       {isLoading ? (
@@ -78,9 +80,9 @@ export function ActivityTimeline() {
       ) : trips.length === 0 ? (
         <div className="py-8 text-center">
           <Car className="mx-auto h-8 w-8 text-on-surface-variant opacity-40" aria-hidden="true" />
-          <p className="mt-2 text-sm text-on-surface-variant">No trips in the last 7 days</p>
+          <p className="mt-2 text-sm text-on-surface-variant">{t('webFleetNoRecentTrips')}</p>
           <p className="mt-1 text-xs text-on-surface-variant opacity-70">
-            Trip activity will appear here as members start driving.
+            {t('webFleetNoRecentTripsDesc')}
           </p>
         </div>
       ) : (
@@ -104,19 +106,19 @@ export function ActivityTimeline() {
                     {trip.distance_m > 0 && (
                       <span className="ml-2 inline-flex items-center gap-0.5">
                         <Route className="h-3 w-3" aria-hidden="true" />
-                        {(trip.distance_m / 1000).toFixed(1)} km
+                        {(trip.distance_m / 1000).toFixed(1)} {t('webFleetKm')}
                       </span>
                     )}
                     {trip.driving_seconds > 0 && (
                       <span className="ml-2">
-                        {Math.round(trip.driving_seconds / 60)} min
+                        {Math.round(trip.driving_seconds / 60)} {t('webFleetMin')}
                       </span>
                     )}
                   </p>
                 </div>
                 {trip.fatigue_warnings > 0 && (
                   <span className="shrink-0 rounded-full bg-warning-container px-2 py-0.5 text-[10px] font-semibold text-warning">
-                    {trip.fatigue_warnings} alert{trip.fatigue_warnings > 1 ? 's' : ''}
+                    {t('webFleetAlertsCount', { count: trip.fatigue_warnings, plural: trip.fatigue_warnings > 1 ? 's' : '' })}
                   </span>
                 )}
               </div>

@@ -89,7 +89,7 @@ export function BrandingTab({ seedColor = null, logoUrl = null }: { seedColor?: 
   return (
     <div className="space-y-lg">
       <div>
-        <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Primary Color</label>
+        <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">{t('webSettingsPrimaryColor')}</label>
         <div className="flex items-center gap-4 mt-2">
           <input type="color" value={color} onChange={e => setColor(e.target.value)}
             className="w-10 h-10 rounded-lg border border-outline cursor-pointer" />
@@ -104,12 +104,12 @@ export function BrandingTab({ seedColor = null, logoUrl = null }: { seedColor?: 
       </div>
 
       <div>
-        <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Logo</label>
+        <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">{t('webSettingsLogo')}</label>
 
         {currentLogo ? (
           <div className="mt-2 flex items-center gap-4">
             <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-outline bg-surface-container">
-              <img src={currentLogo} alt="Crew logo" className="h-full w-full object-contain p-1" />
+              <img src={currentLogo} alt="" className="h-full w-full object-contain p-1" />
             </div>
             <div className="flex gap-2">
               <button
@@ -118,14 +118,14 @@ export function BrandingTab({ seedColor = null, logoUrl = null }: { seedColor?: 
                 className="inline-flex items-center gap-1.5 rounded-lg border border-outline px-3 py-1.5 text-xs font-medium text-on-surface-variant hover:bg-surface-container"
               >
                 {uploading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
-                Replace
+                {t('webSettingsLogoReplace')}
               </button>
               <button
                 onClick={removeLogo}
                 className="inline-flex items-center gap-1.5 rounded-lg border border-error/30 px-3 py-1.5 text-xs font-medium text-error hover:bg-error-container"
               >
                 <X className="h-3.5 w-3.5" />
-                Remove
+                {t('webSettingsLogoRemove')}
               </button>
             </div>
           </div>
@@ -141,7 +141,7 @@ export function BrandingTab({ seedColor = null, logoUrl = null }: { seedColor?: 
               <Image size={28} className="mx-auto mb-2 text-on-surface-variant opacity-40" />
             )}
             <p className="text-sm text-on-surface-variant">
-              {uploading ? 'Uploading…' : 'Upload a PNG or SVG (max 2MB)'}
+              {uploading ? t('webSettingsLogoUploading') : t('webSettingsLogoHint')}
             </p>
           </button>
         )}
@@ -152,12 +152,12 @@ export function BrandingTab({ seedColor = null, logoUrl = null }: { seedColor?: 
           accept="image/png,image/svg+xml"
           onChange={handleLogoUpload}
           className="hidden"
-          aria-label="Upload logo"
+          aria-label={t('webSettingsLogoUploadAria')}
         />
       </div>
 
       <div>
-        <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Live Preview</label>
+        <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">{t('webSettingsLivePreview')}</label>
         <div className="mt-2 bg-surface border border-outline rounded-lg p-lg flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-sm font-bold overflow-hidden"
@@ -169,23 +169,23 @@ export function BrandingTab({ seedColor = null, logoUrl = null }: { seedColor?: 
               )}
             </div>
             <div>
-              <div className="text-sm font-semibold text-on-surface">Sample Crew Card</div>
-              <div className="text-2xs text-on-surface-variant">This is how your crew sees the app</div>
+              <div className="text-sm font-semibold text-on-surface">{t('webSettingsPreviewCard')}</div>
+              <div className="text-2xs text-on-surface-variant">{t('webSettingsPreviewCardHint')}</div>
             </div>
           </div>
-          <button className="px-3 py-1.5 rounded-xl text-xs font-semibold text-white" style={{ backgroundColor: color }}>Button</button>
+          <button className="px-3 py-1.5 rounded-xl text-xs font-semibold text-white" style={{ backgroundColor: color }}>{t('webSettingsPreviewButton')}</button>
         </div>
       </div>
 
       <div className="flex items-center gap-3 pt-lg border-t border-outline-variant">
         {!isAdmiral ? (
-          <p className="text-xs text-on-surface-variant">Enterprise branding requires Admiral tier.</p>
+          <p className="text-xs text-on-surface-variant">{t('webSettingsAdmiralRequired')}</p>
         ) : (
           <button onClick={save} disabled={saving}
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-on-primary text-sm font-semibold hover:opacity-90 disabled:opacity-50">
             {saving && <Loader2 size={14} className="animate-spin" />}
             {saved ? <Check size={14} /> : null}
-            {saved ? 'Saved' : saving ? 'Saving…' : 'Save Branding'}
+            {saved ? t('webSettingsSaved') : saving ? t('webSettingsSaving') : t('webSettingsSaveBranding')}
           </button>
         )}
       </div>

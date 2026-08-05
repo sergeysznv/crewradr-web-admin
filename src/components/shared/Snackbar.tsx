@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from 'react';
 import { Check, X, AlertTriangle } from 'lucide-react';
+import { useT } from '@/hooks/use-translations';
 
 interface SnackbarItem {
   id: number;
@@ -32,6 +33,7 @@ export function useSnackbar() {
 }
 
 export function SnackbarProvider({ children }: { children: ReactNode }) {
+  const { t } = useT();
   const [items, setItems] = useState<SnackbarItem[]>([]);
 
   const remove = useCallback((id: number) => {
@@ -68,7 +70,7 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
             <p className="text-sm text-on-surface flex-1">{item.message}</p>
             <button
               onClick={() => remove(item.id)}
-              aria-label="Dismiss"
+              aria-label={t('webSharedDismiss')}
               className="shrink-0 rounded p-0.5 text-on-surface-variant hover:text-on-surface"
             >
               <X className="h-3.5 w-3.5" />

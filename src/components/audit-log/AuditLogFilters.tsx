@@ -1,21 +1,23 @@
 // src/components/audit-log/AuditLogFilters.tsx
+'use client';
+import { useT } from '@/hooks/use-translations';
 import { FilterChips } from '@/components/shared/FilterChips';
 
 export type DatePreset = '7d' | '30d' | '90d' | 'all';
 
-const DATE_PRESETS: { value: DatePreset; label: string }[] = [
-  { value: '7d', label: 'Last 7d' },
-  { value: '30d', label: 'Last 30d' },
-  { value: '90d', label: 'Last 90d' },
-  { value: 'all', label: 'All time' },
+const DATE_PRESETS: { value: DatePreset; labelKey: string }[] = [
+  { value: '7d', labelKey: 'webAuditLast7d' },
+  { value: '30d', labelKey: 'webAuditLast30d' },
+  { value: '90d', labelKey: 'webAuditLast90d' },
+  { value: 'all', labelKey: 'webAuditAllTime' },
 ];
 
 const ACTIONS = [
-  { value: '' as const, label: 'All Actions' },
-  { value: 'member_added' as const, label: 'Member Added' },
-  { value: 'member_removed' as const, label: 'Member Removed' },
-  { value: 'member_role_changed' as const, label: 'Role Changed' },
-  { value: 'member_bulk_import' as const, label: 'Bulk Import' },
+  { value: '' as const, labelKey: 'webAuditActionAll' },
+  { value: 'member_added' as const, labelKey: 'webAuditActionMemberAdded' },
+  { value: 'member_removed' as const, labelKey: 'webAuditActionMemberRemoved' },
+  { value: 'member_role_changed' as const, labelKey: 'webAuditActionRoleChanged' },
+  { value: 'member_bulk_import' as const, labelKey: 'webAuditActionBulkImport' },
 ];
 
 type ActionFilter = (typeof ACTIONS)[number]['value'];
@@ -26,15 +28,16 @@ interface Props {
 }
 
 export function AuditLogFilters({ datePreset, onDatePresetChange, action, onActionChange }: Props) {
+  const { t } = useT();
   return (
     <div className="space-y-3">
       <div>
-        <div className="text-2xs uppercase tracking-wider text-on-surface-variant font-semibold mb-1">Date Range</div>
-        <FilterChips options={DATE_PRESETS} selected={datePreset} onSelect={onDatePresetChange} />
+        <div className="text-2xs uppercase tracking-wider text-on-surface-variant font-semibold mb-1">{t('webAuditDateRange')}</div>
+        <FilterChips options={DATE_PRESETS.map((p) => ({ ...p, label: t(p.labelKey) }))} selected={datePreset} onSelect={onDatePresetChange} />
       </div>
       <div>
-        <div className="text-2xs uppercase tracking-wider text-on-surface-variant font-semibold mb-1">Action</div>
-        <FilterChips options={ACTIONS} selected={action as ActionFilter} onSelect={onActionChange} />
+        <div className="text-2xs uppercase tracking-wider text-on-surface-variant font-semibold mb-1">{t('webAuditActionLabel')}</div>
+        <FilterChips options={ACTIONS.map((a) => ({ ...a, label: t(a.labelKey) }))} selected={action as ActionFilter} onSelect={onActionChange} />
       </div>
     </div>
   );

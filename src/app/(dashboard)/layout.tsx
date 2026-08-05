@@ -159,10 +159,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="max-w-sm text-center">
           <ShieldCheck className="mx-auto h-12 w-12 text-zinc-300 dark:text-zinc-600" />
           <h2 className="mt-4 text-xl font-bold text-zinc-900 dark:text-zinc-100">
-            {loadError ? 'Connection Error' : t('webAccessRestrictedTitle')}
+            {loadError ? t('webShellConnectionError') : t('webAccessRestrictedTitle')}
           </h2>
           <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-            {loadError ? 'Could not load your account. Check your connection and try again.' : t('webAccessRestrictedDesc')}
+            {loadError ? t('webShellConnectionErrorDesc') : t('webAccessRestrictedDesc')}
           </p>
           {loadError && (
             <button onClick={() => loadCrews()} className="mt-4 rounded-lg bg-[var(--brand-seed)] px-6 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90">
@@ -185,13 +185,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <div className="flex h-screen flex-col overflow-hidden bg-[var(--brand-surface)] text-zinc-900 dark:text-zinc-100">
       {/* ── Mobile top bar ── */}
       <header className="flex h-14 shrink-0 items-center gap-3 border-b border-zinc-200 bg-white px-4 dark:border-zinc-700 dark:bg-zinc-900 md:hidden">
-        <button onClick={() => setMobileMenuOpen(true)} aria-label="Open menu" className="text-zinc-600 dark:text-zinc-300">
+        <button onClick={() => setMobileMenuOpen(true)} aria-label={t('webShellOpenMenu')} className="text-zinc-600 dark:text-zinc-300">
           <Menu className="h-5 w-5" />
         </button>
         <img src="/logo-32.png" alt="CrewRadr" className="h-7 w-7 shrink-0 rounded-lg" width={28} height={28} />
         <span className="text-sm font-bold truncate">{activeCrew?.crew_name ?? t('webAdminTitle')}</span>
         <div className="ml-auto flex items-center gap-1">
-          <button onClick={toggleTheme} className="flex h-8 w-8 items-center justify-center rounded-lg text-sm" title={resolved === 'dark' ? 'Light' : 'Dark'}>
+          <button onClick={toggleTheme} className="flex h-8 w-8 items-center justify-center rounded-lg text-sm" title={resolved === 'dark' ? t('webShellLightMode') : t('webShellDarkMode')}>
             {resolved === 'dark' ? '\u{2600}\u{FE0F}' : '\u{1F319}'}
           </button>
         </div>
@@ -204,7 +204,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="absolute inset-y-0 left-0 w-64 bg-white shadow-xl dark:bg-zinc-900">
             <div className="flex h-14 items-center justify-between border-b border-zinc-200 px-4 dark:border-zinc-700">
               <span className="font-bold text-sm">{t('webAdminTitle')}</span>
-              <button onClick={() => setMobileMenuOpen(false)} aria-label="Close menu" className="text-zinc-500">
+              <button onClick={() => setMobileMenuOpen(false)} aria-label={t('webShellCloseMenu')} className="text-zinc-500">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -238,7 +238,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex h-14 items-center gap-2 border-b border-zinc-200 px-3 dark:border-zinc-700">
             <img src="/logo-32.png" alt="CrewRadr" className="h-8 w-8 shrink-0 rounded-lg" width={32} height={32} />
             {!collapsed && <span className="text-sm font-bold">{t('webAdminTitle')}</span>}
-            <button onClick={() => setCollapsed(!collapsed)} aria-label={collapsed ? 'Expand' : 'Collapse'} className="ml-auto text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300">
+            <button onClick={() => setCollapsed(!collapsed)} aria-label={collapsed ? t('webShellExpand') : t('webShellCollapse')} className="ml-auto text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300">
               {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
             </button>
           </div>
@@ -339,7 +339,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="ml-auto flex items-center gap-1">
               <button onClick={toggleTheme}
                 className="flex h-8 w-8 items-center justify-center rounded-lg text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800"
-                title={resolved === 'dark' ? 'Light mode' : 'Dark mode'}>
+                title={resolved === 'dark' ? t('webShellLightMode') : t('webShellDarkMode')}>
                 {resolved === 'dark' ? '\u{2600}\u{FE0F}' : '\u{1F319}'}
               </button>
             </div>
