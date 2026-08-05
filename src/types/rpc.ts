@@ -86,3 +86,22 @@ export interface ProvisioningLink {
   expires_at?: string;
   created_at: string;
 }
+
+export interface PrivacySettings {
+  retentionDays: number;
+  perMemberSharing: Record<string, boolean>;
+  invisibleMembers: string[];
+}
+
+export interface PersonalExport {
+  exportedAt: string;
+  format: string;
+  profile: Array<Record<string, unknown>>;
+  trips: Array<Record<string, unknown>>;
+  checkIns: Array<Record<string, unknown>>;
+}
+
+export interface DeleteAccountResult {
+  status: string;
+  userId: string;
+}

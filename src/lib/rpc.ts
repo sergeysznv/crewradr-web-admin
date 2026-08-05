@@ -1,7 +1,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
   AccountProfile, FleetDashboard, CrewMembersResponse,
-  BulkImportResult, CrewSettings, AuditLogsResponse, UpdateMemberRoleResult, LivePosition
+  BulkImportResult, CrewSettings, AuditLogsResponse, UpdateMemberRoleResult, LivePosition,
+  PrivacySettings, PersonalExport, DeleteAccountResult
 } from '@/types/rpc';
 import type {
   AlertRule, TripDetail, TrendDataPoint, ReportTemplate, ReportWidget,
@@ -211,4 +212,57 @@ export async function saveAlertRule(
   });
   if (error) throw error;
   return data as string;
+}
+
+/**
+ * Reads retention policy + per-member sharing state (captain/co-captain
+ * gated server-side). Returns the configured policy as-is — the client
+ * clamps it to the tier default via effectiveHistoryDays().
+ */
+export async function getPrivacySettings(
+  supabase: SupabaseClient,
+  crewId: string,
+): Promise<PrivacySettings> {
+  const { data, error } = await supabase
+    .rpc('get_web_privacy_settings', { p_crew_id: crewId })
+    .single<PrivacySettings>();
+  if (error) throw error;
+  return data;
+}
+
+/** GDPR Art. 20 personal data export (rate-limited server-side: 3/24h). */
+export async function getPersonalExport(
+  supabase: SupabaseClient,
+  format: 'json' | 'csv',
+): Promise<PersonalExport> {
+  const { data, error } = await supabase
+    .rpc('get_web_personal_export', { p_format: format })
+    .single<PersonalExport>();
+  if (error) throw error;
+  return data;
+}
+
+/** Deletes the caller's account and all associated data (GDPR Art. 17). */
+export async function deleteWebAccount(supabase: SupabaseClient): Promise<DeleteAccountResult> {
+  const { data, error } = await supabase
+    .rpc('delete_web_account')
+    .single<DeleteAccountResult>();
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * Persists the crew retention policy. No dedicated write RPC exists, so —
+ * like updateCrewBranding — we upsert enterprise_fleet_config directly; the
+ * captain-scoped RLS INSERT/UPDATE policies gate this client-side.
+ */
+export async function updateRetentionDays(
+  supabase: SupabaseClient,
+  crewId: string,
+  days: number,
+): Promise<void> {
+  const { error } = await supabase
+    .from('enterprise_fleet_config')
+    .upsert({ crew_id: crewId, audit_retention_days: days }, { onConflict: 'crew_id' });
+  if (error) throw error;
 }
