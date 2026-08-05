@@ -3,7 +3,10 @@ import type {
   AccountProfile, FleetDashboard, CrewMembersResponse,
   BulkImportResult, CrewSettings, AuditLogsResponse, UpdateMemberRoleResult, LivePosition
 } from '@/types/rpc';
-import type { AlertRule, TripDetail, TrendDataPoint, ReportTemplate, ReportWidget } from '@/types/tier';
+import type {
+  AlertRule, TripDetail, TrendDataPoint, ReportTemplate, ReportWidget,
+  RiskPrediction, Anomaly,
+} from '@/types/tier';
 
 type RpcFn = SupabaseClient['rpc'];
 
@@ -173,6 +176,28 @@ export async function getAlertRules(supabase: SupabaseClient, crewId: string): P
   const { data, error } = await supabase.rpc('get_alert_rules', { p_crew_id: crewId });
   if (error) throw error;
   return (data as AlertRule[]) ?? [];
+}
+
+export async function getWebRiskPredictions(
+  supabase: SupabaseClient,
+  crewId: string,
+): Promise<RiskPrediction[]> {
+  const { data, error } = await supabase.rpc('get_web_risk_predictions', { p_crew_id: crewId });
+  if (error) throw error;
+  return (data as RiskPrediction[]) ?? [];
+}
+
+export async function getWebAnomalies(
+  supabase: SupabaseClient,
+  crewId: string,
+  days = 30,
+): Promise<Anomaly[]> {
+  const { data, error } = await supabase.rpc('get_web_anomalies', {
+    p_crew_id: crewId,
+    p_days: days,
+  });
+  if (error) throw error;
+  return (data as Anomaly[]) ?? [];
 }
 
 export async function saveAlertRule(
