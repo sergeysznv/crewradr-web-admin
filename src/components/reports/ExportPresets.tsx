@@ -82,7 +82,7 @@ function ExportCard({ option, busy, soon, disabled, onExport }: {
     <button
       type="button"
       onClick={() => onExport(option)}
-      disabled={disabled || busy}
+      disabled={disabled || busy || soon}
       className="flex flex-col gap-1.5 rounded-lg border border-outline bg-surface p-4 text-left transition-colors hover:border-primary/40 disabled:cursor-not-allowed disabled:opacity-60"
     >
       <span className="flex items-center gap-2 text-sm font-semibold text-on-surface">
@@ -173,7 +173,7 @@ export function ExportPresets() {
 
       {/* Fleet reports — tier-gated (firstMate+) */}
       <TierGateGuard
-        minTier="firstMate"
+        minTier="captain"
         fallback={
           <section className="flex items-center gap-3 rounded-lg border border-outline bg-surface p-6">
             <Lock className="h-6 w-6 shrink-0 text-on-surface-variant opacity-60" aria-hidden="true" />
