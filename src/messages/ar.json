@@ -316,6 +316,7 @@
   "webProvisioningStatusActive": "نشط",
   "webProvisioningStatusExpired": "منتهي",
   "webProvisioningStatusJoined": "انضم",
+  "webProvisioningStatusPending": "Pending",
   "webProvisioningStatusRevoked": "ملغى",
   "webProvisioningTitle": "روابط التزويد",
   "webProvisioningUsageCount": " · {count} uses",

@@ -11,6 +11,7 @@ export function CsvImportModal({ open, onClose }: { open: boolean; onClose: () =
   const { crewId } = useCrew();
   const importMutation = useBulkImport(crewId!);
   const [text, setText] = useState('');
+  const [importDone, setImportDone] = useState(false);
 
   if (!open) return null;
 
@@ -20,7 +21,12 @@ export function CsvImportModal({ open, onClose }: { open: boolean; onClose: () =
       const [email, role] = line.split(',').map(s => s.trim());
       return { email, role: role || 'member' };
     }).filter(m => m.email);
-    importMutation.mutate(members, { onSuccess: () => onClose() });
+    importMutation.mutate(members, {
+      onSuccess: () => {
+        setImportDone(true);
+        setTimeout(() => { setImportDone(false); onClose(); }, 2500);
+      },
+    });
   };
 
   return (
@@ -49,11 +55,11 @@ export function CsvImportModal({ open, onClose }: { open: boolean; onClose: () =
               className="px-4 py-2 rounded-xl border border-outline text-sm font-semibold text-on-surface-variant hover:bg-surface-container">{t('webMembersImportCancel')}</button>
             <button onClick={handleImport} disabled={!text.trim() || importMutation.isPending}
               className="px-4 py-2 rounded-xl text-sm font-semibold text-white bg-primary hover:opacity-90 disabled:opacity-50">
-              {importMutation.isPending ? t('webMembersImportImporting') : t('webMembersImportCsv')}
+              {importMutation.isPending ? t('webMembersImportImporting') : importDone ? t('webAccountProfileSaved') : t('webMembersImportCsv')}
             </button>
           </div>
 
-          {importMutation.data && (
+          {(importMutation.data || importDone) && importMutation.data && (
             <div className={`mt-lg p-3 rounded-lg text-sm ${importMutation.data.errors.length ? 'bg-warning-container text-warning' : 'bg-primary-container text-primary'}`}>
               {t('webMembersImportResult', { added: importMutation.data.added })}
               {importMutation.data.errors.length > 0 && ` · ${t('webMembersImportErrors', { errors: importMutation.data.errors.length })}`}

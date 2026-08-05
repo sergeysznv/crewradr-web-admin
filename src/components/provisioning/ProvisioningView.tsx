@@ -71,7 +71,7 @@ export function ProvisioningView() {
 
   async function revokeLink(id: string) {
     try {
-      const { error } = await supabase.from('enterprise_provisioning_links').delete().eq('id', id);
+      const { error } = await supabase.from('enterprise_provisioning_links').update({ status: 'revoked' }).eq('id', id);
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ['provisioningLinks', crewId] });
       showSuccess(t('webProvisioningStatusRevoked'));
@@ -94,6 +94,7 @@ export function ProvisioningView() {
   function statusLabel(s: string, expiresAt?: string) {
     if (s === 'pending' && expiresAt && new Date(expiresAt) < new Date()) return t('webProvisioningStatusExpired');
     switch (s) {
+      case 'pending': return t('webProvisioningStatusPending');
       case 'joined': return t('webProvisioningStatusJoined');
       case 'revoked': return t('webProvisioningStatusRevoked');
       default: return t('webProvisioningStatusActive');
@@ -103,6 +104,7 @@ export function ProvisioningView() {
   function statusColor(s: string, expiresAt?: string) {
     if (s === 'pending' && expiresAt && new Date(expiresAt) < new Date()) return 'text-error';
     switch (s) {
+      case 'pending': return 'text-warning';
       case 'joined': return 'text-primary';
       case 'revoked': return 'text-error';
       default: return 'text-success';

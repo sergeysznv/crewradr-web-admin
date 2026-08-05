@@ -314,6 +314,7 @@
   "webProvisioningRevokeConfirm": "This link will no longer work. Any pending joins will be rejected.",
   "webProvisioningRevokeLink": "Revoke Link",
   "webProvisioningStatusActive": "Active",
+  "webProvisioningStatusPending": "Pending",
   "webProvisioningStatusExpired": "Expired",
   "webProvisioningStatusJoined": "Joined",
   "webProvisioningStatusRevoked": "Revoked",

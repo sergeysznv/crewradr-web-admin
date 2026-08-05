@@ -316,6 +316,7 @@
   "webProvisioningStatusActive": "活跃",
   "webProvisioningStatusExpired": "已过期",
   "webProvisioningStatusJoined": "已加入",
+  "webProvisioningStatusPending": "Pending",
   "webProvisioningStatusRevoked": "已撤销",
   "webProvisioningTitle": "邀请链接",
   "webProvisioningUsageCount": " · {count} uses",

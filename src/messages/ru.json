@@ -316,6 +316,7 @@
   "webProvisioningStatusActive": "Активна",
   "webProvisioningStatusExpired": "Истекла",
   "webProvisioningStatusJoined": "Принята",
+  "webProvisioningStatusPending": "Pending",
   "webProvisioningStatusRevoked": "Отозвана",
   "webProvisioningTitle": "Ссылки Подключения",
   "webProvisioningUsageCount": " · {count} uses",

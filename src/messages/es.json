@@ -316,6 +316,7 @@
   "webProvisioningStatusActive": "Activo",
   "webProvisioningStatusExpired": "Expirado",
   "webProvisioningStatusJoined": "Unido",
+  "webProvisioningStatusPending": "Pending",
   "webProvisioningStatusRevoked": "Revocado",
   "webProvisioningTitle": "Enlaces de Aprovisionamiento",
   "webProvisioningUsageCount": " · {count} uses",
