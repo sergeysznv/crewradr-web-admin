@@ -1,16 +1,47 @@
 // src/components/members/MemberDetail.tsx
 'use client';
+
 import type { CrewMember } from '@/types/rpc';
+import { useQuery } from '@tanstack/react-query';
 import { useUpdateMemberRole, useRemoveMember } from '@/hooks/queries/useMutations';
 import { useCrew } from '@/hooks/useCrew';
+import { useSupabase } from '@/hooks/useSupabase';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { useState } from 'react';
+import { Route, Clock, AlertTriangle } from 'lucide-react';
+
+interface MemberTrip {
+  started_at: string;
+  driving_seconds: number;
+  distance_m: number;
+}
 
 export function MemberDetail({ member, onClose }: { member: CrewMember; onClose: () => void }) {
   const { crewId } = useCrew();
+  const supabase = useSupabase();
   const updateRole = useUpdateMemberRole(crewId!);
   const removeMember = useRemoveMember(crewId!);
   const [showRemove, setShowRemove] = useState(false);
+
+  // Recent trips for this member
+  const tripsQuery = useQuery({
+    queryKey: ['memberTrips', crewId, member.user_id],
+    queryFn: async () => {
+      if (!crewId) return [];
+      const { data, error } = await supabase
+        .from('crew_trip_sessions')
+        .select('started_at, driving_seconds, distance_m')
+        .eq('crew_id', crewId)
+        .eq('user_id', member.user_id)
+        .order('started_at', { ascending: false })
+        .limit(5);
+      if (error) throw error;
+      return (data ?? []) as MemberTrip[];
+    },
+    enabled: !!crewId,
+  });
+
+  const trips = tripsQuery.data ?? [];
 
   function handleRemove() {
     removeMember.mutate(member.id, { onSuccess: () => { setShowRemove(false); onClose(); } });
@@ -19,8 +50,12 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
   return (
     <div className="space-y-lg">
       <div className="flex items-center gap-4">
-        <div className="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-xl font-bold text-primary">
-          {(member.display_name ?? member.email ?? '?')[0].toUpperCase()}
+        <div className="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-xl font-bold text-primary overflow-hidden">
+          {member.avatar_url ? (
+            <img src={member.avatar_url} alt="" className="w-full h-full object-cover" />
+          ) : (
+            (member.display_name ?? member.email ?? '?')[0].toUpperCase()
+          )}
         </div>
         <div>
           <h2 className="font-heading font-extrabold text-lg text-on-surface">{member.display_name ?? 'Unknown'}</h2>
@@ -41,6 +76,40 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
           <span className="text-sm text-on-surface-variant">Trips (30d)</span>
           <span className="text-sm text-on-surface">{member.trips_30d}</span>
         </div>
+      </div>
+
+      {/* Recent trips */}
+      <div>
+        <h3 className="flex items-center gap-2 text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">
+          <Route className="h-3.5 w-3.5" />
+          Recent Trips
+        </h3>
+        {tripsQuery.isLoading ? (
+          <div className="space-y-2">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="h-8 bg-surface-container rounded-lg animate-pulse" />
+            ))}
+          </div>
+        ) : trips.length === 0 ? (
+          <p className="text-xs text-on-surface-variant py-2">No recent trips</p>
+        ) : (
+          <div className="divide-y divide-outline-variant">
+            {trips.map((trip, i) => (
+              <div key={i} className="flex items-center justify-between py-2">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-3.5 w-3.5 text-on-surface-variant" aria-hidden="true" />
+                  <span className="text-xs text-on-surface">
+                    {new Date(trip.started_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3 text-xs text-on-surface-variant">
+                  <span>{Math.round(trip.driving_seconds / 60)} min</span>
+                  {trip.distance_m > 0 && <span>{(trip.distance_m / 1000).toFixed(1)} km</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -64,8 +133,6 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
         </button>
       </div>
 
-      {/* Removal requires typing the member's exact name; keyed per-open so
-          the verify input resets every time the dialog is shown. */}
       <ConfirmDialog
         key={showRemove ? 'remove-open' : 'remove-closed'}
         open={showRemove}

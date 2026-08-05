@@ -1,30 +1,47 @@
+// src/components/shared/SlideOverPanel.tsx
 'use client';
+
 import { useEffect, type ReactNode } from 'react';
 import { X } from 'lucide-react';
 
-export function SlideOverPanel({ open, onClose, children }: {
-  open: boolean; onClose: () => void; children: ReactNode;
-}) {
+interface SlideOverPanelProps {
+  open: boolean;
+  onClose: () => void;
+  children: ReactNode;
+}
+
+export function SlideOverPanel({ open, onClose, children }: SlideOverPanelProps) {
+  // Close on Escape
   useEffect(() => {
-    if (open) document.body.style.overflow = 'hidden';
-    else document.body.style.overflow = '';
-    return () => { document.body.style.overflow = ''; };
-  }, [open]);
+    if (!open) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [open, onClose]);
 
   if (!open) return null;
 
   return (
-    <>
-      <div className="fixed inset-0 bg-black/20 z-40" onClick={onClose} />
-      <div className="fixed right-0 top-0 h-full w-[400px] max-w-[90vw] bg-surface border-l border-outline
-                      rounded-tl-xl shadow-xl z-50 overflow-y-auto animate-slide-in">
-        <div className="sticky top-0 bg-surface flex justify-end p-3 border-b border-outline-variant">
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface-variant">
-            <X size={18} />
+    <div className="fixed inset-0 z-[7000]" role="dialog" aria-modal="true">
+      {/* Scrim */}
+      <div className="absolute inset-0 bg-black/20" onClick={onClose} />
+
+      {/* Panel */}
+      <div className="absolute right-0 top-0 bottom-0 w-full max-w-[400px] bg-surface shadow-xl border-l border-outline overflow-y-auto animate-slide-in-right">
+        <div className="flex items-center justify-between p-lg border-b border-outline-variant">
+          <span className="font-heading font-bold text-sm text-on-surface" />
+          <button
+            onClick={onClose}
+            aria-label="Close panel"
+            className="rounded-lg p-1.5 text-on-surface-variant hover:bg-surface-container"
+          >
+            <X className="h-5 w-5" />
           </button>
         </div>
         <div className="p-lg">{children}</div>
       </div>
-    </>
+    </div>
   );
 }

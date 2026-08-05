@@ -1,91 +1,145 @@
-import { type ReactNode } from 'react';
+// src/components/shared/DataTable.tsx
+'use client';
+
+import type { ReactNode } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Column<T> {
   key: string;
   header: string;
   render: (row: T) => ReactNode;
-  className?: string;
 }
 
-interface Pagination {
+interface PaginationConfig {
   offset: number;
   limit: number;
   total: number;
   onPageChange: (offset: number) => void;
 }
 
-export function DataTable<T extends { id: string }>({
-  columns, data, pagination, onRowClick, selectedIds, onToggleSelect, onToggleSelectAll
-}: {
+interface DataTableProps<T> {
   columns: Column<T>[];
   data: T[];
-  pagination?: Pagination;
+  pagination?: PaginationConfig;
   onRowClick?: (row: T) => void;
   selectedIds?: Set<string>;
   onToggleSelect?: (id: string) => void;
   onToggleSelectAll?: () => void;
-}) {
-  const totalPages = pagination ? Math.ceil(pagination.total / pagination.limit) : 0;
-  const currentPage = pagination ? Math.floor(pagination.offset / pagination.limit) + 1 : 0;
-  const allSelected = selectedIds !== undefined && data.length > 0 && selectedIds.size === data.length;
+}
+
+export function DataTable<T extends { id: string }>({
+  columns,
+  data,
+  pagination,
+  onRowClick,
+  selectedIds,
+  onToggleSelect,
+  onToggleSelectAll,
+}: DataTableProps<T>) {
+  const showCheckbox = !!onToggleSelect && !!onToggleSelectAll;
+  const currentPage = pagination
+    ? Math.floor(pagination.offset / pagination.limit) + 1
+    : 1;
+  const totalPages = pagination
+    ? Math.ceil(pagination.total / pagination.limit)
+    : 1;
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-outline-variant">
-            {selectedIds && (
-              <th className="w-10 px-3 py-2" scope="col">
-                <input
-                  type="checkbox"
-                  checked={allSelected}
-                  onChange={onToggleSelectAll}
-                  aria-label="Select all rows"
-                />
-              </th>
-            )}
-            {columns.map(col => (
-              <th key={col.key} className={`text-left text-2xs uppercase text-on-surface-variant tracking-wider font-semibold px-3 py-2 ${col.className ?? ''}`}>
-                {col.header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {data.map(row => (
-            <tr key={row.id}
-              onClick={() => onRowClick?.(row)}
-              className={`border-b border-outline-variant min-h-[48px] ${onRowClick ? 'cursor-pointer hover:bg-surface-container' : ''}`}>
-              {selectedIds && (
-                <td className="px-3 py-2.5" onClick={e => e.stopPropagation()}>
+    <div>
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-outline-variant">
+              {showCheckbox && (
+                <th className="w-10 px-3 py-2.5">
                   <input
                     type="checkbox"
-                    checked={selectedIds.has(row.id)}
-                    onChange={() => onToggleSelect?.(row.id)}
-                    aria-label={`Select row ${row.id}`}
+                    checked={
+                      data.length > 0 &&
+                      data.every((d) => selectedIds?.has(d.id))
+                    }
+                    onChange={onToggleSelectAll}
+                    className="rounded border-outline"
+                    aria-label="Select all"
                   />
-                </td>
+                </th>
               )}
-              {columns.map(col => (
-                <td key={col.key} className={`px-3 py-2.5 ${col.className ?? ''}`}>
-                  {col.render(row)}
-                </td>
+              {columns.map((col) => (
+                <th
+                  key={col.key}
+                  className="px-3 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-on-surface-variant"
+                >
+                  {col.header}
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
-      {pagination && (
-        <div className="flex items-center justify-between px-3 py-3 text-xs text-on-surface-variant">
-          <span>Showing {pagination.offset + 1}–{Math.min(pagination.offset + pagination.limit, pagination.total)} of {pagination.total}</span>
-          <div className="flex gap-2">
-            <button disabled={pagination.offset === 0}
+          </thead>
+          <tbody>
+            {data.map((row) => {
+              const isSelected = selectedIds?.has(row.id) ?? false;
+              return (
+                <tr
+                  key={row.id}
+                  onClick={() => onRowClick?.(row)}
+                  className={`border-b border-outline-variant transition-colors ${
+                    onRowClick ? 'cursor-pointer hover:bg-surface-container' : ''
+                  } ${isSelected ? 'bg-primary/5' : ''}`}
+                >
+                  {showCheckbox && (
+                    <td className="px-3 py-3" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => onToggleSelect?.(row.id)}
+                        className="rounded border-outline"
+                        aria-label={`Select ${row.id}`}
+                      />
+                    </td>
+                  )}
+                  {columns.map((col) => (
+                    <td key={col.key} className="px-3 py-3">
+                      {col.render(row)}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {pagination && totalPages > 1 && (
+        <div className="flex items-center justify-between border-t border-outline-variant px-4 py-2">
+          <p className="text-xs text-on-surface-variant">
+            Showing {pagination.offset + 1}–{Math.min(pagination.offset + pagination.limit, pagination.total)}{' '}
+            of {pagination.total}
+          </p>
+          <div className="flex items-center gap-1">
+            <button
               onClick={() => pagination.onPageChange(Math.max(0, pagination.offset - pagination.limit))}
-              className="px-3 py-1 rounded-md border border-outline disabled:opacity-30 hover:bg-surface-container">Prev</button>
-            <span className="px-2 py-1">{currentPage} / {totalPages}</span>
-            <button disabled={pagination.offset + pagination.limit >= pagination.total}
-              onClick={() => pagination.onPageChange(pagination.offset + pagination.limit)}
-              className="px-3 py-1 rounded-md border border-outline disabled:opacity-30 hover:bg-surface-container">Next</button>
+              disabled={pagination.offset === 0}
+              className="rounded-lg p-1.5 text-on-surface-variant hover:bg-surface-container disabled:opacity-30"
+              aria-label="Previous page"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <span className="px-2 text-xs text-on-surface-variant">
+              {currentPage} / {totalPages}
+            </span>
+            <button
+              onClick={() =>
+                pagination.onPageChange(
+                  pagination.offset + pagination.limit < pagination.total
+                    ? pagination.offset + pagination.limit
+                    : pagination.offset,
+                )
+              }
+              disabled={pagination.offset + pagination.limit >= pagination.total}
+              className="rounded-lg p-1.5 text-on-surface-variant hover:bg-surface-container disabled:opacity-30"
+              aria-label="Next page"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
           </div>
         </div>
       )}

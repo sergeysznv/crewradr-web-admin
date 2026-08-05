@@ -1,7 +1,8 @@
 // src/components/settings/BrandingTab.tsx
 'use client';
-import { useState } from 'react';
-import { Upload, Loader2, Check } from 'lucide-react';
+
+import { useState, useRef } from 'react';
+import { Upload, Loader2, Check, Image, X } from 'lucide-react';
 import { useCrew } from '@/hooks/useCrew';
 import { useSupabase } from '@/hooks/useSupabase';
 import { useSnackbar } from '@/components/shared/Snackbar';
@@ -10,14 +11,19 @@ import { tierRank } from '@/lib/utils';
 import { normalizeSeedColor } from '@/hooks/use-branding';
 
 const PRESETS = ['#8EA595', '#6E8679', '#DDCFB5', '#4A90D9', '#E68A00', '#D9534F'];
+const MAX_LOGO_SIZE = 2 * 1024 * 1024; // 2MB
+const ALLOWED_TYPES = ['image/png', 'image/svg+xml'];
 
-export function BrandingTab({ seedColor = null }: { seedColor?: string | number | null }) {
+export function BrandingTab({ seedColor = null, logoUrl = null }: { seedColor?: string | number | null; logoUrl?: string | null }) {
   const { crewId, tier } = useCrew();
   const supabase = useSupabase();
   const { showSuccess, showError } = useSnackbar();
   const [color, setColor] = useState<string>(normalizeSeedColor(seedColor) ?? PRESETS[0]);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [currentLogo, setCurrentLogo] = useState<string | null>(logoUrl ?? null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const isAdmiral = tierRank(tier) >= 3;
 
@@ -25,7 +31,7 @@ export function BrandingTab({ seedColor = null }: { seedColor?: string | number 
     if (!crewId || !isAdmiral) return;
     setSaving(true);
     try {
-      await updateCrewBranding(supabase, crewId, color);
+      await updateCrewBranding(supabase, crewId, color, currentLogo);
       setSaved(true);
       showSuccess('Branding saved');
       setTimeout(() => setSaved(false), 2500);
@@ -33,6 +39,49 @@ export function BrandingTab({ seedColor = null }: { seedColor?: string | number 
       showError(err instanceof Error ? err.message : 'Failed to save branding');
     }
     setSaving(false);
+  }
+
+  async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !crewId) return;
+
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      showError('Only PNG and SVG files are supported.');
+      return;
+    }
+    if (file.size > MAX_LOGO_SIZE) {
+      showError('Logo must be under 2MB.');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const ext = file.type === 'image/svg+xml' ? 'svg' : 'png';
+      const path = `crew-logos/${crewId}.${ext}`;
+
+      // Remove old logo first (ignore 404 if it doesn't exist)
+      await supabase.storage.from('crew-branding').remove([path]);
+
+      const { error } = await supabase.storage
+        .from('crew-branding')
+        .upload(path, file, { upsert: true, contentType: file.type });
+
+      if (error) throw error;
+
+      const { data: urlData } = supabase.storage.from('crew-branding').getPublicUrl(path);
+      const publicUrl = urlData.publicUrl;
+      setCurrentLogo(publicUrl);
+      showSuccess('Logo uploaded. Save branding to apply.');
+    } catch (err) {
+      showError(err instanceof Error ? err.message : 'Logo upload failed');
+    }
+    setUploading(false);
+    // Reset the input so re-uploading the same file works
+    if (fileRef.current) fileRef.current.value = '';
+  }
+
+  function removeLogo() {
+    setCurrentLogo(null);
   }
 
   return (
@@ -54,19 +103,68 @@ export function BrandingTab({ seedColor = null }: { seedColor?: string | number 
 
       <div>
         <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Logo</label>
-        <div className="mt-2 border-2 border-dashed border-outline rounded-lg p-xl text-center">
-          <Upload size={28} className="mx-auto mb-2 text-on-surface-variant opacity-40" />
-          <p className="text-sm text-on-surface-variant">Upload a PNG or SVG (max 2MB)</p>
-        </div>
+
+        {currentLogo ? (
+          <div className="mt-2 flex items-center gap-4">
+            <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-outline bg-surface-container">
+              <img src={currentLogo} alt="Crew logo" className="h-full w-full object-contain p-1" />
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => fileRef.current?.click()}
+                disabled={uploading}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-outline px-3 py-1.5 text-xs font-medium text-on-surface-variant hover:bg-surface-container"
+              >
+                {uploading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
+                Replace
+              </button>
+              <button
+                onClick={removeLogo}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-error/30 px-3 py-1.5 text-xs font-medium text-error hover:bg-error-container"
+              >
+                <X className="h-3.5 w-3.5" />
+                Remove
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => fileRef.current?.click()}
+            disabled={uploading}
+            className="mt-2 w-full border-2 border-dashed border-outline rounded-lg p-xl text-center hover:border-primary/40 transition-colors"
+          >
+            {uploading ? (
+              <Loader2 size={28} className="mx-auto mb-2 text-on-surface-variant animate-spin" />
+            ) : (
+              <Image size={28} className="mx-auto mb-2 text-on-surface-variant opacity-40" />
+            )}
+            <p className="text-sm text-on-surface-variant">
+              {uploading ? 'Uploading…' : 'Upload a PNG or SVG (max 2MB)'}
+            </p>
+          </button>
+        )}
+
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/png,image/svg+xml"
+          onChange={handleLogoUpload}
+          className="hidden"
+          aria-label="Upload logo"
+        />
       </div>
 
       <div>
         <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Live Preview</label>
         <div className="mt-2 bg-surface border border-outline rounded-lg p-lg flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-sm font-bold"
+            <div className="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-sm font-bold overflow-hidden"
               style={{ backgroundColor: `${color}20`, color }}>
-              C
+              {currentLogo ? (
+                <img src={currentLogo} alt="" className="w-full h-full object-cover" />
+              ) : (
+                'C'
+              )}
             </div>
             <div>
               <div className="text-sm font-semibold text-on-surface">Sample Crew Card</div>

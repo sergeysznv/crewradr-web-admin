@@ -1,20 +1,33 @@
 // src/components/shared/SeverityBadge.tsx
+import type { ReactNode } from 'react';
+
 export type Severity = 'critical' | 'warning' | 'info';
 
-const STYLES: Record<Severity, { container: string; border: string; text: string }> = {
-  critical: { container: 'bg-error-container', border: 'border-l-error', text: 'text-error' },
-  warning: { container: 'bg-warning-container', border: 'border-l-warning', text: 'text-warning' },
-  info: { container: 'bg-primary-container', border: 'border-l-primary', text: 'text-primary' },
+const STYLES: Record<Severity, { border: string; bg: string }> = {
+  critical: { border: 'border-l-error', bg: 'bg-error/5' },
+  warning: { border: 'border-l-warning', bg: 'bg-warning/5' },
+  info: { border: 'border-l-primary', bg: 'bg-primary/5' },
 };
 
-export function SeverityBadge({ severity, label, subtitle }: {
-  severity: Severity; label: string; subtitle?: string;
+export function SeverityBadge({
+  severity,
+  label,
+  subtitle,
+  children,
+}: {
+  severity: Severity;
+  label: string;
+  subtitle?: string;
+  children?: ReactNode;
 }) {
   const s = STYLES[severity];
   return (
-    <div className={`${s.container} ${s.border} border-l-2 rounded-sm px-2 py-1.5`}>
-      <div className={`text-xs font-semibold ${s.text}`}>{label}</div>
-      {subtitle && <div className="text-2xs text-on-surface-variant mt-0.5">{subtitle}</div>}
+    <div className={`border-l-4 ${s.border} ${s.bg} rounded-lg p-3`}>
+      <p className="text-sm font-semibold text-on-surface">{label}</p>
+      {subtitle && (
+        <p className="mt-0.5 text-xs text-on-surface-variant">{subtitle}</p>
+      )}
+      {children}
     </div>
   );
 }

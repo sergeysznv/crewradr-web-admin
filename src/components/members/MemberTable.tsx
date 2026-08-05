@@ -22,8 +22,12 @@ export function MemberTable({ members, total, offset, limit, onOffsetChange, onR
       key: 'name', header: 'Member',
       render: (m: CrewMember) => (
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-sm font-bold text-primary">
-            {(m.display_name ?? m.email ?? '?')[0].toUpperCase()}
+          <div className="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-sm font-bold text-primary overflow-hidden">
+            {m.avatar_url ? (
+              <img src={m.avatar_url} alt="" className="w-full h-full object-cover" />
+            ) : (
+              (m.display_name ?? m.email ?? '?')[0].toUpperCase()
+            )}
           </div>
           <div>
             <div className="font-semibold text-sm text-on-surface">{m.display_name ?? 'Unknown'}</div>

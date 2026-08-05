@@ -20,7 +20,11 @@ export function AlertFeed({ alerts }: { alerts: FleetDashboard['recent_alerts'] 
             severity={SEVERITY_MAP[alert.severity] ?? 'info'}
             label={alert.alert_type}
             subtitle={`${alert.display_name ?? 'Unknown'} · ${new Date(alert.created_at).toLocaleTimeString()}`}
-          />
+          >
+            {alert.message && (
+              <p className="mt-1 text-xs text-on-surface-variant leading-snug">{alert.message}</p>
+            )}
+          </SeverityBadge>
         ))}
       </div>
     </div>

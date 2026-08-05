@@ -1,14 +1,29 @@
 // src/components/shared/Snackbar.tsx
 'use client';
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
-import { CheckCircle, XCircle, X } from 'lucide-react';
 
-interface SnackbarItem { id: number; type: 'success' | 'error'; message: string; undo?: () => void; }
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  type ReactNode,
+} from 'react';
+import { Check, X, AlertTriangle } from 'lucide-react';
 
-const SnackbarContext = createContext<{
-  showSuccess: (message: string, undo?: () => void) => void;
+interface SnackbarItem {
+  id: number;
+  type: 'success' | 'error';
+  message: string;
+}
+
+interface SnackbarContextValue {
+  showSuccess: (message: string) => void;
   showError: (message: string) => void;
-} | null>(null);
+}
+
+const SnackbarContext = createContext<SnackbarContextValue | null>(null);
+
+let _nextId = 0;
 
 export function useSnackbar() {
   const ctx = useContext(SnackbarContext);
@@ -16,36 +31,48 @@ export function useSnackbar() {
   return ctx;
 }
 
-let nextId = 0;
-
 export function SnackbarProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<SnackbarItem[]>([]);
 
-  const remove = useCallback((id: number) => setItems(prev => prev.filter(i => i.id !== id)), []);
+  const remove = useCallback((id: number) => {
+    setItems((prev) => prev.filter((it) => it.id !== id));
+  }, []);
 
-  const show = useCallback((type: 'success' | 'error', message: string, undo?: () => void) => {
-    const id = nextId++;
-    setItems(prev => [...prev, { id, type, message, undo }]);
-    setTimeout(() => remove(id), 5000);
-  }, [remove]);
+  const add = useCallback(
+    (type: 'success' | 'error', message: string) => {
+      const id = ++_nextId;
+      setItems((prev) => [...prev.slice(-4), { id, type, message }]);
+      setTimeout(() => remove(id), 5000);
+    },
+    [remove],
+  );
 
-  const showSuccess = useCallback((m: string, u?: () => void) => show('success', m, u), [show]);
-  const showError = useCallback((m: string) => show('error', m), [show]);
+  const showSuccess = useCallback((m: string) => add('success', m), [add]);
+  const showError = useCallback((m: string) => add('error', m), [add]);
 
   return (
     <SnackbarContext.Provider value={{ showSuccess, showError }}>
       {children}
-      <div className="fixed bottom-20 md:bottom-6 right-4 z-50 flex flex-col gap-2">
-        {items.map(item => (
-          <div key={item.id} className={`flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg text-sm font-semibold
-            ${item.type === 'success' ? 'bg-on-surface text-surface' : 'bg-error-container text-error'}`}>
-            {item.type === 'success' ? <CheckCircle size={16} /> : <XCircle size={16} />}
-            <span>{item.message}</span>
-            {item.undo && (
-              <button onClick={() => { item.undo!(); remove(item.id); }}
-                className="ml-2 underline text-xs font-bold">Undo</button>
+      <div className="fixed bottom-4 right-4 z-[9999] flex flex-col gap-2 pointer-events-none">
+        {items.map((item) => (
+          <div
+            key={item.id}
+            role="alert"
+            className="pointer-events-auto flex items-center gap-3 rounded-xl border border-outline bg-surface px-4 py-3 shadow-lg animate-fade-in max-w-sm"
+          >
+            {item.type === 'success' ? (
+              <Check className="h-4 w-4 shrink-0 text-success" aria-hidden="true" />
+            ) : (
+              <AlertTriangle className="h-4 w-4 shrink-0 text-error" aria-hidden="true" />
             )}
-            <button onClick={() => remove(item.id)} className="ml-2"><X size={14} /></button>
+            <p className="text-sm text-on-surface flex-1">{item.message}</p>
+            <button
+              onClick={() => remove(item.id)}
+              aria-label="Dismiss"
+              className="shrink-0 rounded p-0.5 text-on-surface-variant hover:text-on-surface"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
           </div>
         ))}
       </div>

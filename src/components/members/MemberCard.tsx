@@ -10,8 +10,12 @@ export function MemberCard({ member, onClick }: { member: CrewMember; onClick: (
   return (
     <div onClick={onClick}
       className="bg-surface border border-outline rounded-lg p-md flex items-center gap-3 cursor-pointer hover:bg-surface-container transition-colors">
-      <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-sm font-bold text-primary flex-shrink-0">
-        {(member.display_name ?? member.email ?? '?')[0].toUpperCase()}
+      <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-sm font-bold text-primary flex-shrink-0 overflow-hidden">
+        {member.avatar_url ? (
+          <img src={member.avatar_url} alt="" className="w-full h-full object-cover" />
+        ) : (
+          (member.display_name ?? member.email ?? '?')[0].toUpperCase()
+        )}
       </div>
       <div className="flex-1 min-w-0">
         <div className="font-semibold text-sm text-on-surface truncate">{member.display_name ?? 'Unknown'}</div>

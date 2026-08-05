@@ -1,18 +1,13 @@
 // src/components/dashboard/DashboardView.tsx
 'use client';
-import nextDynamic from 'next/dynamic';
 import { useCrew } from '@/hooks/useCrew';
 import { useFleetDashboard } from '@/hooks/queries/useFleetDashboard';
 import { useRealtimeInvalidation } from '@/hooks/useRealtimeRefresh';
 import { KpiStrip } from '@/components/dashboard/KpiStrip';
 import { AlertFeed } from '@/components/dashboard/AlertFeed';
 import { ActivityTimeline } from '@/components/dashboard/ActivityTimeline';
+import { FleetOverview } from '@/components/dashboard/FleetOverview';
 import { Skeleton } from '@/components/shared/Skeleton';
-
-const FleetMap = nextDynamic(() => import('@/components/dashboard/FleetMap').then(m => ({ default: m.FleetMap })), {
-  ssr: false,
-  loading: () => <Skeleton className="h-[320px] md:h-full min-h-[240px] rounded-lg" />,
-});
 
 export function DashboardView() {
   // Crew seeding happens once at app mount in CrewLoader — not per page.
@@ -41,7 +36,7 @@ export function DashboardView() {
         <div className="space-y-lg">
           <KpiStrip data={dashboard.data} />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-lg">
-            <div className="md:col-span-2"><FleetMap /></div>
+            <div className="md:col-span-2"><FleetOverview dashboard={dashboard.data} /></div>
             <div className="md:col-span-1"><AlertFeed alerts={dashboard.data.recent_alerts} /></div>
           </div>
           <ActivityTimeline />

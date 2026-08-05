@@ -37,8 +37,8 @@ export function SettingsView() {
     <div className="max-w-[720px] space-y-lg">
       <FilterChips options={TABS} selected={tab} onSelect={setTab} />
       <div className="bg-surface border border-outline rounded-lg p-lg md:p-xl">
-        {tab === 'general' && <GeneralTab />}
-        {tab === 'branding' && <BrandingTab seedColor={settings?.branding?.seed_color ?? null} />}
+        {tab === 'general' && <GeneralTab subscription={settings?.subscription ?? null} />}
+        {tab === 'branding' && <BrandingTab seedColor={settings?.branding?.seed_color ?? null} logoUrl={settings?.branding?.logo_url ?? null} />}
         {tab === 'danger' && <DangerZone />}
       </div>
     </div>

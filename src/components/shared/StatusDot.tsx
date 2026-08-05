@@ -1,19 +1,17 @@
 // src/components/shared/StatusDot.tsx
-export type Status = 'active' | 'idle' | 'offline';
+export type Status = 'active' | 'offline';
 
-const COLOR_MAP: Record<Status, string> = {
+const COLORS: Record<Status, string> = {
   active: 'bg-success',
-  idle: 'bg-warning',
-  offline: 'bg-on-surface-variant',
+  offline: 'bg-on-surface-variant opacity-40',
 };
 
-export function StatusDot({ status, pulse = false }: { status: Status; pulse?: boolean }) {
+export function StatusDot({ status }: { status: Status }) {
   return (
-    <span className="relative flex h-1.5 w-1.5">
-      {pulse && status === 'active' && (
-        <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${COLOR_MAP[status]} opacity-75`} />
-      )}
-      <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${COLOR_MAP[status]}`} />
-    </span>
+    <span
+      className={`inline-block h-2 w-2 rounded-full ${COLORS[status]}`}
+      aria-label={status}
+      role="status"
+    />
   );
 }

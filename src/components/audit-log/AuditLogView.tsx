@@ -54,7 +54,25 @@ export function AuditLogView() {
           action={action ?? ''}
           onActionChange={handleActionChange}
         />
-        <button className="flex items-center gap-2 px-4 py-2 rounded-xl border border-outline text-sm font-semibold text-on-surface-variant hover:bg-surface-container">
+        <button
+          onClick={() => {
+            if (logs.length === 0) return;
+            const rows = logs.map((l) =>
+              [l.created_at, l.actor_name ?? l.actor_email ?? 'System', l.action, `${l.target_type}: ${l.target_id}`, JSON.stringify(l.metadata)]
+                .map((v) => `"${String(v).replace(/"/g, '""')}"`)
+                .join(','),
+            );
+            const csv = ['Timestamp,Actor,Action,Target,Details', ...rows].join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `audit-log-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+          }}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl border border-outline text-sm font-semibold text-on-surface-variant hover:bg-surface-container"
+        >
           <Download size={14} /> Export
         </button>
       </div>

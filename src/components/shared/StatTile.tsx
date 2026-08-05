@@ -1,15 +1,36 @@
 // src/components/shared/StatTile.tsx
-export function StatTile({ label, value, trend, trendUp }: {
-  label: string; value: string | number; trend?: string; trendUp?: boolean;
+import { cn } from '@/lib/utils';
+
+export function StatTile({
+  label,
+  value,
+  trend,
+  trendUp,
+}: {
+  label: string;
+  value: string | number;
+  trend?: string;
+  trendUp?: boolean;
 }) {
   return (
-    <div className="bg-surface border border-outline rounded-md px-4 py-3">
-      <div className="text-2xs uppercase text-on-surface-variant tracking-wider">{label}</div>
-      <div className="font-heading font-extrabold text-2xl text-on-surface mt-0.5">{value}</div>
+    <div className="rounded-lg bg-surface border border-outline p-4">
+      <p className="text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold">
+        {label}
+      </p>
+      <p className="mt-1 text-2xl font-extrabold text-on-surface">{value}</p>
       {trend && (
-        <div className={`text-2xs mt-0.5 ${trendUp === true ? 'text-success' : trendUp === false ? 'text-error' : 'text-on-surface-variant'}`}>
+        <p
+          className={cn(
+            'mt-1 text-xs',
+            trendUp === true
+              ? 'text-success'
+              : trendUp === false
+                ? 'text-error'
+                : 'text-on-surface-variant',
+          )}
+        >
           {trend}
-        </div>
+        </p>
       )}
     </div>
   );

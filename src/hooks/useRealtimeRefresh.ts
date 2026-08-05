@@ -60,12 +60,14 @@ export function useVisibilityRefetch(queryKey?: string[]) {
       if (queryKey) queryClient.invalidateQueries({ queryKey });
       else queryClient.invalidateQueries();
     };
-    window.addEventListener('focus', refetch);
-    document.addEventListener('visibilitychange', () => {
+    const onVisibility = () => {
       if (document.visibilityState === 'visible') refetch();
-    });
+    };
+    window.addEventListener('focus', refetch);
+    document.addEventListener('visibilitychange', onVisibility);
     return () => {
       window.removeEventListener('focus', refetch);
+      document.removeEventListener('visibilitychange', onVisibility);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queryClient, keyHash]);

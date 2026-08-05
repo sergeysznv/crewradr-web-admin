@@ -7,6 +7,14 @@ import type { LivePosition } from '@/types/rpc';
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '';
 
 const STALE_AFTER_MS = 15 * 60 * 1000;
+const IDLE_AFTER_MS = 5 * 60 * 1000;
+
+function markerColor(now: number, createdAt: string): string {
+  const age = now - new Date(createdAt).getTime();
+  if (age <= IDLE_AFTER_MS) return '#34D399'; // active — green
+  if (age <= STALE_AFTER_MS) return '#F59E0B'; // idle — amber
+  return '#EF4444'; // stale — red
+}
 
 const escapeHTML = (s: string): string =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -73,8 +81,6 @@ export default function LiveMap({ positions, selectedUserId, onSelect }: LiveMap
     const markers = markersRef.current;
     const currentIds = new Set(positions.map((p) => p.user_id));
     const now = Date.now();
-    const brand =
-      getComputedStyle(document.documentElement).getPropertyValue('--brand-seed').trim() || '#6E8679';
 
     // Remove stale markers
     for (const [id, marker] of markers) {
@@ -100,15 +106,16 @@ export default function LiveMap({ positions, selectedUserId, onSelect }: LiveMap
       const isSelected = pos.user_id === selectedUserId;
       const initial = pos.display_name?.charAt(0)?.toUpperCase() ?? '?';
       const labelText = pos.profile_emoji || initial;
+      const color = markerColor(now, pos.created_at);
 
       const existing = markers.get(pos.user_id);
       if (existing) {
         existing.position = { lat: pos.latitude, lng: pos.longitude };
         existing.zIndex = isSelected ? 1000 : 1;
         existing.title = pos.display_name || initial;
-        updateMarkerContent(existing.content as HTMLElement, brand, isSelected, isStale, labelText);
+        updateMarkerContent(existing.content as HTMLElement, color, isSelected, isStale, labelText);
       } else {
-        const content = createMarkerContent(brand, isSelected, isStale, labelText);
+        const content = createMarkerContent(color, isSelected, isStale, labelText);
         const marker = new google.maps.marker.AdvancedMarkerElement({
           map,
           position: { lat: pos.latitude, lng: pos.longitude },
