@@ -91,7 +91,7 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
       </TierGateGuard>
 
       {/* Admiral tier: AI risk prediction — self-gates via AICard */}
-      <RiskPredictionCard memberId={member.id} />
+      <RiskPredictionCard memberId={member.user_id} />
 
       {/* Recent trips */}
       <div>
