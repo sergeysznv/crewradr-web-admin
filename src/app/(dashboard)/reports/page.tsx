@@ -5,6 +5,7 @@ import { useT } from '@/hooks/use-translations';
 import { TierGateGuard } from '@/components/tier/TierGateGuard';
 import { ExportPresets } from '@/components/reports/ExportPresets';
 import { ReportBuilder } from '@/components/reports/ReportBuilder';
+import { ScheduledReports } from '@/components/reports/ScheduledReports';
 
 export default function ReportsPage() {
   const { t } = useT();
@@ -26,12 +27,8 @@ export default function ReportsPage() {
         </section>
       </TierGateGuard>
 
-      {/* Admiral: Scheduled Reports — placeholder for Phase 5 */}
-      <TierGateGuard minTier="admiral" fallback={null}>
-        <div className="rounded-lg border border-outline bg-surface p-6">
-          <p className="text-sm text-on-surface-variant">{t('webReportsScheduledPlaceholder')}</p>
-        </div>
-      </TierGateGuard>
+      {/* Admiral: Scheduled Reports — coming soon (backend table not yet present) */}
+      <ScheduledReports />
     </div>
   );
 }
