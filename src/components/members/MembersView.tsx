@@ -17,6 +17,7 @@ import { CsvImportModal } from '@/components/members/CsvImportModal';
 import { BulkActionBar } from '@/components/members/BulkActionBar';
 import { PeerRanking } from '@/components/members/PeerRanking';
 import { TierGateGuard } from '@/components/tier/TierGateGuard';
+import { RoleGate } from '@/components/tier/RoleGate';
 import { SlideOverPanel } from '@/components/shared/SlideOverPanel';
 import { FilterChips } from '@/components/shared/FilterChips';
 import { EmptyState } from '@/components/shared/EmptyState';
@@ -28,7 +29,7 @@ type RoleFilter = 'all' | 'captain' | 'co-captain' | 'member';
 
 export function MembersView() {
   const { t } = useT();
-  const { crewId, tier } = useCrew();
+  const { crewId, tier, role } = useCrew();
 
   // Tier gate — firstMate+ can view the roster (tier >= 1); write
   // controls below are gated to captain+ via TierGateGuard.
@@ -71,8 +72,11 @@ export function MembersView() {
 
   const members = data?.members ?? [];
   const filtered = roleFilter === 'all' ? members : members.filter(m => m.role === roleFilter);
-  // Write controls (CSV import, bulk ops, selection) are captain-only.
-  const canWrite = tierRank(tier) >= 2;
+  // Write controls (CSV import, bulk ops, selection) are captain+ tier AND
+  // captain/co-captain role — the update_member_role / remove_member /
+  // add_members RPCs reject plain members server-side.
+  const canWrite = tierRank(tier) >= 2 &&
+    (role === 'captain' || role === 'co-captain' || role === 'co_captain');
 
   function toggleSelect(id: string) {
     setSelectedIds(prev => {
@@ -139,12 +143,14 @@ export function MembersView() {
                 placeholder={t('webMembersSearchPlaceholder')} className="w-full pl-9 pr-4 py-2 rounded-xl border border-outline bg-surface text-sm" />
             </div>
           </div>
-          <TierGateGuard minTier="captain" fallback={null}>
-            <button onClick={() => setShowImport(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl border border-outline text-sm font-semibold text-on-surface-variant hover:bg-surface-container">
-              <Upload size={14} /> {t('webMembersImportButton')}
-            </button>
-          </TierGateGuard>
+          <RoleGate>
+            <TierGateGuard minTier="captain" fallback={null}>
+              <button onClick={() => setShowImport(true)}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl border border-outline text-sm font-semibold text-on-surface-variant hover:bg-surface-container">
+                <Upload size={14} /> {t('webMembersImportButton')}
+              </button>
+            </TierGateGuard>
+          </RoleGate>
         </div>
 
         <FilterChips options={ROLE_FILTERS} selected={roleFilter} onSelect={changeFilter} />
@@ -190,15 +196,17 @@ export function MembersView() {
 
         <CsvImportModal open={showImport} onClose={() => setShowImport(false)} />
 
-        <TierGateGuard minTier="captain" fallback={null}>
-          <BulkActionBar
-            count={selectedIds.size}
-            working={working}
-            onRemove={() => setShowBulkRemove(true)}
-            onRoleChange={bulkRoleChange}
-            onClear={() => setSelectedIds(new Set())}
-          />
-        </TierGateGuard>
+        <RoleGate>
+          <TierGateGuard minTier="captain" fallback={null}>
+            <BulkActionBar
+              count={selectedIds.size}
+              working={working}
+              onRemove={() => setShowBulkRemove(true)}
+              onRoleChange={bulkRoleChange}
+              onClear={() => setSelectedIds(new Set())}
+            />
+          </TierGateGuard>
+        </RoleGate>
 
         <ConfirmDialog
           key={showBulkRemove ? 'bulk-open' : 'bulk-closed'}

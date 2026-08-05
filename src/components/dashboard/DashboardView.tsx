@@ -14,6 +14,7 @@ import { CalendarHeatmap } from '@/components/overview/CalendarHeatmap';
 import { TrendChart } from '@/components/overview/TrendChart';
 import { Skeleton } from '@/components/shared/Skeleton';
 import { TierGateGuard } from '@/components/tier/TierGateGuard';
+import { RoleGate } from '@/components/tier/RoleGate';
 import { AlertRuleBuilder } from '@/components/alerts/AlertRuleBuilder';
 
 export function DashboardView() {
@@ -58,13 +59,16 @@ export function DashboardView() {
           {/* Admiral tier: AI anomaly feed — self-gates via AICard */}
           <AnomalyCard />
           <ActivityTimeline />
-          {/* Captain+: custom alert rules */}
-          <TierGateGuard minTier="captain" fallback={null}>
-            <section className="space-y-md">
-              <h2 className="font-heading text-base font-bold text-on-surface">{t('webAlertsRulesTitle')}</h2>
-              <AlertRuleBuilder />
-            </section>
-          </TierGateGuard>
+          {/* Captain+ tier AND captain/co-captain role: custom alert rules
+              (save_alert_rule is role-gated server-side) */}
+          <RoleGate>
+            <TierGateGuard minTier="captain" fallback={null}>
+              <section className="space-y-md">
+                <h2 className="font-heading text-base font-bold text-on-surface">{t('webAlertsRulesTitle')}</h2>
+                <AlertRuleBuilder />
+              </section>
+            </TierGateGuard>
+          </RoleGate>
         </div>
       ) : dashboard.isError ? (
         <div className="flex items-center justify-center py-24" role="status">

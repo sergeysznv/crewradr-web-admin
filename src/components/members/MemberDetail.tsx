@@ -9,6 +9,7 @@ import { useSupabase } from '@/hooks/useSupabase';
 import { useT } from '@/hooks/use-translations';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { TierGateGuard } from '@/components/tier/TierGateGuard';
+import { RoleGate } from '@/components/tier/RoleGate';
 import { Scorecard } from '@/components/members/Scorecard';
 import { RiskPredictionCard } from '@/components/ai/RiskPredictionCard';
 import { useState } from 'react';
@@ -127,7 +128,9 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
         )}
       </div>
 
-      {/* Captain tier: role change + removal */}
+      {/* Captain+ tier AND captain/co-captain role: role change + removal
+          (update_member_role / remove_member are role-gated server-side) */}
+      <RoleGate>
       <TierGateGuard minTier="captain" fallback={null}>
         <div className="space-y-2">
           <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">{t('webMembersDetailChangeRole')}</label>
@@ -150,6 +153,7 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
           </button>
         </div>
       </TierGateGuard>
+      </RoleGate>
 
       <ConfirmDialog
         key={showRemove ? 'remove-open' : 'remove-closed'}

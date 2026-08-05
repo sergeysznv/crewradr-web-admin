@@ -540,6 +540,7 @@
   "webPrivacyRetentionSaved": "Retention policy saved",
   "webPrivacyRetentionFailed": "Failed to save retention policy",
   "webPrivacyRetentionDenied": "Only captains can view privacy settings",
+  "webRoleGateDenied": "Only captains and co-captains can manage this",
   "webSettingsDeleteAccount": "Delete Account",
   "webSettingsDeleteAccountHint": "Permanently delete your account and all associated data. This action cannot be undone.",
   "webSettingsDeleteAccountButton": "Delete My Account",

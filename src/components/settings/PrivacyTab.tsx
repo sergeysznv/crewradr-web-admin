@@ -11,6 +11,7 @@ import { useSupabase } from '@/hooks/useSupabase';
 import { useSnackbar } from '@/components/shared/Snackbar';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { TierGateGuard } from '@/components/tier/TierGateGuard';
+import { RoleGate } from '@/components/tier/RoleGate';
 import {
   getPrivacySettings,
   getPersonalExport,
@@ -58,7 +59,7 @@ function toCsv(data: PersonalExport): string {
 
 export function PrivacyTab() {
   const { t } = useT();
-  const { crewId, tier } = useCrew();
+  const { crewId, tier, role } = useCrew();
   const { user, signOut } = useAuth();
   const supabase = useSupabase();
   const queryClient = useQueryClient();
@@ -72,12 +73,16 @@ export function PrivacyTab() {
   const [deleting, setDeleting] = useState(false);
 
   const tierKey = toCrewTier(tier);
+  // Retention policy + sharing state is captain/co-captain gated server-side;
+  // skip the RPC entirely for plain members (the RoleGate below hides the
+  // section, so a guaranteed-rejected call would only add noise).
+  const isManager = role === 'captain' || role === 'co-captain' || role === 'co_captain';
 
   // Retention policy + sharing state (captain/co-captain gated server-side)
   const privacyQuery = useQuery({
     queryKey: ['privacySettings', crewId],
     queryFn: () => getPrivacySettings(supabase, crewId!),
-    enabled: !!crewId,
+    enabled: !!crewId && isManager,
     retry: false,
   });
 
@@ -193,7 +198,10 @@ export function PrivacyTab() {
         </div>
       </div>
 
-      {/* ── Data Retention — Captain+ ── */}
+      {/* ── Data Retention — captain+ tier AND captain/co-captain role
+          (get_web_privacy_settings / updateRetentionDays are role-gated
+          server-side) ── */}
+      <RoleGate>
       <TierGateGuard minTier="captain" fallback={null}>
         <div className="border border-outline rounded-lg p-lg">
           <h3 className="font-heading font-bold text-sm text-on-surface">{t('webPrivacyRetentionTitle')}</h3>
@@ -251,6 +259,7 @@ export function PrivacyTab() {
           ) : null}
         </div>
       </TierGateGuard>
+      </RoleGate>
 
       {/* ── Delete Account — always available (GDPR Art. 17) ── */}
       <div className="border border-error/20 rounded-lg p-lg bg-error/5">

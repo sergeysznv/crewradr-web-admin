@@ -7,6 +7,7 @@ import { useTier } from '@/hooks/useTier';
 import { useSupabase } from '@/hooks/useSupabase';
 import { tierHistoryDays } from '@/lib/tier';
 import { TierGateGuard } from '@/components/tier/TierGateGuard';
+import { RoleGate } from '@/components/tier/RoleGate';
 import {
   CheckCircle2,
   FileJson,
@@ -171,38 +172,53 @@ export function ExportPresets() {
         </div>
       </section>
 
-      {/* Fleet reports — tier-gated (firstMate+) */}
-      <TierGateGuard
-        minTier="captain"
+      {/* Fleet reports — captain+ tier AND captain/co-captain role
+          (get_web_fleet_export is role-gated server-side). Tier-denied crews
+          get the upgrade prompt; role-denied members get a captains-only
+          message instead of a confusing server error. */}
+      <RoleGate
         fallback={
           <section className="flex items-center gap-3 rounded-lg border border-outline bg-surface p-6">
             <Lock className="h-6 w-6 shrink-0 text-on-surface-variant opacity-60" aria-hidden="true" />
             <div>
               <h2 className="text-sm font-semibold text-on-surface">{t('webReportsFleetTitle')}</h2>
-              <p className="mt-0.5 text-xs text-on-surface-variant">{t('webUpgradeRequired')}</p>
+              <p className="mt-0.5 text-xs text-on-surface-variant">{t('webRoleGateDenied')}</p>
             </div>
           </section>
         }
       >
-        <section className="space-y-md">
-          <div>
-            <h2 className="font-heading text-base font-bold text-on-surface">{t('webReportsFleetTitle')}</h2>
-            <p className="mt-1 text-xs text-on-surface-variant">{t('webReportsFleetDesc', { days })}</p>
-          </div>
-          <div className="grid grid-cols-1 gap-md sm:grid-cols-3">
-            {FLEET_EXPORT_OPTIONS.map((opt) => (
-              <ExportCard
-                key={opt.id}
-                option={opt}
-                busy={exporting === opt.id}
-                soon={opt.format === 'pdf'}
-                disabled={!crewId}
-                onExport={handleFleetExport}
-              />
-            ))}
-          </div>
-        </section>
-      </TierGateGuard>
+        <TierGateGuard
+          minTier="captain"
+          fallback={
+            <section className="flex items-center gap-3 rounded-lg border border-outline bg-surface p-6">
+              <Lock className="h-6 w-6 shrink-0 text-on-surface-variant opacity-60" aria-hidden="true" />
+              <div>
+                <h2 className="text-sm font-semibold text-on-surface">{t('webReportsFleetTitle')}</h2>
+                <p className="mt-0.5 text-xs text-on-surface-variant">{t('webUpgradeRequired')}</p>
+              </div>
+            </section>
+          }
+        >
+          <section className="space-y-md">
+            <div>
+              <h2 className="font-heading text-base font-bold text-on-surface">{t('webReportsFleetTitle')}</h2>
+              <p className="mt-1 text-xs text-on-surface-variant">{t('webReportsFleetDesc', { days })}</p>
+            </div>
+            <div className="grid grid-cols-1 gap-md sm:grid-cols-3">
+              {FLEET_EXPORT_OPTIONS.map((opt) => (
+                <ExportCard
+                  key={opt.id}
+                  option={opt}
+                  busy={exporting === opt.id}
+                  soon={opt.format === 'pdf'}
+                  disabled={!crewId}
+                  onExport={handleFleetExport}
+                />
+              ))}
+            </div>
+          </section>
+        </TierGateGuard>
+      </RoleGate>
 
       {/* Export status notice */}
       {notice && (
