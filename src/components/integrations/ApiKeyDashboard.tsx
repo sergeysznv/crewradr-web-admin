@@ -8,6 +8,7 @@ import { useCrew } from '@/hooks/useCrew';
 import { useSupabase } from '@/hooks/useSupabase';
 import { useSnackbar } from '@/components/shared/Snackbar';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
+import { useT } from '@/hooks/use-translations';
 import { KeyRound, Plus, Copy, Trash2, Loader2, Check } from 'lucide-react';
 
 /**
@@ -55,6 +56,7 @@ export function ApiKeyDashboard() {
   const { user } = useAuth();
   const { crewId } = useCrew();
   const { showSuccess, showError } = useSnackbar();
+  const { t } = useT();
 
   const [name, setName] = useState('');
   const [scopes, setScopes] = useState<string[]>(['read:crew']);
@@ -111,7 +113,7 @@ export function ApiKeyDashboard() {
       setRateLimitRpm(60);
     },
     onError: (err) => {
-      showError(err instanceof Error ? err.message : 'Failed to create API key');
+      showError(err instanceof Error ? err.message : t('webApiKeyCreateFailed'));
     },
   });
 
@@ -123,10 +125,10 @@ export function ApiKeyDashboard() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['apiKeys'] });
-      showSuccess('API key revoked');
+      showSuccess(t('webApiKeyRevoked'));
     },
     onError: (err) => {
-      showError(err instanceof Error ? err.message : 'Failed to revoke API key');
+      showError(err instanceof Error ? err.message : t('webApiKeyRevokeFailed'));
     },
   });
 
@@ -140,26 +142,26 @@ export function ApiKeyDashboard() {
     if (!createdKey) return;
     navigator.clipboard.writeText(createdKey).then(() => {
       setCopied(true);
-      showSuccess('API key copied to clipboard');
+      showSuccess(t('webApiKeyCopied'));
       setTimeout(() => setCopied(false), 2500);
-    }).catch(() => showError('Clipboard access denied'));
+    }).catch(() => showError(t('webApiKeyClipboardDenied')));
   }
 
   return (
     <div className="space-y-4">
       {/* ── Create key ── */}
       <div className="rounded-2xl border border-outline bg-surface p-lg">
-        <h3 className="text-base font-semibold text-on-surface">Create API Key</h3>
+        <h3 className="text-base font-semibold text-on-surface">{t('webApiKeyCreateTitle')}</h3>
         <div className="mt-3 space-y-3">
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Key name (e.g. Production server)"
+            placeholder={t('webApiKeyNamePlaceholder')}
             className="w-full rounded-lg border border-outline bg-surface-container px-4 py-2 text-sm text-on-surface"
           />
           <div>
-            <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Scopes</p>
+            <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">{t('webApiKeyScopes')}</p>
             <div className="mt-2 flex flex-wrap gap-2">
               {SCOPE_OPTIONS.map((scope) => (
                 <button
@@ -178,7 +180,7 @@ export function ApiKeyDashboard() {
             </div>
           </div>
           <div>
-            <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Rate limit</p>
+            <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">{t('webApiKeyRateLimit')}</p>
             <select
               value={rateLimitRpm}
               onChange={(e) => setRateLimitRpm(Number(e.target.value))}
@@ -186,7 +188,7 @@ export function ApiKeyDashboard() {
             >
               {RATE_LIMIT_OPTIONS.map((rpm) => (
                 <option key={rpm} value={rpm}>
-                  {rpm} req/min
+                  {t('webApiKeyReqMin', { rpm })}
                 </option>
               ))}
             </select>
@@ -198,14 +200,14 @@ export function ApiKeyDashboard() {
             className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-on-primary hover:opacity-90 disabled:opacity-50"
           >
             {createMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-            {createMutation.isPending ? 'Generating…' : 'Generate Key'}
+            {createMutation.isPending ? t('webApiKeyGenerating') : t('webApiKeyGenerate')}
           </button>
         </div>
       </div>
 
       {/* ── Existing keys ── */}
       <div>
-        <h3 className="text-base font-semibold text-on-surface">API Keys</h3>
+        <h3 className="text-base font-semibold text-on-surface">{t('webApiKeyTitle')}</h3>
         {isLoading ? (
           <div className="mt-2 space-y-2">
             {Array.from({ length: 2 }).map((_, i) => (
@@ -215,14 +217,14 @@ export function ApiKeyDashboard() {
         ) : isError ? (
           <div className="mt-2 flex items-center justify-center rounded-2xl border border-outline bg-surface py-8 text-center">
             <div>
-              <p className="text-sm text-on-surface-variant">Failed to load API keys</p>
+              <p className="text-sm text-on-surface-variant">{t('webApiKeyLoadFailed')}</p>
               <button onClick={() => refetch()} className="mt-2 rounded-lg bg-primary px-4 py-1.5 text-sm font-semibold text-on-primary">
-                Retry
+                {t('webSharedRetry')}
               </button>
             </div>
           </div>
         ) : apiKeys.length === 0 ? (
-          <p className="mt-2 text-sm text-on-surface-variant">No API keys generated</p>
+          <p className="mt-2 text-sm text-on-surface-variant">{t('webApiKeyNoKeys')}</p>
         ) : (
           <div className="mt-2 space-y-2">
             {apiKeys.map((key) => (
@@ -239,26 +241,26 @@ export function ApiKeyDashboard() {
                       </span>
                     ))}
                     <span className="rounded-full bg-surface-container px-2 py-0.5 text-[10px] text-on-surface-variant">
-                      {key.rate_limit_rpm} req/min
+                      {t('webApiKeyReqMin', { rpm: key.rate_limit_rpm })}
                     </span>
                   </div>
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
                   <div className="text-right">
                     <span className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-bold ${key.is_active ? 'bg-success/15 text-success' : 'bg-surface-container text-on-surface-variant'}`}>
-                      {key.is_active ? 'Active' : 'Revoked'}
+                      {key.is_active ? t('webApiKeyActive') : t('webApiKeyRevokedStatus')}
                     </span>
                     {key.last_used_at && (
                       <p className="mt-1 text-[10px] text-on-surface-variant/60">
-                        Last used {new Date(key.last_used_at).toLocaleDateString()}
+                        {t('webApiKeyLastUsed', { date: new Date(key.last_used_at).toLocaleDateString() })}
                       </p>
                     )}
                   </div>
                   <button
                     onClick={() => setRevokeTarget(key)}
                     className="rounded-lg p-2 text-on-surface-variant hover:bg-error-container hover:text-error"
-                    title="Revoke key"
-                    aria-label={`Revoke key ${key.name}`}
+                    title={t('webApiKeyRevoke')}
+                    aria-label={t('webApiKeyRevokeAria', { name: key.name })}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -271,19 +273,19 @@ export function ApiKeyDashboard() {
 
       {/* ── Key shown once ── */}
       {createdKey && (
-        <div className="fixed inset-0 z-[8000] flex items-center justify-center" role="dialog" aria-modal="true" aria-label="API key created">
+        <div className="fixed inset-0 z-[8000] flex items-center justify-center" role="dialog" aria-modal="true" aria-label={t('webApiKeyCreated')}>
           <div className="absolute inset-0 bg-black/40" onClick={() => setCreatedKey(null)} />
           <div className="relative z-10 mx-4 w-full max-w-md rounded-2xl bg-surface p-6 shadow-xl border border-outline">
             <KeyRound className="h-6 w-6 text-primary" aria-hidden="true" />
-            <h2 className="mt-3 text-lg font-bold text-on-surface">API key created</h2>
+            <h2 className="mt-3 text-lg font-bold text-on-surface">{t('webApiKeyCreated')}</h2>
             <p className="mt-1 text-sm text-on-surface-variant">
-              Copy this key now — it will not be shown again.
+              {t('webApiKeyCreatedHint')}
             </p>
             <div className="mt-4 flex items-center gap-2 rounded-xl border border-outline bg-surface-container p-3">
               <code className="flex-1 truncate font-mono text-sm text-on-surface" title={createdKey}>
                 {createdKey}
               </code>
-              <button onClick={copyKey} className="rounded-lg p-2 text-on-surface-variant hover:bg-surface-container-high hover:text-primary" title="Copy key" aria-label="Copy key">
+              <button onClick={copyKey} className="rounded-lg p-2 text-on-surface-variant hover:bg-surface-container-high hover:text-primary" title={t('webApiKeyCopy')} aria-label={t('webApiKeyCopy')}>
                 {copied ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
               </button>
             </div>
@@ -291,7 +293,7 @@ export function ApiKeyDashboard() {
               onClick={() => setCreatedKey(null)}
               className="mt-4 w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-on-primary hover:opacity-90"
             >
-              Done
+              {t('webApiKeyDone')}
             </button>
           </div>
         </div>
@@ -299,9 +301,9 @@ export function ApiKeyDashboard() {
 
       <ConfirmDialog
         open={!!revokeTarget}
-        title="Revoke API key"
-        message={`"${revokeTarget?.name ?? ''}" will stop working immediately. Any integrations using it will fail.`}
-        confirmLabel="Revoke"
+        title={t('webApiKeyRevokeDialogTitle')}
+        message={t('webApiKeyRevokeMessage', { name: revokeTarget?.name ?? '' })}
+        confirmLabel={t('webRevoke')}
         destructive
         onConfirm={() => revokeTarget && revokeMutation.mutate(revokeTarget.id)}
         onCancel={() => setRevokeTarget(null)}

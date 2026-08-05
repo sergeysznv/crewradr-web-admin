@@ -2,11 +2,15 @@
 'use client';
 
 import { Component, type ReactNode } from 'react';
+import { useT } from '@/hooks/use-translations';
+
+type TranslateFn = (key: string, params?: Record<string, string | number>) => string;
 
 interface WidgetErrorBoundaryProps {
   children: ReactNode;
   widgetName: string;
   fallback?: ReactNode;
+  t?: TranslateFn;
 }
 
 interface WidgetErrorBoundaryState {
@@ -18,7 +22,7 @@ interface WidgetErrorBoundaryState {
  * widget and shows an inline card with a retry button instead of crashing
  * the whole page.
  */
-export class WidgetErrorBoundary extends Component<WidgetErrorBoundaryProps, WidgetErrorBoundaryState> {
+class WidgetErrorBoundaryClass extends Component<WidgetErrorBoundaryProps, WidgetErrorBoundaryState> {
   constructor(props: WidgetErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false };
@@ -31,19 +35,22 @@ export class WidgetErrorBoundary extends Component<WidgetErrorBoundaryProps, Wid
   render() {
     if (this.state.hasError) {
       if (this.props.fallback) return this.props.fallback;
+      const { t } = this.props;
       return (
         <div className="rounded-2xl border border-outline bg-surface p-6 text-center">
           <p className="text-base font-semibold text-on-surface">
-            Unable to render {this.props.widgetName}
+            {t
+              ? t('webErrorBoundaryUnableRender', { widgetName: this.props.widgetName })
+              : `Unable to render ${this.props.widgetName}`}
           </p>
           <p className="mt-1 text-xs text-on-surface-variant">
-            A temporary error occurred while rendering this view.
+            {t ? t('webErrorBoundaryTemporaryError') : 'A temporary error occurred while rendering this view.'}
           </p>
           <button
             onClick={() => this.setState({ hasError: false })}
             className="mt-4 rounded-full bg-primary-container px-4 py-2 text-sm text-primary"
           >
-            Retry Widget
+            {t ? t('webErrorBoundaryRetryWidget') : 'Retry Widget'}
           </button>
         </div>
       );
@@ -54,25 +61,34 @@ export class WidgetErrorBoundary extends Component<WidgetErrorBoundaryProps, Wid
 }
 
 /**
+ * Hook wrapper so the class-based boundary can consume translations.
+ */
+export function WidgetErrorBoundary(props: WidgetErrorBoundaryProps) {
+  const { t } = useT();
+  return <WidgetErrorBoundaryClass {...props} t={t} />;
+}
+
+/**
  * Full-page error boundary for the dashboard shell: shows a centered card
  * with a reload action when an unexpected error crashes the app frame.
  */
 export function ShellErrorBoundary({ children }: { children: ReactNode }) {
+  const { t } = useT();
   return (
     <WidgetErrorBoundary
       widgetName="Dashboard"
       fallback={
         <div className="flex min-h-screen items-center justify-center bg-scaffold p-8">
           <div className="max-w-md rounded-3xl border border-outline bg-surface p-12 text-center">
-            <h2 className="text-xl font-bold text-on-surface">Something went wrong</h2>
+            <h2 className="text-xl font-bold text-on-surface">{t('webErrorBoundaryTitle')}</h2>
             <p className="mt-3 text-base text-on-surface-variant">
-              An unexpected error occurred while loading the dashboard.
+              {t('webErrorBoundaryDesc')}
             </p>
             <button
               onClick={() => window.location.reload()}
               className="mt-6 rounded-full bg-primary px-6 py-3 text-lg font-bold text-white"
             >
-              Reload Dashboard
+              {t('webErrorBoundaryReload')}
             </button>
           </div>
         </div>

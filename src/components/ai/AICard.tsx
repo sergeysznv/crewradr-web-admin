@@ -2,6 +2,7 @@
 
 import { type ReactNode } from 'react';
 import { TierGateGuard } from '@/components/tier/TierGateGuard';
+import { useT } from '@/hooks/use-translations';
 
 interface AICardProps {
   children: ReactNode;
@@ -10,6 +11,7 @@ interface AICardProps {
 }
 
 export function AICard({ children, isLoading = false, serviceDown = false }: AICardProps) {
+  const { t } = useT();
   return (
     <TierGateGuard minTier="admiral" fallback={null}>
       {isLoading ? (
@@ -21,9 +23,7 @@ export function AICard({ children, isLoading = false, serviceDown = false }: AIC
         <div className="rounded-lg border border-outline bg-surface p-4">
           <div className="flex items-center gap-2">
             <div className="h-2 w-2 animate-pulse rounded-full bg-warning" />
-            <span className="text-xs text-on-surface-variant">
-              Predictive risk insights currently updating…
-            </span>
+            <span className="text-xs text-on-surface-variant">{t('webAIServiceDown')}</span>
           </div>
         </div>
       ) : (
