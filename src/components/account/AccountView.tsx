@@ -53,7 +53,7 @@ export function AccountView() {
       showSuccess(t('webAccountProfileSaved'));
       setTimeout(() => setSaved(false), 2500);
     } catch {
-      showError('Failed to save profile.');
+      showError(t('webAccountProfileFailed'));
     }
     setSaving(false);
   }

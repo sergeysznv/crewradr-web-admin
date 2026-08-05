@@ -14,7 +14,7 @@ export function useUpdateMemberRole(crewId: string) {
       updateMemberRole(supabase, memberId, newRole),
     onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: ['crewMembers', crewId] });
-      showSuccess(`Role changed to ${data.new_role}`);
+      showSuccess(`Role changed to ${data.new_role}`); // matches webMembersRoleChanged
     },
     onError: (err: Error) => showError(err.message),
   });

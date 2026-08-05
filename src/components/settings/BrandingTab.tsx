@@ -3,6 +3,7 @@
 
 import { useState, useRef } from 'react';
 import { Upload, Loader2, Check, Image, X } from 'lucide-react';
+import { useT } from '@/hooks/use-translations';
 import { useCrew } from '@/hooks/useCrew';
 import { useSupabase } from '@/hooks/useSupabase';
 import { useSnackbar } from '@/components/shared/Snackbar';
@@ -15,6 +16,7 @@ const MAX_LOGO_SIZE = 2 * 1024 * 1024; // 2MB
 const ALLOWED_TYPES = ['image/png', 'image/svg+xml'];
 
 export function BrandingTab({ seedColor = null, logoUrl = null }: { seedColor?: string | number | null; logoUrl?: string | null }) {
+  const { t } = useT();
   const { crewId, tier } = useCrew();
   const supabase = useSupabase();
   const { showSuccess, showError } = useSnackbar();
@@ -33,10 +35,10 @@ export function BrandingTab({ seedColor = null, logoUrl = null }: { seedColor?: 
     try {
       await updateCrewBranding(supabase, crewId, color, currentLogo);
       setSaved(true);
-      showSuccess('Branding saved');
+      showSuccess(t('webCrewSettingsBrandingSaved'));
       setTimeout(() => setSaved(false), 2500);
     } catch (err) {
-      showError(err instanceof Error ? err.message : 'Failed to save branding');
+      showError(err instanceof Error ? err.message : t('webCrewSettingsSaveFailed'));
     }
     setSaving(false);
   }
@@ -46,11 +48,11 @@ export function BrandingTab({ seedColor = null, logoUrl = null }: { seedColor?: 
     if (!file || !crewId) return;
 
     if (!ALLOWED_TYPES.includes(file.type)) {
-      showError('Only PNG and SVG files are supported.');
+      showError(t('webCrewSettingsLogoType'));
       return;
     }
     if (file.size > MAX_LOGO_SIZE) {
-      showError('Logo must be under 2MB.');
+      showError(t('webCrewSettingsLogoSize'));
       return;
     }
 
@@ -71,9 +73,9 @@ export function BrandingTab({ seedColor = null, logoUrl = null }: { seedColor?: 
       const { data: urlData } = supabase.storage.from('crew-branding').getPublicUrl(path);
       const publicUrl = urlData.publicUrl;
       setCurrentLogo(publicUrl);
-      showSuccess('Logo uploaded. Save branding to apply.');
+      showSuccess(t('webCrewSettingsLogoUploaded'));
     } catch (err) {
-      showError(err instanceof Error ? err.message : 'Logo upload failed');
+      showError(err instanceof Error ? err.message : t('webCrewSettingsLogoFailed'));
     }
     setUploading(false);
     // Reset the input so re-uploading the same file works

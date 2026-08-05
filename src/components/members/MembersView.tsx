@@ -1,6 +1,7 @@
 // src/components/members/MembersView.tsx
 'use client';
 import { useState } from 'react';
+import { useT } from '@/hooks/use-translations';
 import { useCrew } from '@/hooks/useCrew';
 import { useCrewMembers } from '@/hooks/queries/useCrewMembers';
 import { useRealtimeInvalidation } from '@/hooks/useRealtimeRefresh';
@@ -30,6 +31,7 @@ const ROLE_FILTERS = [
 type RoleFilter = 'all' | 'captain' | 'co-captain' | 'member';
 
 export function MembersView() {
+  const { t } = useT();
   const { crewId } = useCrew();
   const supabase = useSupabase();
   const { showSuccess, showError } = useSnackbar();
@@ -81,10 +83,10 @@ export function MembersView() {
       const results = await Promise.allSettled(ids.map(id => removeMember(supabase, id)));
       const failures = results.filter(r => r.status === 'rejected').length;
       const removed = ids.length - failures;
-      if (failures > 0) showError(`${failures} removal${failures === 1 ? '' : 's'} failed`);
-      if (removed > 0) showSuccess(`${removed} member${removed === 1 ? '' : 's'} removed`);
+      if (failures > 0) showError(t('webMembersBulkRemoveFailed', { count: failures, plural: failures === 1 ? '' : 's' }));
+      if (removed > 0) showSuccess(t('webMembersBulkRemoveSuccess', { count: removed, plural: removed === 1 ? '' : 's' }));
     } catch (err) {
-      showError(err instanceof Error ? err.message : 'Bulk removal failed');
+      showError(err instanceof Error ? err.message : t('webMembersBulkRemoveError'));
     }
     setWorking(false);
     setSelectedIds(new Set());
@@ -99,9 +101,9 @@ export function MembersView() {
         ids.map(id => updateRole.mutateAsync({ memberId: id, newRole: role })),
       );
       const failures = results.filter(r => r.status === 'rejected').length;
-      if (failures > 0) showError(`${failures} role change${failures === 1 ? '' : 's'} failed`);
+      if (failures > 0) showError(t('webMembersBulkRoleChangeFailed', { count: failures, plural: failures === 1 ? '' : 's' }));
     } catch (err) {
-      showError(err instanceof Error ? err.message : 'Bulk role change failed');
+      showError(err instanceof Error ? err.message : t('webMembersBulkRoleChangeError'));
     }
     setWorking(false);
     setSelectedIds(new Set());
