@@ -5,8 +5,8 @@ import type {
   PrivacySettings, PersonalExport, DeleteAccountResult
 } from '@/types/rpc';
 import type {
-  AlertRule, TripDetail, TrendDataPoint, ReportTemplate, ReportWidget,
-  RiskPrediction, Anomaly,
+  AlertRule, TripDetail, TripListItem, TrendDataPoint, ReportTemplate, ReportWidget,
+  ScheduledReport, RiskPrediction, Anomaly,
 } from '@/types/tier';
 
 type RpcFn = SupabaseClient['rpc'];
@@ -81,6 +81,22 @@ export async function getTripDetail(supabase: SupabaseClient, tripId: string): P
   const { data, error } = await supabase.rpc('get_web_trip_detail', { p_trip_id: tripId }).single<TripDetail>();
   if (error) throw error;
   return data;
+}
+
+/** Crew trip list, tier-clamped server-side (7/30/90/365 days). */
+export async function getWebTripList(
+  supabase: SupabaseClient,
+  crewId: string,
+  days = 30,
+  memberId?: string | null,
+): Promise<TripListItem[]> {
+  const { data, error } = await supabase.rpc('get_web_trip_list', {
+    p_crew_id: crewId,
+    p_days: days,
+    p_member_id: memberId ?? null,
+  });
+  if (error) throw error;
+  return (data as TripListItem[]) ?? [];
 }
 
 export type TrendMetric = 'miles' | 'hours' | 'alerts';
@@ -168,6 +184,37 @@ export async function saveReportTemplate(
   const { data, error } = await supabase.rpc('save_report_template', {
     p_crew_id: crewId,
     p_template: template,
+  });
+  if (error) throw error;
+  return data as string;
+}
+
+export interface ScheduledReportInput {
+  id?: string;
+  templateId: string;
+  schedule: string;
+  format: 'pdf' | 'csv';
+  recipients: string[];
+  enabled: boolean;
+}
+
+export async function getScheduledReports(
+  supabase: SupabaseClient,
+  crewId: string,
+): Promise<ScheduledReport[]> {
+  const { data, error } = await supabase.rpc('get_scheduled_reports', { p_crew_id: crewId });
+  if (error) throw error;
+  return (data as ScheduledReport[]) ?? [];
+}
+
+export async function saveScheduledReport(
+  supabase: SupabaseClient,
+  crewId: string,
+  schedule: ScheduledReportInput,
+): Promise<string> {
+  const { data, error } = await supabase.rpc('save_scheduled_report', {
+    p_crew_id: crewId,
+    p_schedule: schedule,
   });
   if (error) throw error;
   return data as string;

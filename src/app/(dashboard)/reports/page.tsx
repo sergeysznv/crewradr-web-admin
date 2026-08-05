@@ -31,7 +31,7 @@ export default function ReportsPage() {
         </TierGateGuard>
       </RoleGate>
 
-      {/* Admiral: Scheduled Reports — coming soon (backend table not yet present) */}
+      {/* Admiral: Scheduled Reports (save/get_scheduled_reports RPCs) */}
       <ScheduledReports />
     </div>
   );
