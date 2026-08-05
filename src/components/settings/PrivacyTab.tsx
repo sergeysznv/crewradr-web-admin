@@ -134,7 +134,19 @@ export function PrivacyTab() {
   async function handleDeleteAccount() {
     setDeleting(true);
     try {
+      if (!user?.email) {
+        throw new Error('No authenticated user email available for account deletion.');
+      }
       await deleteWebAccount(supabase);
+      // Complete GDPR Art. 17 erasure: delete_web_account deliberately leaves
+      // auth.users intact; the delete_account Edge Function (service role)
+      // performs the final auth-level deletion, which cascades to the app
+      // user row. Runs before the client-side purge so sign-out only happens
+      // after full erasure.
+      const { error: fnError } = await supabase.functions.invoke('delete_account', {
+        body: { email: user.email },
+      });
+      if (fnError) throw fnError;
       // Client-side purge (GDPR Art. 17): wipe local storage, drop all
       // TanStack Query caches, clear the Supabase session, redirect.
       localStorage.clear();
