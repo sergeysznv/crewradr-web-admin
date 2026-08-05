@@ -11,7 +11,7 @@ import { useVersionCheck } from '@/hooks/use-version-check';
 import { useVisibilityRefetch } from '@/hooks/useRealtimeRefresh';
 import { useCrew } from '@/hooks/useCrew';
 import { IdleWarningOverlay, SignedOutOverlay } from '@/components/session-locked-overlay';
-import { ErrorBoundary } from '@/components/shared/ErrorBoundary';
+import { ShellErrorBoundary } from '@/components/shared/ErrorBoundary';
 import { supabase } from '@/lib/supabase/client';
 import { tierColor, tierLabel } from '@/lib/utils';
 import {
@@ -378,7 +378,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
           <div className="flex-1 overflow-auto">
             <div className="p-lg md:p-xl max-w-[1400px] w-full">
-              <ErrorBoundary>{children}</ErrorBoundary>
+              <ShellErrorBoundary>{children}</ShellErrorBoundary>
             </div>
           </div>
         </main>
