@@ -5,6 +5,25 @@ import type { CrewTier, WebCrewSettings, TierContextValue } from '@/types/tier';
 import { useCrew } from '@/hooks/useCrew';
 import { supabase } from '@/lib/supabase/client';
 
+/**
+ * RPCs return snake_case tier values ('first_mate') while the rest of the
+ * codebase uses camelCase CrewTier ('firstMate'). Normalize at the single
+ * boundary where RPC data enters state so every consumer (DowngradeBanner,
+ * tierHistoryDays, hasMinTier, ...) sees a valid CrewTier.
+ */
+function normalizeTier(raw: string | null | undefined): CrewTier {
+  switch (raw) {
+    case 'first_mate':
+      return 'firstMate';
+    case 'deckhand':
+    case 'captain':
+    case 'admiral':
+      return raw;
+    default:
+      return 'deckhand';
+  }
+}
+
 const TierContext = createContext<TierContextValue>({
   tier: 'deckhand',
   settings: null,
@@ -52,11 +71,14 @@ export function TierProvider({ children }: { children: ReactNode }) {
       if (rpcErr) throw rpcErr;
       // Ignore stale responses that resolve after the user switched crews.
       if (!data || data.crewId !== crewIdRef.current) return;
-      setSettings(data as WebCrewSettings);
+      // Normalize snake_case tier values ('first_mate') → camelCase CrewTier.
+      setSettings({ ...(data as WebCrewSettings), tier: normalizeTier(data.tier) });
 
       // Derive downgrade state from settings response
       setGraceDaysRemaining(data?.graceDaysRemaining ?? 0);
-      setPendingDowngradeTier(data?.pendingDowngradeTier ?? null);
+      setPendingDowngradeTier(
+        data?.pendingDowngradeTier ? normalizeTier(data.pendingDowngradeTier) : null
+      );
       setIsOverCapacity(data?.isOverCapacity ?? false);
     } catch (e) {
       if (crewIdRef.current === crewId) {
