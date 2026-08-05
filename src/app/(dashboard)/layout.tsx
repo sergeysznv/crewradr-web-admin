@@ -12,11 +12,13 @@ import { useVisibilityRefetch } from '@/hooks/useRealtimeRefresh';
 import { useCrew } from '@/hooks/useCrew';
 import { IdleWarningOverlay, SignedOutOverlay } from '@/components/session-locked-overlay';
 import { ShellErrorBoundary } from '@/components/shared/ErrorBoundary';
+import { OfflineBanner } from '@/components/shared/OfflineBanner';
+import { useTabFocus } from '@/hooks/useTabFocus';
 import { supabase } from '@/lib/supabase/client';
 import { tierColor, tierLabel } from '@/lib/utils';
 import {
   LayoutDashboard, Users, Settings, ShieldCheck, FileText, Link, MapPin, LogOut,
-  Loader2, ChevronLeft, ChevronRight, WifiOff, Menu, X, Sparkles, Crown, ArrowUp,
+  Loader2, ChevronLeft, ChevronRight, Menu, X, Sparkles, Crown, ArrowUp,
 } from 'lucide-react';
 import type { CrewSummary } from '@/types';
 
@@ -76,7 +78,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [userTier, setUserTier] = useState(0);
   const [collapsed, setCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isOnline, setIsOnline] = useState(() => typeof navigator === 'undefined' || navigator.onLine);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState<string>('');
   const [loadError, setLoadError] = useState(false);
@@ -87,6 +88,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   // Refetch all queries when the tab becomes visible again.
   useVisibilityRefetch();
+  // Reconnect Realtime + invalidate crewSettings when the tab regains focus.
+  useTabFocus();
 
   const loadCrews = useCallback(async () => {
     setLoadError(false);
@@ -131,14 +134,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       return () => clearTimeout(t);
     }
   }, [user, ready, loadCrews, router]);
-
-  useEffect(() => {
-    const on = () => setIsOnline(true);
-    const off = () => setIsOnline(false);
-    window.addEventListener('online', on);
-    window.addEventListener('offline', off);
-    return () => { window.removeEventListener('online', on); window.removeEventListener('offline', off); };
-  }, []);
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -194,6 +189,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-[var(--brand-surface)] text-zinc-900 dark:text-zinc-100">
+      {/* ── Offline status bar ── */}
+      <OfflineBanner />
+
       {/* ── Mobile top bar ── */}
       <header className="flex h-14 shrink-0 items-center gap-3 border-b border-zinc-200 bg-white px-4 dark:border-zinc-700 dark:bg-zinc-900 md:hidden">
         <button onClick={() => setMobileMenuOpen(true)} aria-label={t('webShellOpenMenu')} className="text-zinc-600 dark:text-zinc-300">
@@ -354,11 +352,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <main className="flex flex-1 flex-col overflow-hidden">
           {/* Desktop top bar */}
           <header className="hidden h-14 shrink-0 items-center gap-3 border-b border-zinc-200 bg-white px-4 dark:border-zinc-700 dark:bg-zinc-900 md:flex">
-            {!isOnline && (
-              <div className="flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-xs text-amber-700 dark:bg-amber-950 dark:text-amber-400">
-                <WifiOff className="h-3 w-3" />{t('webOfflineBanner')}
-              </div>
-            )}
             {activeCrew && (
               <span className="text-sm font-medium">
                 {activeCrew.crew_name}
