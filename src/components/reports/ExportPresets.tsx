@@ -56,6 +56,22 @@ function downloadFile(content: string, filename: string, mime: string) {
   URL.revokeObjectURL(url);
 }
 
+// Download a remote file (signed URL from the generate-fleet-export function)
+// as a blob so the browser saves it under the server-provided filename.
+async function downloadFromUrl(url: string, filename: string) {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Download failed: ${response.status}`);
+  const blob = await response.blob();
+  const objectUrl = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = objectUrl;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(objectUrl);
+}
+
 function jsonToCsv(rows: Record<string, unknown>[]): string {
   if (rows.length === 0) return '';
   const headers = Array.from(new Set(rows.flatMap((r) => Object.keys(r))));
@@ -69,6 +85,13 @@ function jsonToCsv(rows: Record<string, unknown>[]): string {
     ...rows.map((r) => headers.map((h) => escape(r[h])).join(',')),
   ].join('\n');
 }
+
+// Map the fleet export cards to the dataset the Edge Function generates.
+// (CSV exports are per-dataset; JSON exports contain everything.)
+const FLEET_KINDS: Record<string, 'trips' | 'alerts' | 'all'> = {
+  fleet_trips_csv: 'trips',
+  fleet_alerts_csv: 'alerts',
+};
 
 function ExportCard({ option, busy, soon, disabled, onExport }: {
   option: ExportOption;
@@ -108,7 +131,7 @@ export function ExportPresets() {
   const { tier, settings } = useTier();
   const supabase = useSupabase();
   const [exporting, setExporting] = useState<string | null>(null);
-  const [notice, setNotice] = useState<{ kind: 'success' | 'error'; text: string } | null>(null);
+  const [notice, setNotice] = useState<{ kind: 'success' | 'error'; text: string; href?: string } | null>(null);
 
   const crewId = settings?.crewId ?? '';
   const days = settings?.historyDays ?? tierHistoryDays(tier);
@@ -148,13 +171,37 @@ export function ExportPresets() {
   const handleFleetExport = (option: ExportOption) =>
     runExport(option, async () => {
       if (!crewId) throw new Error(t('webReportsExportFailed'));
-      const { error } = await supabase.rpc('get_web_fleet_export', {
-        p_crew_id: crewId,
-        p_format: option.format,
-        p_date_range: { days },
+      // S8: generate-fleet-export Edge Function performs the captain gate,
+      // generates the file, uploads it to private storage, writes the audit
+      // trail, and returns a signed download URL synchronously.
+      const { data, error } = await supabase.functions.invoke('generate-fleet-export', {
+        body: {
+          crew_id: crewId,
+          format: option.format,
+          kind: FLEET_KINDS[option.id] ?? 'all',
+          date_range: { days },
+        },
       });
-      if (error) throw error;
-      setNotice({ kind: 'success', text: t('webReportsExportQueued') });
+      if (error) {
+        const ctx = (error as { context?: unknown }).context;
+        const serverMessage =
+          ctx && typeof ctx === 'object' && 'error' in ctx
+            ? String((ctx as { error: unknown }).error)
+            : '';
+        throw new Error(serverMessage || t('webReportsExportFailed'));
+      }
+      const payload = data as {
+        status: string;
+        downloadUrl: string;
+        fileName: string;
+      } | null;
+      if (!payload?.downloadUrl) throw new Error(t('webReportsExportFailed'));
+      await downloadFromUrl(payload.downloadUrl, payload.fileName);
+      setNotice({
+        kind: 'success',
+        text: t('webReportsExportReady', { filename: payload.fileName }),
+        href: payload.downloadUrl,
+      });
     });
 
   return (
@@ -235,7 +282,18 @@ export function ExportPresets() {
           ) : (
             <TriangleAlert className="h-4 w-4 shrink-0" aria-hidden="true" />
           )}
-          {notice.text}
+          {notice.href ? (
+            <a
+              href={notice.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-2 hover:opacity-80"
+            >
+              {notice.text}
+            </a>
+          ) : (
+            notice.text
+          )}
         </div>
       )}
     </div>
