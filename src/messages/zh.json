@@ -498,5 +498,22 @@
   "webUpgradeRequired": "需要升级。在CrewRadr应用中升级。",
   "webUpgradeTierFree": "Included with CrewRadr",
   "webUpgradeTierPaid": "Admiral subscription required",
-  "webUpgradeTitle": "Unlock Premium Features"
+  "webUpgradeTitle": "Unlock Premium Features",
+  "webAlertsRulesTitle": "自定义提醒规则",
+  "webAlertsRulesYourRules": "我的规则",
+  "webAlertsRulesCreateRule": "创建规则",
+  "webAlertsRulesNameLabel": "规则名称",
+  "webAlertsRulesNamePlaceholder": "例如：高速超速提醒",
+  "webAlertsRulesSpeedLabel": "速度阈值（英里/小时）",
+  "webAlertsRulesDurationLabel": "持续时间（分钟）",
+  "webAlertsRulesCondition": "速度 > {speed} 英里/小时持续 {duration} 分钟",
+  "webAlertsRulesActive": "已启用",
+  "webAlertsRulesPaused": "已暂停",
+  "webAlertsRulesSave": "保存规则",
+  "webAlertsRulesSaving": "保存中…",
+  "webAlertsRulesEmpty": "暂无自定义提醒规则",
+  "webAlertsRulesEmptyDesc": "请在上方创建第一条规则",
+  "webAlertsRulesSaved": "规则已保存",
+  "webAlertsRulesSaveFailed": "保存规则失败",
+  "webAlertsRulesToggleFailed": "更新规则失败"
 }

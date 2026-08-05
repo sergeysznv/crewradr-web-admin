@@ -498,5 +498,22 @@
   "webUpgradeRequired": "This feature requires a higher subscription tier. Upgrade in the CrewRadr mobile app.",
   "webUpgradeTierFree": "Included with CrewRadr",
   "webUpgradeTierPaid": "Admiral subscription required",
-  "webUpgradeTitle": "Unlock Premium Features"
+  "webUpgradeTitle": "Unlock Premium Features",
+  "webAlertsRulesTitle": "Custom Alert Rules",
+  "webAlertsRulesYourRules": "Your Rules",
+  "webAlertsRulesCreateRule": "Create Rule",
+  "webAlertsRulesNameLabel": "Rule Name",
+  "webAlertsRulesNamePlaceholder": "e.g., Highway Speed Alert",
+  "webAlertsRulesSpeedLabel": "Speed Threshold (mph)",
+  "webAlertsRulesDurationLabel": "Duration (minutes)",
+  "webAlertsRulesCondition": "Speed > {speed}mph for {duration}min",
+  "webAlertsRulesActive": "Active",
+  "webAlertsRulesPaused": "Paused",
+  "webAlertsRulesSave": "Save Rule",
+  "webAlertsRulesSaving": "Saving…",
+  "webAlertsRulesEmpty": "No custom alert rules",
+  "webAlertsRulesEmptyDesc": "Create your first rule above",
+  "webAlertsRulesSaved": "Rule saved",
+  "webAlertsRulesSaveFailed": "Failed to save rule",
+  "webAlertsRulesToggleFailed": "Failed to update rule"
 }

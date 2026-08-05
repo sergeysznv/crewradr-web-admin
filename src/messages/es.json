@@ -498,5 +498,22 @@
   "webUpgradeRequired": "Requiere plan superior. Mejora en la app CrewRadr.",
   "webUpgradeTierFree": "Included with CrewRadr",
   "webUpgradeTierPaid": "Admiral subscription required",
-  "webUpgradeTitle": "Unlock Premium Features"
+  "webUpgradeTitle": "Unlock Premium Features",
+  "webAlertsRulesTitle": "Reglas de alerta personalizadas",
+  "webAlertsRulesYourRules": "Tus reglas",
+  "webAlertsRulesCreateRule": "Crear regla",
+  "webAlertsRulesNameLabel": "Nombre de la regla",
+  "webAlertsRulesNamePlaceholder": "p. ej., alerta de velocidad en autopista",
+  "webAlertsRulesSpeedLabel": "Umbral de velocidad (mph)",
+  "webAlertsRulesDurationLabel": "Duración (minutos)",
+  "webAlertsRulesCondition": "Velocidad > {speed} mph durante {duration} min",
+  "webAlertsRulesActive": "Activa",
+  "webAlertsRulesPaused": "En pausa",
+  "webAlertsRulesSave": "Guardar regla",
+  "webAlertsRulesSaving": "Guardando…",
+  "webAlertsRulesEmpty": "Sin reglas personalizadas",
+  "webAlertsRulesEmptyDesc": "Crea tu primera regla arriba",
+  "webAlertsRulesSaved": "Regla guardada",
+  "webAlertsRulesSaveFailed": "No se pudo guardar la regla",
+  "webAlertsRulesToggleFailed": "No se pudo actualizar la regla"
 }

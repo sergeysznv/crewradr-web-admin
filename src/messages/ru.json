@@ -498,5 +498,22 @@
   "webUpgradeRequired": "Требуется обновление. Обновитесь в приложении.",
   "webUpgradeTierFree": "Included with CrewRadr",
   "webUpgradeTierPaid": "Admiral subscription required",
-  "webUpgradeTitle": "Unlock Premium Features"
+  "webUpgradeTitle": "Unlock Premium Features",
+  "webAlertsRulesTitle": "Пользовательские правила оповещений",
+  "webAlertsRulesYourRules": "Ваши правила",
+  "webAlertsRulesCreateRule": "Создать правило",
+  "webAlertsRulesNameLabel": "Название правила",
+  "webAlertsRulesNamePlaceholder": "Например: превышение на трассе",
+  "webAlertsRulesSpeedLabel": "Порог скорости (миль/ч)",
+  "webAlertsRulesDurationLabel": "Длительность (мин)",
+  "webAlertsRulesCondition": "Скорость > {speed} миль/ч в течение {duration} мин",
+  "webAlertsRulesActive": "Активно",
+  "webAlertsRulesPaused": "Пауза",
+  "webAlertsRulesSave": "Сохранить правило",
+  "webAlertsRulesSaving": "Сохранение…",
+  "webAlertsRulesEmpty": "Нет пользовательских правил",
+  "webAlertsRulesEmptyDesc": "Создайте первое правило выше",
+  "webAlertsRulesSaved": "Правило сохранено",
+  "webAlertsRulesSaveFailed": "Не удалось сохранить правило",
+  "webAlertsRulesToggleFailed": "Не удалось обновить правило"
 }

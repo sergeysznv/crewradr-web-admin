@@ -498,5 +498,22 @@
   "webUpgradeRequired": "ترقية مطلوبة. قم بالترقية في التطبيق.",
   "webUpgradeTierFree": "Included with CrewRadr",
   "webUpgradeTierPaid": "Admiral subscription required",
-  "webUpgradeTitle": "Unlock Premium Features"
+  "webUpgradeTitle": "Unlock Premium Features",
+  "webAlertsRulesTitle": "قواعد التنبيه المخصصة",
+  "webAlertsRulesYourRules": "قواعدك",
+  "webAlertsRulesCreateRule": "إنشاء قاعدة",
+  "webAlertsRulesNameLabel": "اسم القاعدة",
+  "webAlertsRulesNamePlaceholder": "مثال: تنبيه السرعة على الطريق السريع",
+  "webAlertsRulesSpeedLabel": "حد السرعة (ميل/ساعة)",
+  "webAlertsRulesDurationLabel": "المدة (دقائق)",
+  "webAlertsRulesCondition": "السرعة > {speed} ميل/ساعة لمدة {duration} دقيقة",
+  "webAlertsRulesActive": "نشطة",
+  "webAlertsRulesPaused": "متوقفة",
+  "webAlertsRulesSave": "حفظ القاعدة",
+  "webAlertsRulesSaving": "جارٍ الحفظ…",
+  "webAlertsRulesEmpty": "لا توجد قواعد مخصصة",
+  "webAlertsRulesEmptyDesc": "أنشئ قاعدتك الأولى أعلاه",
+  "webAlertsRulesSaved": "تم حفظ القاعدة",
+  "webAlertsRulesSaveFailed": "تعذر حفظ القاعدة",
+  "webAlertsRulesToggleFailed": "تعذر تحديث القاعدة"
 }

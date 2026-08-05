@@ -3,7 +3,7 @@ import type {
   AccountProfile, FleetDashboard, CrewMembersResponse,
   BulkImportResult, CrewSettings, AuditLogsResponse, UpdateMemberRoleResult, LivePosition
 } from '@/types/rpc';
-import type { TripDetail, TrendDataPoint, ReportTemplate, ReportWidget } from '@/types/tier';
+import type { AlertRule, TripDetail, TrendDataPoint, ReportTemplate, ReportWidget } from '@/types/tier';
 
 type RpcFn = SupabaseClient['rpc'];
 
@@ -164,6 +164,25 @@ export async function saveReportTemplate(
   const { data, error } = await supabase.rpc('save_report_template', {
     p_crew_id: crewId,
     p_template: template,
+  });
+  if (error) throw error;
+  return data as string;
+}
+
+export async function getAlertRules(supabase: SupabaseClient, crewId: string): Promise<AlertRule[]> {
+  const { data, error } = await supabase.rpc('get_alert_rules', { p_crew_id: crewId });
+  if (error) throw error;
+  return (data as AlertRule[]) ?? [];
+}
+
+export async function saveAlertRule(
+  supabase: SupabaseClient,
+  crewId: string,
+  rule: { id?: string; name: string; conditions: AlertRule['conditions']; enabled: boolean },
+): Promise<string> {
+  const { data, error } = await supabase.rpc('save_alert_rule', {
+    p_crew_id: crewId,
+    p_rule: rule,
   });
   if (error) throw error;
   return data as string;

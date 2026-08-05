@@ -12,6 +12,8 @@ import { FleetOverview } from '@/components/dashboard/FleetOverview';
 import { CalendarHeatmap } from '@/components/overview/CalendarHeatmap';
 import { TrendChart } from '@/components/overview/TrendChart';
 import { Skeleton } from '@/components/shared/Skeleton';
+import { TierGateGuard } from '@/components/tier/TierGateGuard';
+import { AlertRuleBuilder } from '@/components/alerts/AlertRuleBuilder';
 
 export function DashboardView() {
   // Crew seeding happens once at app mount in CrewLoader — not per page.
@@ -53,6 +55,13 @@ export function DashboardView() {
           </div>
           <AlertFeed alerts={dashboard.data.recent_alerts} />
           <ActivityTimeline />
+          {/* Captain+: custom alert rules */}
+          <TierGateGuard minTier="captain" fallback={null}>
+            <section className="space-y-md">
+              <h2 className="font-heading text-base font-bold text-on-surface">{t('webAlertsRulesTitle')}</h2>
+              <AlertRuleBuilder />
+            </section>
+          </TierGateGuard>
         </div>
       ) : dashboard.isError ? (
         <div className="flex items-center justify-center py-24" role="status">
