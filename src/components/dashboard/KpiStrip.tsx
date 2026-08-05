@@ -41,7 +41,7 @@ export function KpiStrip({ data }: { data: FleetDashboard }) {
       <StatTile label={t('webFleetFleetSize')} value={data.member_count} />
       <StatTile label={t('webFleetActiveNow')} value={data.active_trips} />
       <StatTile
-        label={t('webFleetAlerts24h')}
+        label={t('webFleetRecentAlerts')}
         value={data.recent_alerts.length}
         trend={data.recent_alerts.length > 0 ? t('webFleetAlertsCount', { count: data.recent_alerts.length, plural: 's' }) : t('webFleetAllClear')}
         trendUp={data.recent_alerts.length > 0 ? false : undefined}

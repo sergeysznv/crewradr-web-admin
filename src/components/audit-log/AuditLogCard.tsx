@@ -18,6 +18,11 @@ export function AuditLogCard({ log }: { log: AuditLogEntry }) {
       </div>
       <div className="text-sm text-on-surface">{log.actor_name ?? log.actor_email ?? 'System'}</div>
       <div className="text-xs text-on-surface-variant">{log.target_type}: {log.target_id.slice(0, 12)}...</div>
+      {log.metadata && Object.keys(log.metadata).length > 0 && (
+        <div className="text-xs text-on-surface-variant font-mono truncate border-t border-outline-variant pt-2">
+          {JSON.stringify(log.metadata)}
+        </div>
+      )}
     </div>
   );
 }

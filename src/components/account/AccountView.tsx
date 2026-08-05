@@ -1,6 +1,6 @@
 // src/components/account/AccountView.tsx
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useT, useLocale } from '@/hooks/use-translations';
 import { useAuth } from '@/hooks/use-auth';
@@ -30,6 +30,16 @@ export function AccountView() {
 
   const profile = account.data?.profile ?? null;
   const crews = account.data?.crews ?? [];
+
+  // Seed locale from profile language_preference on first load.
+  const seededRef = useRef(false);
+  useEffect(() => {
+    if (seededRef.current || !profile?.language_preference) return;
+    if (profile.language_preference !== locale) {
+      setLocale(profile.language_preference);
+    }
+    seededRef.current = true;
+  }, [profile?.language_preference, locale, setLocale]);
 
   // Draft = null until the user edits; the input shows the profile value
   // otherwise. No effect needed to sync — avoids setState-in-effect.

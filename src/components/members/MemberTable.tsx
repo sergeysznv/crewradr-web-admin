@@ -27,6 +27,8 @@ export function MemberTable({ members, total, offset, limit, onOffsetChange, onR
           <div className="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-sm font-bold text-primary overflow-hidden">
             {m.avatar_url ? (
               <img src={m.avatar_url} alt="" className="w-full h-full object-cover" />
+            ) : m.profile_emoji ? (
+              <span className="text-sm leading-none">{m.profile_emoji}</span>
             ) : (
               (m.display_name ?? m.email ?? '?')[0].toUpperCase()
             )}

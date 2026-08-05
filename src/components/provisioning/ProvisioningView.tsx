@@ -127,7 +127,7 @@ export function ProvisioningView() {
   return (
     <div className="flex h-full flex-col animate-fade-in">
       <div className="flex items-center gap-3 border-b border-outline-variant pb-4">
-        <h1 className="text-lg font-bold text-on-surface">{t('webProvisioningTitle')}</h1>
+        <h1 className="text-2xl font-bold text-on-surface">{t('webProvisioningTitle')}</h1>
         <div className="flex-1" />
         {copied && <span className="text-xs text-success animate-fade-in">{t('webProvisioningCopied')}</span>}
         <button onClick={createLink} disabled={creating}

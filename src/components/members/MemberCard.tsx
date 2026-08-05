@@ -15,6 +15,8 @@ export function MemberCard({ member, onClick }: { member: CrewMember; onClick: (
       <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-sm font-bold text-primary flex-shrink-0 overflow-hidden">
         {member.avatar_url ? (
           <img src={member.avatar_url} alt="" className="w-full h-full object-cover" />
+        ) : member.profile_emoji ? (
+          <span className="text-lg leading-none">{member.profile_emoji}</span>
         ) : (
           (member.display_name ?? member.email ?? '?')[0].toUpperCase()
         )}

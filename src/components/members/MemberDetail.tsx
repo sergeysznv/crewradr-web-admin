@@ -55,6 +55,8 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
         <div className="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-xl font-bold text-primary overflow-hidden">
           {member.avatar_url ? (
             <img src={member.avatar_url} alt="" className="w-full h-full object-cover" />
+          ) : member.profile_emoji ? (
+            <span className="text-2xl leading-none">{member.profile_emoji}</span>
           ) : (
             (member.display_name ?? member.email ?? '?')[0].toUpperCase()
           )}
