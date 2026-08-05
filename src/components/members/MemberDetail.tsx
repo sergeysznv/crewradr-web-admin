@@ -127,26 +127,29 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
         )}
       </div>
 
-      <div className="space-y-2">
-        <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">{t('webMembersDetailChangeRole')}</label>
-        <div className="flex gap-2">
-          {['member', 'co-captain'].map(role => (
-            <button key={role} disabled={role === member.role}
-              onClick={() => updateRole.mutate({ memberId: member.id, newRole: role })}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold border
-                ${role === member.role ? 'bg-primary-container text-primary border-primary/30' : 'border-outline text-on-surface-variant hover:bg-surface-container'}`}>
-              {role}
-            </button>
-          ))}
+      {/* Captain tier: role change + removal */}
+      <TierGateGuard minTier="captain" fallback={null}>
+        <div className="space-y-2">
+          <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">{t('webMembersDetailChangeRole')}</label>
+          <div className="flex gap-2">
+            {['member', 'co-captain'].map(role => (
+              <button key={role} disabled={role === member.role}
+                onClick={() => updateRole.mutate({ memberId: member.id, newRole: role })}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold border
+                  ${role === member.role ? 'bg-primary-container text-primary border-primary/30' : 'border-outline text-on-surface-variant hover:bg-surface-container'}`}>
+                {role}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
 
-      <div className="pt-lg border-t border-outline-variant">
-        <button onClick={() => setShowRemove(true)}
-          className="w-full px-4 py-2 rounded-xl border border-error/30 text-error text-sm font-semibold hover:bg-error-container">
-          {t('webMembersRemoveFromCrew')}
-        </button>
-      </div>
+        <div className="pt-lg border-t border-outline-variant">
+          <button onClick={() => setShowRemove(true)}
+            className="w-full px-4 py-2 rounded-xl border border-error/30 text-error text-sm font-semibold hover:bg-error-container">
+            {t('webMembersRemoveFromCrew')}
+          </button>
+        </div>
+      </TierGateGuard>
 
       <ConfirmDialog
         key={showRemove ? 'remove-open' : 'remove-closed'}

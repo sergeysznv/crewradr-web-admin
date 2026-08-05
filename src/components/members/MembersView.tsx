@@ -30,8 +30,9 @@ export function MembersView() {
   const { t } = useT();
   const { crewId, tier } = useCrew();
 
-  // Tier gate — captain+ (tier >= 2)
-  if (tierRank(tier) < 2) {
+  // Tier gate — firstMate+ can view the roster (tier >= 1); write
+  // controls below are gated to captain+ via TierGateGuard.
+  if (tierRank(tier) < 1) {
     return (
       <div className="flex flex-1 items-center justify-center py-24" role="status">
         <div className="text-center max-w-sm">
@@ -70,6 +71,8 @@ export function MembersView() {
 
   const members = data?.members ?? [];
   const filtered = roleFilter === 'all' ? members : members.filter(m => m.role === roleFilter);
+  // Write controls (CSV import, bulk ops, selection) are captain-only.
+  const canWrite = tierRank(tier) >= 2;
 
   function toggleSelect(id: string) {
     setSelectedIds(prev => {
@@ -136,10 +139,12 @@ export function MembersView() {
                 placeholder={t('webMembersSearchPlaceholder')} className="w-full pl-9 pr-4 py-2 rounded-xl border border-outline bg-surface text-sm" />
             </div>
           </div>
-          <button onClick={() => setShowImport(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl border border-outline text-sm font-semibold text-on-surface-variant hover:bg-surface-container">
-            <Upload size={14} /> {t('webMembersImportButton')}
-          </button>
+          <TierGateGuard minTier="captain" fallback={null}>
+            <button onClick={() => setShowImport(true)}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl border border-outline text-sm font-semibold text-on-surface-variant hover:bg-surface-container">
+              <Upload size={14} /> {t('webMembersImportButton')}
+            </button>
+          </TierGateGuard>
         </div>
 
         <FilterChips options={ROLE_FILTERS} selected={roleFilter} onSelect={changeFilter} />
@@ -162,9 +167,9 @@ export function MembersView() {
               offset={offset} limit={limit}
               onOffsetChange={setOffset}
               onRowClick={setSelected}
-              selectedIds={selectedIds}
-              onToggleSelect={toggleSelect}
-              onToggleSelectAll={toggleSelectAll}
+              {...(canWrite
+                ? { selectedIds, onToggleSelect: toggleSelect, onToggleSelectAll: toggleSelectAll }
+                : {})}
             />
           )}
         </div>
@@ -185,13 +190,15 @@ export function MembersView() {
 
         <CsvImportModal open={showImport} onClose={() => setShowImport(false)} />
 
-        <BulkActionBar
-          count={selectedIds.size}
-          working={working}
-          onRemove={() => setShowBulkRemove(true)}
-          onRoleChange={bulkRoleChange}
-          onClear={() => setSelectedIds(new Set())}
-        />
+        <TierGateGuard minTier="captain" fallback={null}>
+          <BulkActionBar
+            count={selectedIds.size}
+            working={working}
+            onRemove={() => setShowBulkRemove(true)}
+            onRoleChange={bulkRoleChange}
+            onClear={() => setSelectedIds(new Set())}
+          />
+        </TierGateGuard>
 
         <ConfirmDialog
           key={showBulkRemove ? 'bulk-open' : 'bulk-closed'}

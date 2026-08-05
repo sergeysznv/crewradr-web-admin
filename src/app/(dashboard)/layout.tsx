@@ -22,6 +22,7 @@ import { tierColor, tierLabel } from '@/lib/utils';
 import {
   LayoutDashboard, Users, Settings, ShieldCheck, FileText, Link, MapPin, LogOut,
   Loader2, ChevronLeft, ChevronRight, Menu, X, Sparkles, Crown, ArrowUp, Plug,
+  Route, BarChart3,
 } from 'lucide-react';
 import type { CrewSummary } from '@/types';
 
@@ -30,7 +31,9 @@ import type { CrewSummary } from '@/types';
 const NAV_ITEMS = [
   { href: '/fleet', label: 'webNavFleet', icon: LayoutDashboard, minTier: 0 }, // home
   { href: '/map', label: 'webNavLiveMap', icon: MapPin, minTier: 3 },
-  { href: '/members', label: 'webNavMembers', icon: Users, minTier: 2 },
+  { href: '/trips', label: 'webNavTrips', icon: Route, minTier: 1 },
+  { href: '/members', label: 'webNavMembers', icon: Users, minTier: 1 }, // first mate: read-only
+  { href: '/reports', label: 'webNavReports', icon: BarChart3, minTier: 1 },
   { href: '/settings', label: 'webNavCrewSettings', icon: Settings, minTier: 2 },
   { href: '/audit-log', label: 'webNavAuditLog', icon: FileText, minTier: 3 },
   { href: '/compliance', label: 'webNavCompliance', icon: ShieldCheck, minTier: 3 },
