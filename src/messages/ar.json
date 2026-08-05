@@ -416,6 +416,7 @@
   "webTripsNoTripSelectedDesc": "اختر رحلة من القائمة لاستكشاف خطها الزمني وسرعتها وتوقفاتها وتنبيهاتها.",
   "webTripsSelectPrompt": "اختر رحلة لعرض التفاصيل",
   "webTripsSpeed": "السرعة",
+  "webTripsStopAt": "توقف عند {lat}, {lng}",
   "webTripsStops": "التوقفات",
   "webTripsTitle": "الرحلات",
   "webUpdateAvailable": "تحديث متاح",

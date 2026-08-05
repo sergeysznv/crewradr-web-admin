@@ -416,6 +416,7 @@
   "webTripsNoTripSelectedDesc": "从列表中选择行程，查看其时间线、速度、停留点和警报。",
   "webTripsSelectPrompt": "选择行程以查看详情",
   "webTripsSpeed": "速度",
+  "webTripsStopAt": "在 {lat}, {lng} 停留",
   "webTripsStops": "停留点",
   "webTripsTitle": "行程",
   "webUpdateAvailable": "有可用更新",

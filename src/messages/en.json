@@ -416,6 +416,7 @@
   "webTripsNoTripSelectedDesc": "Choose a trip from the list to explore its timeline, speed, stops, and alerts.",
   "webTripsSelectPrompt": "Select a trip to view details",
   "webTripsSpeed": "Speed",
+  "webTripsStopAt": "Stop at {lat}, {lng}",
   "webTripsStops": "Stops",
   "webTripsTitle": "Trips",
   "webUpdateAvailable": "Update Available",

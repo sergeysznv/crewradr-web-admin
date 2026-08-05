@@ -416,6 +416,7 @@
   "webTripsNoTripSelectedDesc": "Elige un viaje de la lista para explorar su línea de tiempo, velocidad, paradas y alertas.",
   "webTripsSelectPrompt": "Selecciona un viaje para ver los detalles",
   "webTripsSpeed": "Velocidad",
+  "webTripsStopAt": "Parada en {lat}, {lng}",
   "webTripsStops": "Paradas",
   "webTripsTitle": "Viajes",
   "webUpdateAvailable": "Actualización Disponible",

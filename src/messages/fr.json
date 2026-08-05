@@ -416,6 +416,7 @@
   "webTripsNoTripSelectedDesc": "Choisissez un trajet dans la liste pour explorer sa chronologie, sa vitesse, ses arrêts et ses alertes.",
   "webTripsSelectPrompt": "Sélectionnez un trajet pour voir les détails",
   "webTripsSpeed": "Vitesse",
+  "webTripsStopAt": "Arrêt à {lat}, {lng}",
   "webTripsStops": "Arrêts",
   "webTripsTitle": "Trajets",
   "webUpdateAvailable": "Mise à Jour Disponible",

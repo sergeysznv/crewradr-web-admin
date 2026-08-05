@@ -416,6 +416,7 @@
   "webTripsNoTripSelectedDesc": "Выберите поездку из списка, чтобы изучить её хронологию, скорость, остановки и оповещения.",
   "webTripsSelectPrompt": "Выберите поездку для просмотра деталей",
   "webTripsSpeed": "Скорость",
+  "webTripsStopAt": "Остановка в {lat}, {lng}",
   "webTripsStops": "Остановки",
   "webTripsTitle": "Поездки",
   "webUpdateAvailable": "Обновление",
