@@ -115,6 +115,16 @@ export function TierProvider({ children }: { children: ReactNode }) {
     };
   }, [fetchSettings, crewId]);
 
+  // SPA sign-in (and session changes) don't reload the page, so TierProvider
+  // would otherwise keep its initial 'deckhand' tier forever. Refetch settings
+  // whenever the auth state changes so tier reflects the signed-in user.
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN') fetchSettings();
+    });
+    return () => subscription.unsubscribe();
+  }, [fetchSettings]);
+
   const tier: CrewTier = settings?.tier ?? 'deckhand';
   const isInLockout = graceDaysRemaining <= 0 && isOverCapacity;
 
