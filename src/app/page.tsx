@@ -154,18 +154,18 @@ export default function LoginPage() {
         {step === 'login' && (
           <div className="rounded-xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
             <form onSubmit={handleLogin}>
-              <label className="mb-1 block text-sm font-medium text-zinc-900 dark:text-zinc-100">Email</label>
+              <label className="mb-1 block text-sm font-medium text-zinc-900 dark:text-zinc-100">{t('webLoginEmail')}</label>
               <input id="email" name="email" type="email" value={email} onChange={e => setEmail(e.target.value)}
                 className="mb-4 w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500"
                 placeholder="captain@crewradr.app" autoComplete="email" autoFocus />
-              <label className="mb-1 block text-sm font-medium text-zinc-900 dark:text-zinc-100">Password</label>
+              <label className="mb-1 block text-sm font-medium text-zinc-900 dark:text-zinc-100">{t('webLoginPassword')}</label>
               <input id="password" name="password" type="password" value={password} onChange={e => setPassword(e.target.value)}
                 className="mb-6 w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500"
                 autoComplete="current-password" />
               <button type="submit" disabled={busy}
                 className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--brand-seed)] px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50">
                 {busy && <Loader2 className="h-4 w-4 animate-spin" />}
-                {busy ? 'Signing in…' : 'Sign In'}
+                {busy ? t('webLoginSigningIn') : t('webLoginSignIn')}
               </button>
             </form>
             {passkeySupported && (
@@ -189,17 +189,17 @@ export default function LoginPage() {
             <form onSubmit={handleMfa}>
               <div className="mb-4 flex items-center gap-2">
                 <button type="button" onClick={reset} className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"><ArrowLeft className="h-4 w-4" /></button>
-                <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Two-Factor Authentication</h2>
+                <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">{t('webLoginMfaTitle')}</h2>
               </div>
-              <p className="mb-4 text-sm text-zinc-500 dark:text-zinc-400">Enter the 6-digit code from your authenticator app.</p>
-              <label className="mb-1 block text-sm font-medium text-zinc-900 dark:text-zinc-100">Verification code</label>
+              <p className="mb-4 text-sm text-zinc-500 dark:text-zinc-400">{t('webLoginMfaDesc')}</p>
+              <label className="mb-1 block text-sm font-medium text-zinc-900 dark:text-zinc-100">{t('webLoginMfaCode')}</label>
               <input id="mfaCode" name="mfaCode" type="text" inputMode="numeric" pattern="[0-9]*" maxLength={6}
                 value={mfaCode} onChange={e => setMfaCode(e.target.value.replace(/\D/g, ''))}
                 className="mb-4 w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-center text-2xl tracking-[0.5em] font-mono text-zinc-900 placeholder:text-zinc-400 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500"
                 placeholder="123456" autoComplete="one-time-code" autoFocus />
               <button type="submit" disabled={busy}
                 className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--brand-seed)] px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50">
-                {busy && <Loader2 className="h-4 w-4 animate-spin" />} Verify
+                {busy && <Loader2 className="h-4 w-4 animate-spin" />} {t('webLoginMfaVerify')}
               </button>
             </form>
           </div>
@@ -236,7 +236,7 @@ export default function LoginPage() {
         )}
 
         {step === 'login' && (
-          <p className="mt-6 text-center text-xs text-zinc-400 dark:text-zinc-500">2FA required for web portal access</p>
+          <p className="mt-6 text-center text-xs text-zinc-400 dark:text-zinc-500">{t('webLogin2faRequired')}</p>
         )}
       </div>
     </div>

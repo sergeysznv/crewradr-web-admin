@@ -1,5 +1,6 @@
 // src/components/dashboard/DashboardView.tsx
 'use client';
+import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { useCrew } from '@/hooks/useCrew';
 import { useFleetDashboard } from '@/hooks/queries/useFleetDashboard';
 import { useRealtimeInvalidation } from '@/hooks/useRealtimeRefresh';
@@ -40,6 +41,16 @@ export function DashboardView() {
             <div className="md:col-span-1"><AlertFeed alerts={dashboard.data.recent_alerts} /></div>
           </div>
           <ActivityTimeline />
+        </div>
+      ) : dashboard.isError ? (
+        <div className="flex items-center justify-center py-24" role="status">
+          <div className="text-center">
+            <AlertTriangle className="mx-auto h-10 w-10 text-amber-500" aria-hidden="true" />
+            <p className="mt-2 text-sm text-on-surface-variant">Failed to load fleet data</p>
+            <button onClick={() => dashboard.refetch()} className="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-on-primary">
+              <RefreshCw className="h-4 w-4" /> Retry
+            </button>
+          </div>
         </div>
       ) : null}
     </>

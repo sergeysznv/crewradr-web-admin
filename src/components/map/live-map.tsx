@@ -158,6 +158,9 @@ export default function LiveMap({ positions, selectedUserId, onSelect }: LiveMap
         syncMarkers(map, pendingMarkersRef.current);
         pendingMarkersRef.current = [];
       }
+    }).catch(() => {
+      // Map failed to load — the MapView parent already handles the error
+      // state via positionsQuery.isError. Silently do nothing here.
     });
 
     return () => { cancelled = true; };

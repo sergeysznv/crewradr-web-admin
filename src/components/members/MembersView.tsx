@@ -36,7 +36,7 @@ export function MembersView() {
   const supabase = useSupabase();
   const { showSuccess, showError } = useSnackbar();
   const updateRole = useUpdateMemberRole(crewId!);
-  const { data, search, setSearch, offset, setOffset, limit, isLoading } = useCrewMembers(crewId);
+  const { data, search, setSearch, offset, setOffset, limit, isLoading, isError, refetch } = useCrewMembers(crewId);
   const [selected, setSelected] = useState<CrewMember | null>(null);
   const [roleFilter, setRoleFilter] = useState<RoleFilter>('all');
   const [showImport, setShowImport] = useState(false);
@@ -132,6 +132,11 @@ export function MembersView() {
         <div className="hidden md:block bg-surface border border-outline rounded-lg overflow-hidden">
           {isLoading ? (
             <div className="p-lg text-sm text-on-surface-variant">Loading...</div>
+          ) : isError ? (
+            <div className="p-lg text-center">
+              <p className="text-sm text-on-surface-variant">Failed to load members</p>
+              <button onClick={() => refetch()} className="mt-2 rounded-lg bg-primary px-4 py-1.5 text-sm font-semibold text-on-primary">Retry</button>
+            </div>
           ) : filtered.length === 0 ? (
             <EmptyState icon={<Users size={40} />} title="No members found" message="Try adjusting your search or filters." />
           ) : (

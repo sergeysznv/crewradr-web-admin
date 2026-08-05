@@ -19,7 +19,7 @@ const PRESET_DAYS: Record<DatePreset, number | null> = {
 
 export function AuditLogView() {
   const { crewId } = useCrew();
-  const { data, isLoading, setDateFrom, setDateTo, action, setAction, offset, setOffset, limit } = useAuditLogs(crewId);
+  const { data, isLoading, isError, refetch, setDateFrom, setDateTo, action, setAction, offset, setOffset, limit } = useAuditLogs(crewId);
   const [datePreset, setDatePreset] = useState<DatePreset>('30d');
 
   // Realtime — append new audit events as they are written.
@@ -80,6 +80,11 @@ export function AuditLogView() {
       <div className="hidden md:block bg-surface border border-outline rounded-lg overflow-hidden">
         {isLoading ? (
           <div className="p-lg text-sm text-on-surface-variant">Loading...</div>
+        ) : isError ? (
+          <div className="p-lg text-center">
+            <p className="text-sm text-on-surface-variant">Failed to load audit logs</p>
+            <button onClick={() => refetch()} className="mt-2 rounded-lg bg-primary px-4 py-1.5 text-sm font-semibold text-on-primary">Retry</button>
+          </div>
         ) : logs.length === 0 ? (
           <EmptyState icon={<ScrollText size={40} />} title="No audit events" message="No events match your current filters." />
         ) : (
@@ -90,7 +95,7 @@ export function AuditLogView() {
       <div className="md:hidden space-y-2">
         {isLoading ? (
           <div className="p-lg text-sm text-on-surface-variant">Loading...</div>
-        ) : (
+        ) : isError ? null : (
           logs.map(log => <AuditLogCard key={log.id} log={log} />)
         )}
       </div>

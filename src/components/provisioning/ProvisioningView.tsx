@@ -82,10 +82,13 @@ export function ProvisioningView() {
   }
 
   function copyLink(code: string) {
-    navigator.clipboard.writeText(`https://crewradr.app/join/${code}`);
-    setCopied(true);
-    showSuccess(t('webProvisioningCopied'));
-    setTimeout(() => setCopied(false), 2500);
+    navigator.clipboard.writeText(`https://crewradr.app/join/${code}`).then(() => {
+      setCopied(true);
+      showSuccess(t('webProvisioningCopied'));
+      setTimeout(() => setCopied(false), 2500);
+    }).catch(() => {
+      showError('Clipboard access denied');
+    });
   }
 
   function statusLabel(s: string, expiresAt?: string) {
@@ -138,6 +141,13 @@ export function ProvisioningView() {
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="h-16 rounded-lg bg-surface-container animate-pulse" />
             ))}
+          </div>
+        ) : linksQuery.isError ? (
+          <div className="flex items-center justify-center py-16 text-center">
+            <div>
+              <p className="text-sm text-on-surface-variant">Failed to load provisioning links</p>
+              <button onClick={() => linksQuery.refetch()} className="mt-2 rounded-lg bg-primary px-4 py-1.5 text-sm font-semibold text-on-primary">Retry</button>
+            </div>
           </div>
         ) : links.length === 0 ? (
           <div className="flex items-center justify-center py-16 text-center text-sm text-on-surface-variant">
