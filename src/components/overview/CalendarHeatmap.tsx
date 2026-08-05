@@ -12,8 +12,13 @@ interface DayCell {
   tripCount?: number;
 }
 
-const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const WEEK_DAYS = 7;
+const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+function getWeekdayLabel(isoDate: string): string {
+  const [year, month, day] = isoDate.split('-').map(Number);
+  return WEEKDAY_LABELS[new Date(year, month - 1, day).getDay()];
+}
 
 function getIntensity(activeHours: number): string {
   if (activeHours === 0) return 'bg-surface-container-highest/20';
@@ -55,13 +60,13 @@ export function CalendarHeatmap({ crewId }: { crewId: string }) {
     <div className="rounded-lg border border-outline bg-surface p-lg">
       <h3 className="mb-3 text-sm font-bold text-on-surface">{t('webOverviewThisWeek')}</h3>
       <div className="grid grid-cols-7 gap-1">
-        {DAYS.map((day) => (
+        {data.map((cell) => (
           <div
-            key={day}
+            key={`header-${cell.date}`}
             className="text-center text-[10px] font-semibold uppercase text-on-surface-variant"
             aria-hidden="true"
           >
-            {day}
+            {getWeekdayLabel(cell.date)}
           </div>
         ))}
         {data.map((cell, i) => (
