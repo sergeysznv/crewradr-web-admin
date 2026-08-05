@@ -16,7 +16,7 @@ import { supabase } from '@/lib/supabase/client';
 import { tierColor, tierLabel } from '@/lib/utils';
 import {
   LayoutDashboard, Users, Settings, ShieldCheck, FileText, Link, MapPin, LogOut,
-  Loader2, ChevronLeft, ChevronRight, WifiOff, Menu, X,
+  Loader2, ChevronLeft, ChevronRight, WifiOff, Menu, X, Sparkles, Crown, ArrowUp,
 } from 'lucide-react';
 import type { CrewSummary } from '@/types';
 
@@ -80,6 +80,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState<string>('');
   const [loadError, setLoadError] = useState(false);
+  const [showUpgrade, setShowUpgrade] = useState(false);
 
   const palette = useBranding(activeCrewId, userTier);
   const { idleWarning, staySignedIn, handleSignOut } = useSessionTimeout();
@@ -210,6 +211,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
             <div className="p-3 space-y-1">
               <NavItems items={visibleNav} pathname={pathname} t={t} mobile onNavigate={(href) => router.push(href)} />
+              {userTier < 3 && (
+                <button onClick={() => { setShowUpgrade(true); setMobileMenuOpen(false); }}
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium"
+                  style={{ color: 'var(--brand-accent, #D4A017)' }}>
+                  <Sparkles className="h-5 w-5 shrink-0" />
+                  <span>{t('webNavUpgrade')}</span>
+                </button>
+              )}
             </div>
             <div className="absolute bottom-0 left-0 right-0 border-t border-zinc-200 p-3 dark:border-zinc-700">
               <div className="flex items-center gap-3">
@@ -296,6 +305,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </button>
               );
             })}
+            {/* Upgrade CTA — only when features are locked */}
+            {userTier < 3 && (
+              <button onClick={() => setShowUpgrade(true)}
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+                style={{ color: 'var(--brand-accent, #D4A017)' }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = resolved === 'dark' ? '#27272a' : '#f4f4f5'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = ''; }}
+              >
+                <Sparkles className="h-4 w-4 shrink-0" />
+                {!collapsed && <span>{t('webNavUpgrade')}</span>}
+              </button>
+            )}
           </nav>
 
           <div className="border-t border-zinc-200 p-2 dark:border-zinc-700">
@@ -352,6 +373,51 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </main>
       </div>
+
+      {/* ── Upgrade modal ── */}
+      {showUpgrade && (
+        <div className="fixed inset-0 z-[9000] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setShowUpgrade(false)} />
+          <div className="relative z-10 mx-4 w-full max-w-md rounded-2xl bg-surface p-6 shadow-xl border border-outline">
+            <div className="flex items-center gap-2 mb-4">
+              <Crown className="h-5 w-5 text-[var(--brand-accent,#D4A017)]" aria-hidden="true" />
+              <h2 className="font-heading font-bold text-lg text-on-surface">{t('webUpgradeTitle')}</h2>
+            </div>
+            <p className="text-sm text-on-surface-variant mb-4">{t('webUpgradeDescription')}</p>
+
+            <div className="space-y-3 mb-4">
+              <div className="rounded-xl border border-outline p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ backgroundColor: `${tierColor('captain')}20`, color: tierColor('captain') }}>{t('webTierCaptain')}</span>
+                  <span className="text-xs font-semibold text-on-surface">{t('webUpgradeTierFree')}</span>
+                </div>
+                <ul className="space-y-1.5 text-xs text-on-surface-variant">
+                  <li className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5 text-primary" /> {t('webUpgradeCaptainFeature1')}</li>
+                  <li className="flex items-center gap-1.5"><Settings className="h-3.5 w-3.5 text-primary" /> {t('webUpgradeCaptainFeature2')}</li>
+                </ul>
+              </div>
+              <div className="rounded-xl border border-[var(--brand-accent,#D4A017)]/30 p-4" style={{ background: 'color-mix(in srgb, var(--brand-accent, #D4A017) 5%, transparent)' }}>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ backgroundColor: `${tierColor('admiral')}20`, color: tierColor('admiral') }}>{t('webTierAdmiral')}</span>
+                  <span className="text-xs font-semibold text-on-surface">{t('webUpgradeTierPaid')}</span>
+                </div>
+                <ul className="space-y-1.5 text-xs text-on-surface-variant">
+                  <li className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-[var(--brand-accent,#D4A017)]" /> {t('webUpgradeAdmiralFeature1')}</li>
+                  <li className="flex items-center gap-1.5"><FileText className="h-3.5 w-3.5 text-[var(--brand-accent,#D4A017)]" /> {t('webUpgradeAdmiralFeature2')}</li>
+                  <li className="flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5 text-[var(--brand-accent,#D4A017)]" /> {t('webUpgradeAdmiralFeature3')}</li>
+                  <li className="flex items-center gap-1.5"><Link className="h-3.5 w-3.5 text-[var(--brand-accent,#D4A017)]" /> {t('webUpgradeAdmiralFeature4')}</li>
+                </ul>
+              </div>
+            </div>
+
+            <p className="text-xs text-on-surface-variant text-center mb-4">{t('webUpgradeFooter')}</p>
+            <button onClick={() => setShowUpgrade(false)}
+              className="w-full rounded-xl bg-[var(--brand-seed)] px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90">
+              {t('webUpgradeCta')}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ── Idle warning ── */}
       {idleWarning && <IdleWarningOverlay staySignedIn={staySignedIn} onSignOut={handleSignOut} />}

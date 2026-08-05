@@ -296,6 +296,7 @@
   "webNavMembers": "Miembros",
   "webNavMyAccount": "Mi Cuenta",
   "webNavProvisioning": "Aprovisionamiento",
+  "webNavUpgrade": "Upgrade",
   "webNoCrewFound": "Grupo no encontrado.",
   "webNotFoundCta": "Back to Dashboard",
   "webNotFoundDesc": "The page you're looking for doesn't exist or has been moved.",
@@ -405,5 +406,17 @@
   "webUpdateAvailableDesc": "Nueva versión desplegada. Recarga para ver cambios.",
   "webUpdateLater": "Más tarde",
   "webUpdateReloadNow": "Recargar Ahora",
-  "webUpgradeRequired": "Requiere plan superior. Mejora en la app CrewRadr."
+  "webUpgradeAdmiralFeature1": "Live fleet map with real-time tracking",
+  "webUpgradeAdmiralFeature2": "Audit logs & compliance reports",
+  "webUpgradeAdmiralFeature3": "OSHA 300 & FMCSA ELD exports",
+  "webUpgradeAdmiralFeature4": "Provisioning links & SSO domains",
+  "webUpgradeCaptainFeature1": "Member management & CSV import",
+  "webUpgradeCaptainFeature2": "Crew settings & branding",
+  "webUpgradeCta": "Open CrewRadr App to Upgrade",
+  "webUpgradeDescription": "Upgrade your tier in the CrewRadr mobile app to access these powerful fleet management tools on the web.",
+  "webUpgradeFooter": "Managed via App Store / Google Play subscriptions.",
+  "webUpgradeRequired": "Requiere plan superior. Mejora en la app CrewRadr.",
+  "webUpgradeTierFree": "Included with CrewRadr",
+  "webUpgradeTierPaid": "Admiral subscription required",
+  "webUpgradeTitle": "Unlock Premium Features"
 }
