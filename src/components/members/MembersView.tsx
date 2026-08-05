@@ -15,6 +15,8 @@ import { MemberCard } from '@/components/members/MemberCard';
 import { MemberDetail } from '@/components/members/MemberDetail';
 import { CsvImportModal } from '@/components/members/CsvImportModal';
 import { BulkActionBar } from '@/components/members/BulkActionBar';
+import { PeerRanking } from '@/components/members/PeerRanking';
+import { TierGateGuard } from '@/components/tier/TierGateGuard';
 import { SlideOverPanel } from '@/components/shared/SlideOverPanel';
 import { FilterChips } from '@/components/shared/FilterChips';
 import { EmptyState } from '@/components/shared/EmptyState';
@@ -171,6 +173,11 @@ export function MembersView() {
         <div className="md:hidden space-y-2">
           {filtered.map(m => <MemberCard key={m.id} member={m} onClick={() => setSelected(m)} />)}
         </div>
+
+        {/* Captain tier: crew leaderboard */}
+        <TierGateGuard minTier="captain" fallback={null}>
+          {members.length > 0 && <PeerRanking memberIds={members.map(m => m.id)} crewId={crewId!} />}
+        </TierGateGuard>
 
         <SlideOverPanel open={!!selected} onClose={() => setSelected(null)}>
           {selected && <MemberDetail member={selected} onClose={() => setSelected(null)} />}

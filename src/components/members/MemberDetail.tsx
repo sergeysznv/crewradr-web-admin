@@ -8,6 +8,8 @@ import { useCrew } from '@/hooks/useCrew';
 import { useSupabase } from '@/hooks/useSupabase';
 import { useT } from '@/hooks/use-translations';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
+import { TierGateGuard } from '@/components/tier/TierGateGuard';
+import { Scorecard } from '@/components/members/Scorecard';
 import { useState } from 'react';
 import { Route, Clock, AlertTriangle } from 'lucide-react';
 
@@ -81,6 +83,11 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
           <span className="text-sm text-on-surface">{member.trips_30d}</span>
         </div>
       </div>
+
+      {/* Captain tier: safety scorecard */}
+      <TierGateGuard minTier="captain" fallback={null}>
+        <Scorecard memberId={member.id} />
+      </TierGateGuard>
 
       {/* Recent trips */}
       <div>
