@@ -5,6 +5,7 @@ import { useT } from '@/hooks/use-translations';
 import { useCrew } from '@/hooks/useCrew';
 import { useTripDetail } from '@/hooks/queries/useTripDetail';
 import { TripTimeline } from '@/components/trips/TripTimeline';
+import { RiskPredictionCard } from '@/components/ai/RiskPredictionCard';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { tierRank } from '@/lib/utils';
 import { Route, Lock, Loader2, TriangleAlert } from 'lucide-react';
@@ -46,7 +47,11 @@ export function TripsView() {
         {/* Trip detail */}
         <div className="lg:col-span-2">
           {trip ? (
-            <TripTimeline trip={trip} />
+            <>
+              <TripTimeline trip={trip} />
+              {/* Admiral tier: AI risk prediction — self-gates via AICard */}
+              <RiskPredictionCard memberId={trip.memberId} />
+            </>
           ) : (
             <div className="flex items-center justify-center rounded-xl border border-outline bg-surface p-12">
               {isLoading ? (

@@ -7,6 +7,7 @@ import { useFleetDashboard } from '@/hooks/queries/useFleetDashboard';
 import { useRealtimeInvalidation } from '@/hooks/useRealtimeRefresh';
 import { KpiStrip } from '@/components/dashboard/KpiStrip';
 import { AlertFeed } from '@/components/dashboard/AlertFeed';
+import { AnomalyCard } from '@/components/ai/AnomalyCard';
 import { ActivityTimeline } from '@/components/dashboard/ActivityTimeline';
 import { FleetOverview } from '@/components/dashboard/FleetOverview';
 import { CalendarHeatmap } from '@/components/overview/CalendarHeatmap';
@@ -54,6 +55,8 @@ export function DashboardView() {
             <div className="md:col-span-2"><FleetOverview dashboard={dashboard.data} /></div>
           </div>
           <AlertFeed alerts={dashboard.data.recent_alerts} />
+          {/* Admiral tier: AI anomaly feed — self-gates via AICard */}
+          <AnomalyCard />
           <ActivityTimeline />
           {/* Captain+: custom alert rules */}
           <TierGateGuard minTier="captain" fallback={null}>

@@ -10,6 +10,7 @@ import { useT } from '@/hooks/use-translations';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { TierGateGuard } from '@/components/tier/TierGateGuard';
 import { Scorecard } from '@/components/members/Scorecard';
+import { RiskPredictionCard } from '@/components/ai/RiskPredictionCard';
 import { useState } from 'react';
 import { Route, Clock, AlertTriangle } from 'lucide-react';
 
@@ -88,6 +89,9 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
       <TierGateGuard minTier="captain" fallback={null}>
         <Scorecard memberId={member.id} />
       </TierGateGuard>
+
+      {/* Admiral tier: AI risk prediction — self-gates via AICard */}
+      <RiskPredictionCard memberId={member.id} />
 
       {/* Recent trips */}
       <div>
