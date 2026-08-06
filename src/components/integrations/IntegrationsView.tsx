@@ -25,10 +25,10 @@ export function IntegrationsView() {
   const { t } = useT();
   return (
     <TierGateGuard minTier="admiral" fallback={<LockedFallback />}>
-      <div className="mx-auto max-w-[1400px]">
+      <div className="space-y-lg animate-fade-in">
         <h1 className="text-2xl font-bold text-on-surface">{t('webIntegrationsTitle')}</h1>
 
-        <div className="mt-6">
+        <div>
           <section>
             <h2 className="text-lg font-bold text-on-surface">{t('webIntegrationsApiKeys')}</h2>
             <div className="mt-4">

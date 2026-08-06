@@ -43,8 +43,8 @@ export function TripsView() {
   }
 
   return (
-    <div className="space-y-lg">
-      <h1 className="text-xl font-bold text-on-surface">{t('webTripsTitle')}</h1>
+    <div className="space-y-lg animate-fade-in">
+      <h1 className="text-2xl font-bold text-on-surface">{t('webTripsTitle')}</h1>
 
       <div className="grid grid-cols-1 gap-lg lg:grid-cols-3">
         {/* Trip list */}

@@ -133,7 +133,8 @@ export function MembersView() {
   }
 
   return (
-    <div className="space-y-lg">
+    <div className="space-y-lg animate-fade-in">
+      <h1 className="text-2xl font-bold text-on-surface">{t('webMembersTitle')}</h1>
         {/* Controls */}
         <div className="flex flex-col md:flex-row gap-3 items-start md:items-center justify-between">
           <div className="flex items-center gap-2 flex-1 max-w-md">
@@ -162,7 +163,7 @@ export function MembersView() {
           ) : isError ? (
             <div className="p-lg text-center">
               <p className="text-sm text-on-surface-variant">{t('webMembersFailedToLoad')}</p>
-              <button onClick={() => refetch()} className="mt-2 rounded-lg bg-primary px-4 py-1.5 text-sm font-semibold text-on-primary">{t('webSharedRetry')}</button>
+              <button onClick={() => refetch()} className="mt-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-on-primary">{t('webSharedRetry')}</button>
             </div>
           ) : filtered.length === 0 ? (
             <EmptyState icon={<Users size={40} />} title={t('webMembersNoMembersFound')} message={t('webMembersNoMembersHint')} />

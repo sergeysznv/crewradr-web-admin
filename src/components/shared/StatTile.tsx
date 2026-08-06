@@ -4,33 +4,33 @@ import { cn } from '@/lib/utils';
 export function StatTile({
   label,
   value,
-  trend,
-  trendUp,
+  subtitle,
+  tone,
 }: {
   label: string;
   value: string | number;
-  trend?: string;
-  trendUp?: boolean;
+  subtitle?: string;
+  tone?: 'good' | 'bad' | 'neutral';
 }) {
   return (
     <div className="rounded-lg bg-surface border border-outline p-4">
       <p className="text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold">
         {label}
       </p>
-      <p className="mt-1 text-2xl font-extrabold text-on-surface">{value}</p>
-      {trend && (
-        <p
-          className={cn(
-            'mt-1 text-xs',
-            trendUp === true
-              ? 'text-success'
-              : trendUp === false
-                ? 'text-error'
-                : 'text-on-surface-variant',
-          )}
-        >
-          {trend}
-        </p>
+      <p
+        className={cn(
+          'mt-1 text-2xl font-extrabold',
+          tone === 'good'
+            ? 'text-success'
+            : tone === 'bad'
+              ? 'text-error'
+              : 'text-on-surface',
+        )}
+      >
+        {value}
+      </p>
+      {subtitle && (
+        <p className="mt-1 text-xs text-on-surface-variant">{subtitle}</p>
       )}
     </div>
   );

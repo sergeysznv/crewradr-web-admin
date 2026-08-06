@@ -12,8 +12,8 @@ export default function ReportsPage() {
   const { t } = useT();
 
   return (
-    <div className="space-y-lg">
-      <h1 className="text-xl font-bold text-on-surface">{t('webReportsTitle')}</h1>
+    <div className="space-y-lg animate-fade-in">
+      <h1 className="text-2xl font-bold text-on-surface">{t('webReportsTitle')}</h1>
 
       <ExportPresets />
 

@@ -43,7 +43,8 @@ export function DashboardView() {
           <Skeleton className="h-[320px] rounded-lg" />
         </div>
       ) : dashboard.data ? (
-        <div className="space-y-lg">
+        <div className="space-y-lg animate-fade-in">
+          <h1 className="text-2xl font-bold text-on-surface">{t('webNavFleet')}</h1>
           <KpiStrip data={dashboard.data} />
           {/* Fleet-wide aggregate safety score (captain+ tier) */}
           <TierGateGuard minTier="captain" fallback={null}>
@@ -79,7 +80,7 @@ export function DashboardView() {
         <div className="flex items-center justify-center py-24" role="status">
           <div className="text-center">
             <AlertTriangle className="mx-auto h-10 w-10 text-amber-500" aria-hidden="true" />
-            <p className="mt-2 text-sm text-on-surface-variant">Failed to load fleet data</p>
+            <p className="mt-2 text-sm text-on-surface-variant">{t('webErrorLoading')}</p>
             <button onClick={() => dashboard.refetch()} className="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-on-primary">
               <RefreshCw className="h-4 w-4" /> Retry
             </button>

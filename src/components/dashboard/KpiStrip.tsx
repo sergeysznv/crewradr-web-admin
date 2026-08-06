@@ -38,22 +38,25 @@ export function KpiStrip({ data }: { data: FleetDashboard }) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-lg">
       <StatTile label={t('webFleetFleetSize')} value={data.member_count} />
-      <StatTile label={t('webFleetActiveNow')} value={data.active_trips} />
+      <StatTile
+        label={t('webFleetActiveNow')}
+        value={data.active_trips}
+        tone={data.active_trips > 0 ? 'good' : 'neutral'}
+      />
       <StatTile
         label={t('webFleetRecentAlerts')}
         value={data.total_alert_count}
-        trend={data.total_alert_count > 0 ? t('webFleetAlertsCount', { count: data.total_alert_count, plural: data.total_alert_count !== 1 ? 's' : '' }) : t('webFleetAllClear')}
-        trendUp={data.total_alert_count > 0 ? false : undefined}
+        tone={data.total_alert_count > 0 ? 'bad' : 'good'}
       />
       <StatTile
         label={t('webFleetTripsToday')}
         value={todayQuery.isLoading ? '…' : todayQuery.data ?? '—'}
+        tone={!todayQuery.isLoading && todayQuery.data != null && todayQuery.data > 0 ? 'good' : 'neutral'}
       />
       <StatTile
         label={t('webFleetSafetyScore')}
         value={safetyScore != null ? safetyScore : '—'}
-        trend={safetyScore != null ? (safetyScore >= 80 ? t('webFleetGood') : safetyScore >= 50 ? t('webFleetFair') : t('webFleetPoor')) : undefined}
-        trendUp={safetyScore != null ? (safetyScore >= 80 ? true : safetyScore >= 50 ? undefined : false) : undefined}
+        tone={safetyScore != null ? (safetyScore >= 80 ? 'good' : safetyScore >= 50 ? 'neutral' : 'bad') : 'neutral'}
       />
     </div>
   );

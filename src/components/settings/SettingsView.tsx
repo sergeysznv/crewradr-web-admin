@@ -54,7 +54,7 @@ export function SettingsView() {
   );
 
   return (
-    <div className="max-w-[720px] space-y-lg">
+    <div className="max-w-3xl space-y-lg animate-fade-in">
       <FilterChips options={TABS.map((tab) => ({ ...tab, label: t(tab.labelKey) }))} selected={tab} onSelect={setTab} />
       <div className="bg-surface border border-outline rounded-lg p-lg md:p-xl">
         {tab === 'general' && <GeneralTab subscription={settings?.subscription ?? null} />}

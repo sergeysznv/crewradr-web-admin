@@ -9,7 +9,7 @@ import { useRealtimeInvalidation } from '@/hooks/useRealtimeRefresh';
 import { useSnackbar } from '@/components/shared/Snackbar';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { tierRank } from '@/lib/utils';
-import { Link, Plus, Copy, Trash2, Loader2, Lock } from 'lucide-react';
+import { Link, Plus, Copy, Trash2, Loader2, Lock, AlertTriangle } from 'lucide-react';
 import type { ProvisioningLink } from '@/types/rpc';
 
 export function ProvisioningView() {
@@ -145,10 +145,11 @@ export function ProvisioningView() {
             ))}
           </div>
         ) : linksQuery.isError ? (
-          <div className="flex items-center justify-center py-16 text-center">
+          <div className="flex items-center justify-center py-24 text-center">
             <div>
-              <p className="text-sm text-on-surface-variant">Failed to load provisioning links</p>
-              <button onClick={() => linksQuery.refetch()} className="mt-2 rounded-lg bg-primary px-4 py-1.5 text-sm font-semibold text-on-primary">Retry</button>
+              <AlertTriangle className="mx-auto h-10 w-10 text-amber-500" aria-hidden="true" />
+              <p className="mt-2 text-sm text-on-surface-variant">{t('webErrorLoading')}</p>
+              <button onClick={() => linksQuery.refetch()} className="mt-4 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-on-primary">{t('webRetry')}</button>
             </div>
           </div>
         ) : links.length === 0 ? (

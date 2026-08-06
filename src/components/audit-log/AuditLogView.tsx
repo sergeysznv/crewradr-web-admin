@@ -63,7 +63,8 @@ export function AuditLogView() {
   }
 
   return (
-    <div className="space-y-lg">
+    <div className="space-y-lg animate-fade-in">
+      <h1 className="text-2xl font-bold text-on-surface">{t('webAuditTitle')}</h1>
       <div className="flex items-start justify-between gap-3 flex-wrap">
         <AuditLogFilters
           datePreset={datePreset}
@@ -105,7 +106,7 @@ export function AuditLogView() {
         ) : isError ? (
           <div className="p-lg text-center">
             <p className="text-sm text-on-surface-variant">{t('webAuditFailedToLoad')}</p>
-            <button onClick={() => refetch()} className="mt-2 rounded-lg bg-primary px-4 py-1.5 text-sm font-semibold text-on-primary">{t('webRetry')}</button>
+            <button onClick={() => refetch()} className="mt-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-on-primary">{t('webRetry')}</button>
           </div>
         ) : logs.length === 0 ? (
           <EmptyState icon={<ScrollText size={40} />} title={t('webAuditNoEvents')} message={t('webAuditNoEventsHint')} />

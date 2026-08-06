@@ -141,7 +141,7 @@ export function MapView() {
           <p className="mt-2 text-sm text-on-surface-variant">{t('webMapFailed')}</p>
           <button
             onClick={() => positionsQuery.refetch()}
-            className="mt-4 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-on-primary"
+            className="mt-4 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-on-primary"
           >
             {t('retry')}
           </button>
