@@ -66,14 +66,16 @@ interface LiveMapProps {
   positions: LivePosition[];
   selectedUserId: string | null;
   onSelect: (p: LivePosition | null) => void;
+  onError?: (error: Error) => void;
 }
 
-export default function LiveMap({ positions, selectedUserId, onSelect }: LiveMapProps) {
+export default function LiveMap({ positions, selectedUserId, onSelect, onError }: LiveMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<Map<string, google.maps.marker.AdvancedMarkerElement>>(new Map());
   const didFitRef = useRef(false);
   const pendingMarkersRef = useRef<LivePosition[]>([]);
+  const loadErrorRef = useRef(false);
 
   // Declared before use so the purity lint sees a stable binding (runtime
   // behavior identical — function declarations are hoisted).
@@ -149,6 +151,8 @@ export default function LiveMap({ positions, selectedUserId, onSelect }: LiveMap
         mapTypeControl: true,
         streetViewControl: false,
         fullscreenControl: false,
+        scrollwheel: false,
+        gestureHandling: 'greedy',
       });
 
       map.addListener('click', () => onSelect(null));
@@ -158,9 +162,11 @@ export default function LiveMap({ positions, selectedUserId, onSelect }: LiveMap
         syncMarkers(map, pendingMarkersRef.current);
         pendingMarkersRef.current = [];
       }
-    }).catch(() => {
-      // Map failed to load — the MapView parent already handles the error
-      // state via positionsQuery.isError. Silently do nothing here.
+    }).catch((err: unknown) => {
+      if (!loadErrorRef.current) {
+        loadErrorRef.current = true;
+        onError?.(err instanceof Error ? err : new Error('Google Maps failed to load'));
+      }
     });
 
     return () => { cancelled = true; };

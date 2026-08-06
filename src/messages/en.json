@@ -160,7 +160,7 @@
 	"webFleetFair": "Fair",
 	"webFleetFatigueWarnings": "Fatigue Warnings",
 	"webFleetSafetyScoreTitle": "Fleet Safety Score",
-	"webFleetSafetyScoreDesc": "Average across all crew members (30-day)",
+	"webFleetSafetyScoreDesc": "Average across all crew members (90-day)",
 	"webFleetSafetyExcellent": "Excellent",
 	"webFleetSafetyGood": "Good",
 	"webFleetSafetyFair": "Fair",

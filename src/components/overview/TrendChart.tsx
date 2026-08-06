@@ -27,7 +27,7 @@ export function TrendChart({ metric, crewId, label }: TrendChartProps) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
 
-  const { data: points = [] } = useQuery({
+  const { data: points = [], isError } = useQuery({
     queryKey: ['webTrendData', crewId, metric, days],
     queryFn: () => getWebTrendData(supabase, crewId, metric, days),
     enabled: !!crewId,
@@ -67,7 +67,7 @@ export function TrendChart({ metric, crewId, label }: TrendChartProps) {
       </div>
       <div className="mt-1">
         <span className="text-2xl font-extrabold text-on-surface">
-          {lastValue !== null ? formatValue(lastValue) : '—'}
+          {isError ? <span className="text-xs text-error">{t('webErrorLoading')}</span> : lastValue !== null ? formatValue(lastValue) : '—'}
         </span>
       </div>
       {points.length >= 2 ? (

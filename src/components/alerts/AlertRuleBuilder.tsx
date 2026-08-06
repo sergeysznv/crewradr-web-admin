@@ -18,7 +18,7 @@ export function AlertRuleBuilder() {
   const [speedMph, setSpeedMph] = useState<number>(80);
   const [durationMin, setDurationMin] = useState<number>(5);
 
-  const { data: rules = [] } = useAlertRules(crewId);
+  const { data: rules = [], isError } = useAlertRules(crewId);
   const saveMutation = useSaveAlertRule(crewId);
 
   const handleSave = () => {
@@ -47,6 +47,9 @@ export function AlertRuleBuilder() {
 
   return (
     <div className="space-y-md">
+      {isError && (
+        <p className="text-xs text-error">{t('webErrorLoading')}</p>
+      )}
       {/* Existing rules */}
       {rules.length > 0 && (
         <div>

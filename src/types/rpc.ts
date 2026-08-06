@@ -7,6 +7,7 @@ export interface FleetDashboard {
   crew_name: string;
   member_count: number;
   active_trips: number;
+  total_alert_count: number;
   recent_alerts: Array<{ id: string; alert_type: string; severity: string; message: string; created_at: string; display_name: string | null }>;
   trip_stats?: {
     total_trips: number;
@@ -45,7 +46,7 @@ export interface CrewSettings {
   // seed_color arrives as an ARGB bigint (JSON number) from the RPC; hex
   // strings are tolerated for legacy rows.
   branding: { seed_color: string | number | null; logo_url: string | null } | null;
-  subscription: { tier: string; status: string; current_period_end: string | null } | null;
+  subscription: { tier: string; status: string; billing_interval: string | null; max_capacity: number; created_at: string; updated_at: string } | null;
   // Reserved: the backend returns sso_enabled: true when SSO is available
   // for this crew. The Settings UI keeps the SSO tab hidden until then.
   sso_enabled?: boolean;
@@ -79,8 +80,11 @@ export interface LivePosition {
   user_id: string;
   display_name: string | null;
   profile_emoji: string | null;
+  avatar_url: string | null;
+  role: string;
   latitude: number;
   longitude: number;
+  event_type: string | null;
   created_at: string;
 }
 

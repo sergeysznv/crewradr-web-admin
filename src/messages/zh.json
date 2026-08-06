@@ -160,7 +160,7 @@
 	"webFleetFair": "Fair",
 	"webFleetFatigueWarnings": "疲劳警告",
 	"webFleetSafetyScoreTitle": "车队安全评分",
-	"webFleetSafetyScoreDesc": "所有成员的平均值（30天）",
+	"webFleetSafetyScoreDesc": "所有成员的平均值（90天）",
 	"webFleetSafetyExcellent": "优秀",
 	"webFleetSafetyGood": "良好",
 	"webFleetSafetyFair": "一般",

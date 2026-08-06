@@ -36,6 +36,7 @@ export function MapView() {
   });
 
   const [selected, setSelected] = useState<LivePosition | null>(null);
+  const [mapLoadError, setMapLoadError] = useState<string | null>(null);
 
   const positions = positionsQuery.data ?? [];
   const isAdmiral = tierRank(tier) >= 3;
@@ -171,20 +172,29 @@ export function MapView() {
 
       <div className="relative mt-lg flex-1">
         <div className="h-[calc(100vh-12rem)] min-h-[480px] overflow-hidden rounded-xl border border-outline bg-surface-container shadow-sm">
-          {positions.length === 0 ? (
-            <div className="flex h-full items-center justify-center" role="status">
+          <LiveMap
+            positions={positions}
+            selectedUserId={selected?.user_id ?? null}
+            onSelect={setSelected}
+            onError={(err) => setMapLoadError(err.message)}
+          />
+          {mapLoadError && (
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-xl bg-surface-container/80" role="alert">
+              <div className="text-center">
+                <AlertTriangle className="mx-auto h-10 w-10 text-amber-500" aria-hidden="true" />
+                <p className="mt-2 text-sm text-on-surface-variant">{t('webMapFailed')}</p>
+                <p className="mt-1 text-xs text-on-surface-variant opacity-70">{mapLoadError}</p>
+              </div>
+            </div>
+          )}
+          {positions.length === 0 && (
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-xl bg-surface-container/70" role="status">
               <div className="text-center">
                 <MapPin className="mx-auto h-10 w-10 text-on-surface-variant opacity-40" aria-hidden="true" />
                 <p className="mt-2 text-sm text-on-surface-variant">{t('webMapNoPositions')}</p>
                 <p className="mt-1 text-xs text-on-surface-variant opacity-70">{t('webMapNoPositionsDesc')}</p>
               </div>
             </div>
-          ) : (
-            <LiveMap
-              positions={positions}
-              selectedUserId={selected?.user_id ?? null}
-              onSelect={setSelected}
-            />
           )}
         </div>
 

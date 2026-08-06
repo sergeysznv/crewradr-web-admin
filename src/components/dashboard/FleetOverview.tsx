@@ -29,7 +29,7 @@ export function FleetOverview({ dashboard }: FleetOverviewProps) {
   });
 
   const onlineCount = positionsQuery.data?.length ?? null;
-  const alertCount = dashboard.recent_alerts.length;
+  const alertCount = dashboard.total_alert_count;
 
   return (
     <div className="bg-surface border border-outline rounded-lg p-lg flex flex-col justify-between min-h-[240px]">

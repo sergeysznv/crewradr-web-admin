@@ -79,7 +79,6 @@ export function FleetSafetyScore() {
 
   const avgScore = rankings.reduce((sum, r) => sum + r.overallScore, 0) / rankings.length;
   const distribution = computeDistribution(rankings);
-  const maxBucket = Math.max(distribution.excellent, distribution.good, distribution.fair, distribution.poor, 1);
   const best = rankings[0]; // rankings are sorted by overallScore desc
   const worst = rankings[rankings.length - 1];
 
@@ -115,7 +114,7 @@ export function FleetSafetyScore() {
         <div className="md:col-span-2 space-y-2">
           {(Object.keys(distribution) as (keyof Distribution)[]).map((bucket) => {
             const count = distribution[bucket];
-            const pct = maxBucket > 0 ? (count / rankings.length) * 100 : 0;
+            const pct = (count / rankings.length) * 100;
             return (
               <div key={bucket} className="flex items-center gap-2">
                 <span className="w-16 text-xs font-medium text-on-surface-variant shrink-0">

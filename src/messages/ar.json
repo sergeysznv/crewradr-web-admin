@@ -160,7 +160,7 @@
 	"webFleetFair": "Fair",
 	"webFleetFatigueWarnings": "تحذيرات الإرهاق",
 	"webFleetSafetyScoreTitle": "درجة سلامة الأسطول",
-	"webFleetSafetyScoreDesc": "متوسط جميع الأعضاء (30 يومًا)",
+	"webFleetSafetyScoreDesc": "متوسط جميع الأعضاء (90 يومًا)",
 	"webFleetSafetyExcellent": "ممتاز",
 	"webFleetSafetyGood": "جيد",
 	"webFleetSafetyFair": "متوسط",

@@ -15,10 +15,11 @@ const SEVERITY_COLORS: Record<AnomalySeverity, string> = {
 
 export function AnomalyCard() {
   const { t } = useT();
-  const { settings } = useTier();
+  const { settings, tier } = useTier();
   const crewId = settings?.crewId ?? null;
+  const isAdmiral = tier === 'admiral';
 
-  const { data: anomalies = [], isLoading, error } = useAnomalies(crewId);
+  const { data: anomalies = [], isLoading, error } = useAnomalies(crewId, 30, isAdmiral);
 
   const recentAnomalies = anomalies.slice(0, 5);
   const serviceDown = !!error;

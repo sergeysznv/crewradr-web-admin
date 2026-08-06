@@ -5,67 +5,32 @@ import { useQuery } from '@tanstack/react-query';
 import { useCrew } from '@/hooks/useCrew';
 import { useSupabase } from '@/hooks/useSupabase';
 import { useT } from '@/hooks/use-translations';
+import { useTier } from '@/hooks/useTier';
 import { useMeasurementSystem } from '@/hooks/useMeasurementSystem';
+import { getWebTripList } from '@/lib/rpc';
+import { tierHistoryDays } from '@/lib/tier';
 import { formatDistanceMeters } from '@/lib/units';
 import { Clock, Route, Car } from 'lucide-react';
-
-interface TripSession {
-  user_id: string;
-  started_at: string;
-  driving_seconds: number;
-  distance_m: number;
-  fatigue_warnings: number;
-}
+import type { TripListItem } from '@/types/tier';
 
 export function ActivityTimeline() {
   const { crewId } = useCrew();
   const supabase = useSupabase();
   const { t } = useT();
   const { system } = useMeasurementSystem();
+  const { settings, tier } = useTier();
+  const days = settings?.historyDays ?? tierHistoryDays(tier);
 
   const tripsQuery = useQuery({
-    queryKey: ['recentTrips', crewId],
-    queryFn: async () => {
-      if (!crewId) return [];
-      const since = new Date();
-      since.setDate(since.getDate() - 7);
-      const { data, error } = await supabase
-        .from('crew_trip_sessions')
-        .select('user_id, started_at, driving_seconds, distance_m, fatigue_warnings')
-        .eq('crew_id', crewId)
-        .gte('started_at', since.toISOString())
-        .order('started_at', { ascending: false })
-        .limit(8);
-      if (error) throw error;
-      return (data ?? []) as TripSession[];
-    },
+    queryKey: ['recentTrips', crewId, days],
+    queryFn: () => getWebTripList(supabase, crewId!, days),
     enabled: !!crewId,
     refetchInterval: 60_000,
   });
 
-  // Resolve display names for the user_ids in the trips.
-  const userIds = [...new Set((tripsQuery.data ?? []).map((t) => t.user_id))];
-  const profilesQuery = useQuery({
-    queryKey: ['tripProfiles', crewId, userIds],
-    queryFn: async () => {
-      if (userIds.length === 0) return {} as Record<string, string>;
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('user_id, display_name')
-        .in('user_id', userIds);
-      if (error) throw error;
-      const map: Record<string, string> = {};
-      for (const row of data ?? []) {
-        map[row.user_id] = (row as { display_name: string }).display_name;
-      }
-      return map;
-    },
-    enabled: userIds.length > 0,
-  });
-
-  const trips = tripsQuery.data ?? [];
-  const names = profilesQuery.data ?? {};
+  const trips: TripListItem[] = tripsQuery.data ?? [];
   const isLoading = tripsQuery.isLoading;
+  const isError = tripsQuery.isError;
 
   return (
     <div className="bg-surface border border-outline rounded-lg p-lg">
@@ -74,7 +39,11 @@ export function ActivityTimeline() {
         <h2 className="font-heading font-bold text-sm text-on-surface">{t('webFleetRecentActivity')}</h2>
       </div>
 
-      {isLoading ? (
+      {isError ? (
+        <div className="py-8 text-center">
+          <p className="text-xs text-error">{t('webErrorLoading')}</p>
+        </div>
+      ) : isLoading ? (
         <div className="space-y-3 py-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="h-10 bg-surface-container rounded-lg animate-pulse" />
@@ -91,10 +60,10 @@ export function ActivityTimeline() {
       ) : (
         <div className="divide-y divide-outline-variant">
           {trips.map((trip, i) => {
-            const displayName = names[trip.user_id] || trip.user_id.slice(0, 8);
+            const displayName = trip.member_name || trip.member_id.slice(0, 8);
             const initial = displayName.charAt(0).toUpperCase();
             return (
-              <div key={`${trip.user_id}-${trip.started_at}-${i}`} className="flex items-center gap-3 py-2.5">
+              <div key={`${trip.id}-${i}`} className="flex items-center gap-3 py-2.5">
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-container text-xs font-bold text-primary">
                   {initial}
                 </div>
@@ -106,22 +75,22 @@ export function ActivityTimeline() {
                     {new Date(trip.started_at).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
                     {' · '}
                     {new Date(trip.started_at).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
-                    {trip.distance_m > 0 && (
+                    {trip.distance_miles > 0 && (
                       <span className="ml-2 inline-flex items-center gap-0.5">
                         <Route className="h-3 w-3" aria-hidden="true" />
-                        {formatDistanceMeters(trip.distance_m, system)}
+                        {formatDistanceMeters(trip.distance_miles * 1609.34, system)}
                       </span>
                     )}
-                    {trip.driving_seconds > 0 && (
+                    {trip.duration_min > 0 && (
                       <span className="ml-2">
-                        {Math.round(trip.driving_seconds / 60)} {t('webFleetMin')}
+                        {trip.duration_min} {t('webFleetMin')}
                       </span>
                     )}
                   </p>
                 </div>
-                {trip.fatigue_warnings > 0 && (
+                {trip.alert_count > 0 && (
                   <span className="shrink-0 rounded-full bg-warning-container px-2 py-0.5 text-[10px] font-semibold text-warning">
-                    {t('webFleetAlertsCount', { count: trip.fatigue_warnings, plural: trip.fatigue_warnings > 1 ? 's' : '' })}
+                    {t('webFleetAlertsCount', { count: trip.alert_count, plural: trip.alert_count > 1 ? 's' : '' })}
                   </span>
                 )}
               </div>

@@ -160,7 +160,7 @@
 	"webFleetFair": "Fair",
 	"webFleetFatigueWarnings": "Alertes de fatigue",
 	"webFleetSafetyScoreTitle": "Score de sécurité de la flotte",
-	"webFleetSafetyScoreDesc": "Moyenne de tous les membres (30 jours)",
+	"webFleetSafetyScoreDesc": "Moyenne de tous les membres (90 jours)",
 	"webFleetSafetyExcellent": "Excellent",
 	"webFleetSafetyGood": "Bon",
 	"webFleetSafetyFair": "Moyen",

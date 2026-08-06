@@ -29,7 +29,7 @@ import type { CrewSummary } from '@/types';
 // Routes that exist in the redesign. minTier: 0 deckhand, 1 first mate,
 // 2 captain, 3 admiral.
 const NAV_ITEMS = [
-  { href: '/fleet', label: 'webNavFleet', icon: LayoutDashboard, minTier: 0 }, // home
+  { href: '/fleet', label: 'webNavFleet', icon: LayoutDashboard, minTier: 1 }, // first mate+
   { href: '/map', label: 'webNavLiveMap', icon: MapPin, minTier: 3 },
   { href: '/trips', label: 'webNavTrips', icon: Route, minTier: 1 },
   { href: '/members', label: 'webNavMembers', icon: Users, minTier: 1 }, // first mate: read-only

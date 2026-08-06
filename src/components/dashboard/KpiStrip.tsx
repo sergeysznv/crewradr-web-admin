@@ -13,13 +13,13 @@ export function KpiStrip({ data }: { data: FleetDashboard }) {
   const supabase = useSupabase();
   const { t } = useT();
 
-  // Trips started today
+  // Trips started today (UTC midnight — matches server current_date)
   const todayQuery = useQuery({
     queryKey: ['tripsToday', crewId],
     queryFn: async () => {
       if (!crewId) return 0;
-      const startOfDay = new Date();
-      startOfDay.setHours(0, 0, 0, 0);
+      const now = new Date();
+      const startOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
       const { count, error } = await supabase
         .from('crew_trip_sessions')
         .select('*', { count: 'exact', head: true })
@@ -41,9 +41,9 @@ export function KpiStrip({ data }: { data: FleetDashboard }) {
       <StatTile label={t('webFleetActiveNow')} value={data.active_trips} />
       <StatTile
         label={t('webFleetRecentAlerts')}
-        value={data.recent_alerts.length}
-        trend={data.recent_alerts.length > 0 ? t('webFleetAlertsCount', { count: data.recent_alerts.length, plural: 's' }) : t('webFleetAllClear')}
-        trendUp={data.recent_alerts.length > 0 ? false : undefined}
+        value={data.total_alert_count}
+        trend={data.total_alert_count > 0 ? t('webFleetAlertsCount', { count: data.total_alert_count, plural: data.total_alert_count !== 1 ? 's' : '' }) : t('webFleetAllClear')}
+        trendUp={data.total_alert_count > 0 ? false : undefined}
       />
       <StatTile
         label={t('webFleetTripsToday')}

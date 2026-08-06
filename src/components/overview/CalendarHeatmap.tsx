@@ -9,7 +9,6 @@ import { getWebTrendData } from '@/lib/rpc';
 interface DayCell {
   date: string;
   activeHours: number;
-  tripCount?: number;
 }
 
 const WEEK_DAYS = 7;
@@ -34,7 +33,7 @@ export function CalendarHeatmap({ crewId }: { crewId: string }) {
 
   // The trend RPC returns (p_days + 1) points (start day through today);
   // keep the trailing week so the "This Week" grid aligns with today.
-  const { data: rawPoints = [] } = useQuery({
+  const { data: rawPoints = [], isError } = useQuery({
     queryKey: ['webTrendData', crewId, 'hours', WEEK_DAYS],
     queryFn: () => getWebTrendData(supabase, crewId, 'hours', WEEK_DAYS),
     enabled: !!crewId,
@@ -45,6 +44,14 @@ export function CalendarHeatmap({ crewId }: { crewId: string }) {
     date: p.date,
     activeHours: Math.round(p.value * 10) / 10,
   }));
+
+  if (isError) {
+    return (
+      <div className="rounded-lg border border-outline bg-surface p-lg text-center">
+        <p className="text-xs text-error">{t('webErrorLoading')}</p>
+      </div>
+    );
+  }
 
   if (data.length === 0 || data.every((d) => d.activeHours === 0)) {
     return (
@@ -73,24 +80,8 @@ export function CalendarHeatmap({ crewId }: { crewId: string }) {
           <div
             key={i}
             className={`aspect-square rounded-md ${getIntensity(cell.activeHours)}`}
-            title={
-              cell.tripCount !== undefined
-                ? t('webOverviewDayTooltipTrips', {
-                    date: cell.date,
-                    hours: cell.activeHours,
-                    trips: cell.tripCount,
-                  })
-                : t('webOverviewDayTooltip', { date: cell.date, hours: cell.activeHours })
-            }
-            aria-label={
-              cell.tripCount !== undefined
-                ? t('webOverviewDayTooltipTrips', {
-                    date: cell.date,
-                    hours: cell.activeHours,
-                    trips: cell.tripCount,
-                  })
-                : t('webOverviewDayTooltip', { date: cell.date, hours: cell.activeHours })
-            }
+            title={t('webOverviewDayTooltip', { date: cell.date, hours: cell.activeHours })}
+            aria-label={t('webOverviewDayTooltip', { date: cell.date, hours: cell.activeHours })}
           />
         ))}
       </div>

@@ -51,15 +51,19 @@ export function GeneralTab({
               {subscription.status}
             </span>
           </div>
-          {subscription.current_period_end && (
+          {subscription.billing_interval && (
             <div className="flex justify-between items-center">
-              <span className="text-sm text-on-surface-variant">{t('webSettingsRenews')}</span>
+              <span className="text-sm text-on-surface-variant">{t('webSettingsBilling')}</span>
+              <span className="text-sm font-semibold text-on-surface capitalize">
+                {subscription.billing_interval}
+              </span>
+            </div>
+          )}
+          {subscription.max_capacity > 0 && (
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-on-surface-variant">{t('webSettingsMaxMembers')}</span>
               <span className="text-sm font-semibold text-on-surface">
-                {new Date(subscription.current_period_end).toLocaleDateString(undefined, {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
+                {subscription.max_capacity}
               </span>
             </div>
           )}

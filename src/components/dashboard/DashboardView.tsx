@@ -46,7 +46,9 @@ export function DashboardView() {
         <div className="space-y-lg">
           <KpiStrip data={dashboard.data} />
           {/* Fleet-wide aggregate safety score (captain+ tier) */}
-          <FleetSafetyScore />
+          <TierGateGuard minTier="captain" fallback={null}>
+            <FleetSafetyScore />
+          </TierGateGuard>
           {/* Trends — one card per metric, tier-clamped history window */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-lg">
             <TrendChart metric="miles" crewId={crewId!} label={t('webOverviewTrendMiles')} />

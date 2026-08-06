@@ -160,7 +160,7 @@
 	"webFleetFair": "Fair",
 	"webFleetFatigueWarnings": "Предупреждения об усталости",
 	"webFleetSafetyScoreTitle": "Рейтинг безопасности автопарка",
-	"webFleetSafetyScoreDesc": "Среднее по всем участникам (30 дней)",
+	"webFleetSafetyScoreDesc": "Среднее по всем участникам (90 дней)",
 	"webFleetSafetyExcellent": "Отлично",
 	"webFleetSafetyGood": "Хорошо",
 	"webFleetSafetyFair": "Удовлетворительно",
