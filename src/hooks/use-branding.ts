@@ -83,8 +83,11 @@ export function useBranding(crewId?: string | null, userTier?: number) {
           } catch { /* fall back to cache/fallback */ }
 
           // 3. Subscribe to Realtime filtered by this specific crew_id.
+          // Use a unique channel name per mount to prevent "cannot add
+          // callbacks after subscribe" when the effect re-runs before the
+          // previous channel is fully torn down.
           channel = supabase
-            .channel(`crew_branding:${id}`)
+            .channel(`crew_branding:${id}:${Date.now()}`)
             .on(
               'postgres_changes',
               { event: '*', schema: 'public', table: 'crew_branding', filter: `crew_id=eq.${id}` },
