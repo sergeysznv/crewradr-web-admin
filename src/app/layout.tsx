@@ -4,7 +4,14 @@ import { MeasurementProvider } from '@/components/settings/MeasurementProvider';
 import { TierProvider } from '@/hooks/useTier';
 import '@/app/globals.css';
 
-export const metadata: Metadata = { title: 'CrewRadr Admin', description: 'Fleet management dashboard' };
+export const metadata: Metadata = {
+  title: 'CrewRadr Admin',
+  description: 'Fleet management dashboard',
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/logo-96.png',
+  },
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
