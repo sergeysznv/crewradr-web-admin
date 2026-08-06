@@ -5,6 +5,8 @@ import { useState, useMemo } from 'react';
 import { useT } from '@/hooks/use-translations';
 import { useCrew } from '@/hooks/useCrew';
 import { useSupabase } from '@/hooks/useSupabase';
+import { useMeasurementSystem } from '@/hooks/useMeasurementSystem';
+import { formatDistanceMeters } from '@/lib/units';
 import { useSnackbar } from '@/components/shared/Snackbar';
 import { tierRank } from '@/lib/utils';
 import { FileText, Download, Loader2, Check, Mail, Lock, Eye, X, ChevronDown } from 'lucide-react';
@@ -27,6 +29,7 @@ interface TripSession {
 
 export function ComplianceView() {
   const { t } = useT();
+  const { system } = useMeasurementSystem();
   const { crewId, tier } = useCrew();
   const supabase = useSupabase();
   const { showError } = useSnackbar();
@@ -54,13 +57,13 @@ export function ComplianceView() {
 
   const eldRows = useMemo(() => {
     if (!eldData) return [];
-    return eldData.map((s) => [
-      s.user_id,
-      s.started_at,
-      ((s.driving_seconds ?? 0) / 3600).toFixed(1),
-      ((s.distance_m ?? 0) / 1000).toFixed(1),
-      String(s.fatigue_warnings ?? 0),
-    ]);
+    return eldData.map((s) => ({
+      userId: s.user_id,
+      startedAt: s.started_at,
+      hours: ((s.driving_seconds ?? 0) / 3600).toFixed(1),
+      distanceM: s.distance_m ?? 0,
+      fatigue: String(s.fatigue_warnings ?? 0),
+    }));
   }, [eldData]);
 
   async function generateOsha() {
@@ -132,8 +135,15 @@ export function ComplianceView() {
       if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
       return `"${s}"`;
     };
-    const csv = ['Driver,Date,DrivingHours,DistanceKm,FatigueWarnings',
-      ...eldRows.map((r) => r.map(csvEscape).join(','))
+    const distanceHeader = system === 'imperial' ? 'DistanceMi' : 'DistanceKm';
+    const distanceValue = (m: number) =>
+      system === 'imperial' ? (m / 1609.344).toFixed(1) : (m / 1000).toFixed(1);
+    const csv = [`Driver,Date,DrivingHours,${distanceHeader},FatigueWarnings`,
+      ...eldRows.map((r) =>
+        [r.userId, r.startedAt, r.hours, distanceValue(r.distanceM), r.fatigue]
+          .map(csvEscape)
+          .join(',')
+      )
     ].join('\n');
     download(`eld-report-crew-${new Date().toISOString().split('T')[0]}.csv`, csv);
   }
@@ -275,11 +285,11 @@ export function ComplianceView() {
               <tbody className="divide-y divide-outline-variant">
                 {eldRows.slice(0, 25).map((row, i) => (
                   <tr key={i} className="hover:bg-surface-container/50">
-                    <td className="px-3 py-1.5 text-on-surface font-mono text-xs">{row[0].slice(0, 8)}</td>
-                    <td className="px-3 py-1.5 text-on-surface whitespace-nowrap">{new Date(row[1]).toLocaleDateString()}</td>
-                    <td className="px-3 py-1.5 text-on-surface">{row[2]}</td>
-                    <td className="px-3 py-1.5 text-on-surface">{row[3]} {t('webComplianceKm')}</td>
-                    <td className="px-3 py-1.5 text-on-surface">{row[4]}</td>
+                    <td className="px-3 py-1.5 text-on-surface font-mono text-xs">{row.userId.slice(0, 8)}</td>
+                    <td className="px-3 py-1.5 text-on-surface whitespace-nowrap">{new Date(row.startedAt).toLocaleDateString()}</td>
+                    <td className="px-3 py-1.5 text-on-surface">{row.hours}</td>
+                    <td className="px-3 py-1.5 text-on-surface">{formatDistanceMeters(row.distanceM, system)}</td>
+                    <td className="px-3 py-1.5 text-on-surface">{row.fatigue}</td>
                   </tr>
                 ))}
               </tbody>

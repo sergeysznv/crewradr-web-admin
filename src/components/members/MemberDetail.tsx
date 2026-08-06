@@ -7,6 +7,8 @@ import { useUpdateMemberRole, useRemoveMember } from '@/hooks/queries/useMutatio
 import { useCrew } from '@/hooks/useCrew';
 import { useSupabase } from '@/hooks/useSupabase';
 import { useT } from '@/hooks/use-translations';
+import { useMeasurementSystem } from '@/hooks/useMeasurementSystem';
+import { formatDistanceMeters } from '@/lib/units';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { TierGateGuard } from '@/components/tier/TierGateGuard';
 import { RoleGate } from '@/components/tier/RoleGate';
@@ -24,6 +26,7 @@ interface MemberTrip {
 
 export function MemberDetail({ member, onClose }: { member: CrewMember; onClose: () => void }) {
   const { t } = useT();
+  const { system } = useMeasurementSystem();
   const { crewId } = useCrew();
   const supabase = useSupabase();
   const updateRole = useUpdateMemberRole(crewId!);
@@ -124,7 +127,7 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
                 </div>
                 <div className="flex items-center gap-3 text-xs text-on-surface-variant">
                   <span>{Math.round(trip.driving_seconds / 60)} {t('webMembersDetailMin')}</span>
-                  {trip.distance_m > 0 && <span>{(trip.distance_m / 1000).toFixed(1)} {t('webMembersDetailKm')}</span>}
+                  {trip.distance_m > 0 && <span>{formatDistanceMeters(trip.distance_m, system)}</span>}
                 </div>
               </div>
             ))}

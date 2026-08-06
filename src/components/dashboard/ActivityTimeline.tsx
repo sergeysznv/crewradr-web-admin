@@ -5,6 +5,8 @@ import { useQuery } from '@tanstack/react-query';
 import { useCrew } from '@/hooks/useCrew';
 import { useSupabase } from '@/hooks/useSupabase';
 import { useT } from '@/hooks/use-translations';
+import { useMeasurementSystem } from '@/hooks/useMeasurementSystem';
+import { formatDistanceMeters } from '@/lib/units';
 import { Clock, Route, Car } from 'lucide-react';
 
 interface TripSession {
@@ -19,6 +21,7 @@ export function ActivityTimeline() {
   const { crewId } = useCrew();
   const supabase = useSupabase();
   const { t } = useT();
+  const { system } = useMeasurementSystem();
 
   const tripsQuery = useQuery({
     queryKey: ['recentTrips', crewId],
@@ -106,7 +109,7 @@ export function ActivityTimeline() {
                     {trip.distance_m > 0 && (
                       <span className="ml-2 inline-flex items-center gap-0.5">
                         <Route className="h-3 w-3" aria-hidden="true" />
-                        {(trip.distance_m / 1000).toFixed(1)} {t('webFleetKm')}
+                        {formatDistanceMeters(trip.distance_m, system)}
                       </span>
                     )}
                     {trip.driving_seconds > 0 && (
