@@ -7,6 +7,7 @@ import { useTripList } from '@/hooks/queries/useTripList';
 import { useTripDetail } from '@/hooks/queries/useTripDetail';
 import { TripTimeline } from '@/components/trips/TripTimeline';
 import { RiskPredictionCard } from '@/components/ai/RiskPredictionCard';
+import { ETACard } from '@/components/ai/ETACard';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { tierRank } from '@/lib/utils';
 import { tierHistoryDays } from '@/lib/tier';
@@ -126,6 +127,8 @@ export function TripsView() {
               <TripTimeline trip={trip} />
               {/* Admiral tier: AI risk prediction — self-gates via AICard */}
               <RiskPredictionCard memberId={trip.memberId} />
+              {/* Admiral tier: AI arrival prediction — live trips only */}
+              {trip.isLive && <ETACard memberId={trip.memberId} />}
             </>
           ) : (
             <div className="flex items-center justify-center rounded-xl border border-outline bg-surface p-12">

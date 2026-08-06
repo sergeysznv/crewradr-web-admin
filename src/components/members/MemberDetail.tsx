@@ -12,6 +12,7 @@ import { TierGateGuard } from '@/components/tier/TierGateGuard';
 import { RoleGate } from '@/components/tier/RoleGate';
 import { Scorecard } from '@/components/members/Scorecard';
 import { RiskPredictionCard } from '@/components/ai/RiskPredictionCard';
+import { ETACard } from '@/components/ai/ETACard';
 import { useState } from 'react';
 import { Route, Clock, AlertTriangle } from 'lucide-react';
 
@@ -93,6 +94,9 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
 
       {/* Admiral tier: AI risk prediction — self-gates via AICard */}
       <RiskPredictionCard memberId={member.user_id} />
+
+      {/* Admiral tier: AI arrival prediction — self-gates via AICard */}
+      <ETACard memberId={member.user_id} />
 
       {/* Recent trips */}
       <div>
