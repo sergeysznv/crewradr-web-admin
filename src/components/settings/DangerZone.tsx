@@ -56,13 +56,13 @@ export function DangerZone() {
     setWorking(true);
     try {
       await transferCaptaincy(supabase, crewId, transferTarget);
-      showSuccess('Ownership transferred successfully.');
+      showSuccess(t('webSettingsTransferSuccess'));
       setShowTransfer(false);
       setTransferTarget(null);
       queryClient.invalidateQueries({ queryKey: ['crewMembers', crewId] });
       router.refresh();
     } catch {
-      showError('Transfer failed');
+      showError(t('webSettingsTransferFailed'));
     }
     setWorking(false);
   }
@@ -80,11 +80,11 @@ export function DangerZone() {
       if (error) throw error;
       const row = data as { id: string };
       await removeMember(supabase, row.id);
-      showSuccess('You have left the crew.');
+      showSuccess(t('webSettingsLeaveSuccess'));
       queryClient.invalidateQueries({ queryKey: ['crewMembers', crewId] });
       router.push('/fleet');
     } catch {
-      showError('Failed to leave crew');
+      showError(t('webSettingsLeaveFailed'));
     }
     setWorking(false);
     setShowLeave(false);
@@ -95,10 +95,10 @@ export function DangerZone() {
     setWorking(true);
     try {
       await dissolveCrew(supabase, crewId);
-      showSuccess('Crew deleted.');
+      showSuccess(t('webSettingsDeleteSuccess'));
       router.push('/');
     } catch {
-      showError('Failed to delete crew');
+      showError(t('webSettingsDeleteFailed'));
     }
     setWorking(false);
     setShowDelete(false);
@@ -157,7 +157,7 @@ export function DangerZone() {
       <ConfirmDialog
         open={showTransfer}
         title={t('webSettingsTransferOwnership')}
-        message="Select a member to transfer captaincy to."
+        message={t('webSettingsTransferDialogMessage')}
         confirmLabel={t('webSettingsTransferButton')}
         destructive
         pending={working}
@@ -171,7 +171,7 @@ export function DangerZone() {
               <Loader2 className="h-4 w-4 animate-spin text-on-surface-variant" />
             </div>
           ) : eligibleMembers.length === 0 ? (
-            <p className="px-3 py-4 text-xs text-on-surface-variant text-center">No other members in this crew.</p>
+            <p className="px-3 py-4 text-xs text-on-surface-variant text-center">{t('webSettingsTransferNoMembers')}</p>
           ) : (
             eligibleMembers.map((m) => (
               <label
@@ -221,7 +221,7 @@ export function DangerZone() {
         verifyText={{
           match: 'delete',
           placeholder: 'delete',
-          label: 'Type "delete" to confirm permanent deletion',
+          label: t('webSettingsDeleteVerifyLabel'),
         }}
         onConfirm={handleDelete}
         onCancel={() => setShowDelete(false)}

@@ -1,6 +1,7 @@
 'use client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSupabase } from '@/hooks/useSupabase';
+import { useT } from '@/hooks/use-translations';
 import { updateMemberRole, bulkImportMembers, removeMember } from '@/lib/rpc';
 import { useSnackbar } from '@/components/shared/Snackbar';
 
@@ -8,15 +9,16 @@ export function useUpdateMemberRole(crewId: string) {
   const supabase = useSupabase();
   const qc = useQueryClient();
   const { showSuccess, showError } = useSnackbar();
+  const { t } = useT();
 
   return useMutation({
     mutationFn: ({ memberId, newRole }: { memberId: string; newRole: string }) =>
       updateMemberRole(supabase, memberId, newRole),
     onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: ['crewMembers', crewId] });
-      showSuccess(`Role changed to ${data.new_role}`); // matches webMutationRoleChanged
+      showSuccess(t('webMutationRoleChanged', { role: data.new_role }));
     },
-    onError: () => showError('Failed to change role'),
+    onError: () => showError(t('webMutationRoleChangeFailed')),
   });
 }
 
@@ -24,14 +26,15 @@ export function useRemoveMember(crewId: string) {
   const supabase = useSupabase();
   const qc = useQueryClient();
   const { showSuccess, showError } = useSnackbar();
+  const { t } = useT();
 
   return useMutation({
     mutationFn: (memberId: string) => removeMember(supabase, memberId),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['crewMembers', crewId] });
-      showSuccess('Member removed'); // matches webMutationMemberRemoved
+      showSuccess(t('webMutationMemberRemoved'));
     },
-    onError: () => showError('Failed to remove member'),
+    onError: () => showError(t('webMutationRemoveFailed')),
   });
 }
 
@@ -39,14 +42,18 @@ export function useBulkImport(crewId: string) {
   const supabase = useSupabase();
   const qc = useQueryClient();
   const { showSuccess, showError } = useSnackbar();
+  const { t } = useT();
 
   return useMutation({
     mutationFn: (members: Array<{ email: string; role: string }>) =>
       bulkImportMembers(supabase, crewId, members),
     onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: ['crewMembers', crewId] });
-      showSuccess(`${data.added} members imported${data.errors.length ? `, ${data.errors.length} errors` : ''}`); // matches webMutationMembersImported
+      const msg = data.errors.length > 0
+        ? t('webMutationMembersImported', { added: String(data.added), errors: String(data.errors.length) })
+        : t('webMutationMembersImportedNoErrors', { added: String(data.added) });
+      showSuccess(msg);
     },
-    onError: () => showError('Import failed'),
+    onError: () => showError(t('webMutationImportFailed')),
   });
 }

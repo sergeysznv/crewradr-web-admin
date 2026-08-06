@@ -1,10 +1,12 @@
 'use client';
 
+import { useT } from '@/hooks/use-translations';
 import { useTier } from '@/hooks/useTier';
 import { useRiskPredictions } from '@/hooks/queries/useRiskPredictions';
 import { AICard } from './AICard';
 
 export function RiskPredictionCard({ memberId }: { memberId: string }) {
+  const { t } = useT();
   const { settings } = useTier();
   const crewId = settings?.crewId ?? null;
 
@@ -19,10 +21,10 @@ export function RiskPredictionCard({ memberId }: { memberId: string }) {
         <>
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant">
-              Risk Prediction
+              {t('webAiRiskPredictionTitle')}
             </span>
             <span className="text-[10px] text-on-surface-variant/60">
-              {Math.round(pred.confidence * 100)}% confidence
+              {t('webAiRiskConfidence', { pct: Math.round(pred.confidence * 100) })}
             </span>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
@@ -37,7 +39,7 @@ export function RiskPredictionCard({ memberId }: { memberId: string }) {
             >
               {Math.round(pred.riskScore * 100)}%
             </span>
-            <span className="text-xs text-on-surface-variant">incident risk today</span>
+            <span className="text-xs text-on-surface-variant">{t('webAiRiskIncidentToday')}</span>
           </div>
           <div className="mt-3 space-y-1">
             {pred.factors.slice(0, 3).map((f, i) => (
@@ -52,7 +54,7 @@ export function RiskPredictionCard({ memberId }: { memberId: string }) {
           </div>
         </>
       ) : (
-        <p className="text-xs text-on-surface-variant">No risk data available for this member</p>
+        <p className="text-xs text-on-surface-variant">{t('webAiRiskNoData')}</p>
       )}
     </AICard>
   );

@@ -9,7 +9,7 @@ import { useMeasurementSystem } from '@/hooks/useMeasurementSystem';
 import { formatDistanceMeters } from '@/lib/units';
 import { useSnackbar } from '@/components/shared/Snackbar';
 import { tierRank } from '@/lib/utils';
-import { FileText, Download, Loader2, Check, Mail, Lock, Eye, X, ChevronDown } from 'lucide-react';
+import { FileText, Download, Loader2, Check, Mail, Lock, Eye, X, ChevronDown, Share2, Printer } from 'lucide-react';
 
 interface SafetyAlert {
   created_at: string;
@@ -32,7 +32,7 @@ export function ComplianceView() {
   const { system } = useMeasurementSystem();
   const { crewId, tier } = useCrew();
   const supabase = useSupabase();
-  const { showError } = useSnackbar();
+  const { showSuccess, showError } = useSnackbar();
   const [genOsha, setGenOsha] = useState(false);
   const [genEld, setGenEld] = useState(false);
   const [lastGen, setLastGen] = useState('');
@@ -41,8 +41,43 @@ export function ComplianceView() {
   const [eldData, setEldData] = useState<TripSession[] | null>(null);
   const [showOshaPreview, setShowOshaPreview] = useState(false);
   const [showEldPreview, setShowEldPreview] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const isAdmiral = tierRank(tier) >= 3;
+
+  // ── Share helpers ──
+  function buildShareUrl(reportType: 'osha' | 'eld'): string {
+    const base = `${window.location.origin}/compliance/shared`;
+    const since = new Date();
+    if (reportType === 'osha') since.setFullYear(since.getFullYear() - 1);
+    else since.setDate(since.getDate() - 30);
+    const params = new URLSearchParams({
+      type: reportType,
+      crew: crewId ?? '',
+      since: since.toISOString(),
+    });
+    return `${base}#${params.toString()}`;
+  }
+
+  function copyShareLink(reportType: 'osha' | 'eld') {
+    const url = buildShareUrl(reportType);
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      showSuccess(t('webComplianceShareCopied'));
+      setTimeout(() => setCopied(false), 2500);
+    }).catch(() => showError('Clipboard access denied'));
+  }
+
+  function handlePrint() {
+    window.print();
+  }
+
+  function handleEmail(reportType: 'osha' | 'eld') {
+    const url = buildShareUrl(reportType);
+    const subject = encodeURIComponent(t('webComplianceShareEmailSubject'));
+    const body = encodeURIComponent(t('webComplianceShareEmailBody', { url }));
+    window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
+  }
 
   const oshaRows = useMemo(() => {
     if (!oshaData) return [];
@@ -203,6 +238,24 @@ export function ComplianceView() {
                   </button>
                 </>
               )}
+              {oshaData && (
+                <div className="mt-3 flex items-center gap-2 border-t border-outline-variant pt-3">
+                  <span className="text-xs font-medium text-on-surface-variant">{t('webComplianceShareTitle')}:</span>
+                  <button onClick={() => copyShareLink('osha')}
+                    className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-colors">
+                    <Share2 className="h-3.5 w-3.5" /> {t('webComplianceShareCopyLink')}
+                  </button>
+                  <button onClick={handlePrint}
+                    className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-colors">
+                    <Printer className="h-3.5 w-3.5" /> {t('webComplianceSharePrint')}
+                  </button>
+                  <button onClick={() => handleEmail('osha')}
+                    className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-colors">
+                    <Mail className="h-3.5 w-3.5" /> {t('webComplianceShareEmail')}
+                  </button>
+                  {copied && <span className="text-xs text-success">{t('webComplianceShareCopied')}</span>}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -265,6 +318,24 @@ export function ComplianceView() {
                     <Download className="h-4 w-4" /> {t('webComplianceDownloadCsv')}
                   </button>
                 </>
+              )}
+              {eldData && (
+                <div className="mt-3 flex items-center gap-2 border-t border-outline-variant pt-3">
+                  <span className="text-xs font-medium text-on-surface-variant">{t('webComplianceShareTitle')}:</span>
+                  <button onClick={() => copyShareLink('eld')}
+                    className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-colors">
+                    <Share2 className="h-3.5 w-3.5" /> {t('webComplianceShareCopyLink')}
+                  </button>
+                  <button onClick={handlePrint}
+                    className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-colors">
+                    <Printer className="h-3.5 w-3.5" /> {t('webComplianceSharePrint')}
+                  </button>
+                  <button onClick={() => handleEmail('eld')}
+                    className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-colors">
+                    <Mail className="h-3.5 w-3.5" /> {t('webComplianceShareEmail')}
+                  </button>
+                  {copied && <span className="text-xs text-success">{t('webComplianceShareCopied')}</span>}
+                </div>
               )}
             </div>
           </div>

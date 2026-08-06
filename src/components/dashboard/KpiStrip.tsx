@@ -32,9 +32,8 @@ export function KpiStrip({ data }: { data: FleetDashboard }) {
     refetchInterval: 60_000,
   });
 
-  const criticalAlerts = data.recent_alerts.filter((a) => a.severity === 'critical').length;
-  const warningAlerts = data.recent_alerts.filter((a) => a.severity === 'warning').length;
-  const safetyScore = Math.max(0, 100 - criticalAlerts * 20 - warningAlerts * 10);
+  const avgScore = data.trip_stats?.avg_score;
+  const safetyScore = avgScore != null ? Math.round(avgScore) : null;
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-lg">
@@ -52,9 +51,9 @@ export function KpiStrip({ data }: { data: FleetDashboard }) {
       />
       <StatTile
         label={t('webFleetSafetyScore')}
-        value={safetyScore}
-        trend={safetyScore >= 80 ? t('webFleetGood') : safetyScore >= 50 ? t('webFleetFair') : t('webFleetPoor')}
-        trendUp={safetyScore >= 80 ? true : safetyScore >= 50 ? undefined : false}
+        value={safetyScore != null ? safetyScore : '—'}
+        trend={safetyScore != null ? (safetyScore >= 80 ? t('webFleetGood') : safetyScore >= 50 ? t('webFleetFair') : t('webFleetPoor')) : undefined}
+        trendUp={safetyScore != null ? (safetyScore >= 80 ? true : safetyScore >= 50 ? undefined : false) : undefined}
       />
     </div>
   );

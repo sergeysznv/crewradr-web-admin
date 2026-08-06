@@ -8,6 +8,13 @@ export interface FleetDashboard {
   member_count: number;
   active_trips: number;
   recent_alerts: Array<{ id: string; alert_type: string; severity: string; message: string; created_at: string; display_name: string | null }>;
+  trip_stats?: {
+    total_trips: number;
+    total_distance_km: number;
+    total_driving_hours: number;
+    total_fatigue_warnings: number;
+    avg_score: number | null;
+  } | null;
 }
 
 export interface CrewMember {

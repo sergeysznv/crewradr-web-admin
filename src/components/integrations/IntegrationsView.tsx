@@ -1,7 +1,6 @@
 // src/components/integrations/IntegrationsView.tsx
 'use client';
 
-import { WebhookManager } from '@/components/integrations/WebhookManager';
 import { ApiKeyDashboard } from '@/components/integrations/ApiKeyDashboard';
 import { TierGateGuard } from '@/components/tier/TierGateGuard';
 import { useT } from '@/hooks/use-translations';
@@ -29,14 +28,7 @@ export function IntegrationsView() {
       <div className="mx-auto max-w-[1400px]">
         <h1 className="text-2xl font-bold text-on-surface">{t('webIntegrationsTitle')}</h1>
 
-        <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-2">
-          <section>
-            <h2 className="text-lg font-bold text-on-surface">{t('webIntegrationsWebhooks')}</h2>
-            <div className="mt-4">
-              <WebhookManager />
-            </div>
-          </section>
-
+        <div className="mt-6">
           <section>
             <h2 className="text-lg font-bold text-on-surface">{t('webIntegrationsApiKeys')}</h2>
             <div className="mt-4">

@@ -1,6 +1,7 @@
 'use client';
 
 import { CheckCircle2 } from 'lucide-react';
+import { useT } from '@/hooks/use-translations';
 import { useTier } from '@/hooks/useTier';
 import { useAnomalies } from '@/hooks/queries/useAnomalies';
 import { AICard } from './AICard';
@@ -13,6 +14,7 @@ const SEVERITY_COLORS: Record<AnomalySeverity, string> = {
 };
 
 export function AnomalyCard() {
+  const { t } = useT();
   const { settings } = useTier();
   const crewId = settings?.crewId ?? null;
 
@@ -24,7 +26,7 @@ export function AnomalyCard() {
   return (
     <AICard isLoading={isLoading} serviceDown={serviceDown}>
       <span className="text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant">
-        Recent Anomalies
+        {t('webAiAnomaliesTitle')}
       </span>
       {recentAnomalies.length > 0 ? (
         <div className="mt-2 space-y-2">
@@ -47,7 +49,7 @@ export function AnomalyCard() {
         <div className="mt-2 flex items-center gap-2">
           <CheckCircle2 size={16} className="text-success" />
           <span className="text-xs text-on-surface-variant">
-            No anomalies detected in this period
+            {t('webAiAnomaliesNone')}
           </span>
         </div>
       )}

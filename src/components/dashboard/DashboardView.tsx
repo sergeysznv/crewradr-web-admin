@@ -12,6 +12,7 @@ import { ActivityTimeline } from '@/components/dashboard/ActivityTimeline';
 import { FleetOverview } from '@/components/dashboard/FleetOverview';
 import { CalendarHeatmap } from '@/components/overview/CalendarHeatmap';
 import { TrendChart } from '@/components/overview/TrendChart';
+import { FleetSafetyScore } from '@/components/dashboard/FleetSafetyScore';
 import { Skeleton } from '@/components/shared/Skeleton';
 import { TierGateGuard } from '@/components/tier/TierGateGuard';
 import { RoleGate } from '@/components/tier/RoleGate';
@@ -44,6 +45,8 @@ export function DashboardView() {
       ) : dashboard.data ? (
         <div className="space-y-lg">
           <KpiStrip data={dashboard.data} />
+          {/* Fleet-wide aggregate safety score (captain+ tier) */}
+          <FleetSafetyScore />
           {/* Trends — one card per metric, tier-clamped history window */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-lg">
             <TrendChart metric="miles" crewId={crewId!} label={t('webOverviewTrendMiles')} />
