@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { AppProviders } from '@/components/AppProviders';
+import { MeasurementProvider } from '@/components/settings/MeasurementProvider';
 import { TierProvider } from '@/hooks/useTier';
 import '@/app/globals.css';
 
@@ -19,7 +20,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="font-body text-on-surface bg-scaffold antialiased">
         <AppProviders>
-          <TierProvider>{children}</TierProvider>
+          <TierProvider>
+            <MeasurementProvider>{children}</MeasurementProvider>
+          </TierProvider>
         </AppProviders>
       </body>
     </html>
