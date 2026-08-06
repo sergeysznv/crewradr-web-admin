@@ -8,6 +8,7 @@ import { useAccountProfile } from '@/hooks/queries/useAccountProfile';
 import { useSupabase } from '@/hooks/useSupabase';
 import { useSnackbar } from '@/components/shared/Snackbar';
 import { MeasurementToggle } from '@/components/settings/MeasurementToggle';
+import { FontScalePicker } from '@/components/settings/FontScalePicker';
 import { tierLabel, tierColor } from '@/lib/utils';
 import { Globe, Users, Loader2, Check, LogOut } from 'lucide-react';
 
@@ -151,6 +152,9 @@ export function AccountView() {
           </select>
         </div>
       </div>
+
+      {/* Font Scale */}
+      <FontScalePicker />
 
       {/* Measuring System */}
       <MeasurementToggle />
