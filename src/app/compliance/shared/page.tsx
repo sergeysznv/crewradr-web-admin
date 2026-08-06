@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { Suspense, useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { createClient } from '@supabase/supabase-js';
 import { useT } from '@/hooks/use-translations';
 import { useMeasurementSystem } from '@/hooks/useMeasurementSystem';
 import { formatDistanceMeters } from '@/lib/units';
-import { Loader2, ShieldCheck, FileText } from 'lucide-react';
+import { Loader2, ShieldCheck } from 'lucide-react';
 
 // This page uses its own anon client so it works for unauthenticated viewers.
 const supabase = createClient(
@@ -31,7 +31,15 @@ interface TripSession {
   fatigue_warnings?: number;
 }
 
-export default function SharedCompliancePage() {
+function LoadingFallback() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950">
+      <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
+    </div>
+  );
+}
+
+function ComplianceContent() {
   const params = useSearchParams();
   const { t } = useT();
   const { system } = useMeasurementSystem();
@@ -102,13 +110,7 @@ export default function SharedCompliancePage() {
     }));
   }, [eldData]);
 
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950">
-        <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
-      </div>
-    );
-  }
+  if (loading) return <LoadingFallback />;
 
   if (error) {
     return (
@@ -204,5 +206,13 @@ export default function SharedCompliancePage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function SharedCompliancePage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <ComplianceContent />
+    </Suspense>
   );
 }
