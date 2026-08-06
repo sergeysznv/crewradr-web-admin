@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useAccountProfile } from '@/hooks/queries/useAccountProfile';
 import { useSupabase } from '@/hooks/useSupabase';
 import { useSnackbar } from '@/components/shared/Snackbar';
+import { MeasurementToggle } from '@/components/settings/MeasurementToggle';
 import { tierLabel, tierColor } from '@/lib/utils';
 import { Globe, Users, Loader2, Check, LogOut } from 'lucide-react';
 
@@ -150,6 +151,9 @@ export function AccountView() {
           </select>
         </div>
       </div>
+
+      {/* Measuring System */}
+      <MeasurementToggle />
 
       {/* Crews */}
       <div className="bg-surface border border-outline rounded-lg p-lg md:p-xl">
