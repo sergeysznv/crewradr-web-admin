@@ -131,7 +131,9 @@ export function ExportPresets() {
   const { tier, settings } = useTier();
   const supabase = useSupabase();
   const [exporting, setExporting] = useState<string | null>(null);
-  const [notice, setNotice] = useState<{ kind: 'success' | 'error'; text: string; href?: string } | null>(null);
+  const [notice, setNotice] = useState<{ kind: 'success' | 'error'; text: string; href?: string; downloadUrl?: string } | null>(null);
+  const [emailTo, setEmailTo] = useState('');
+  const [emailing, setEmailing] = useState(false);
 
   const crewId = settings?.crewId ?? '';
   const days = settings?.historyDays ?? tierHistoryDays(tier);
@@ -201,6 +203,7 @@ export function ExportPresets() {
         kind: 'success',
         text: t('webReportsExportReady', { filename: payload.fileName }),
         href: payload.downloadUrl,
+        downloadUrl: payload.downloadUrl,
       });
     });
 
@@ -292,6 +295,42 @@ export function ExportPresets() {
             </a>
           ) : (
             notice.text
+          )}
+          {notice.kind === 'success' && notice.downloadUrl && (
+            <div className="ml-auto flex items-center gap-2 shrink-0">
+              <input
+                type="email"
+                value={emailTo}
+                onChange={(e) => setEmailTo(e.target.value)}
+                placeholder="recipient@example.com"
+                className="rounded-lg border border-success/30 bg-white px-3 py-1.5 text-xs text-on-surface dark:bg-zinc-800 dark:text-zinc-100"
+              />
+              <button
+                onClick={async () => {
+                  if (!emailTo) return;
+                  setEmailing(true);
+                  try {
+                    const { error } = await supabase.functions.invoke('send-email', {
+                      body: {
+                        to: [emailTo],
+                        subject: `CrewRadr Fleet Export — ${new Date().toISOString().slice(0, 10)}`,
+                        text: `Your fleet export is ready. Download it here: ${notice.downloadUrl}`,
+                      },
+                    });
+                    if (error) throw error;
+                    setEmailTo('');
+                    alert('Report emailed!');
+                  } catch {
+                    alert('Failed to send email');
+                  }
+                  setEmailing(false);
+                }}
+                disabled={emailing || !emailTo}
+                className="rounded-lg bg-success px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90 disabled:opacity-50"
+              >
+                {emailing ? 'Sending…' : 'Email'}
+              </button>
+            </div>
           )}
         </div>
       )}
