@@ -12,6 +12,7 @@ import { useVisibilityRefetch } from '@/hooks/useRealtimeRefresh';
 import { useCrew } from '@/hooks/useCrew';
 import { IdleWarningOverlay, SignedOutOverlay } from '@/components/session-locked-overlay';
 import { ShellErrorBoundary } from '@/components/shared/ErrorBoundary';
+import { FontScaleProvider } from '@/components/settings/FontScaleProvider';
 import { OfflineBanner } from '@/components/shared/OfflineBanner';
 import { DowngradeBanner } from '@/components/tier/DowngradeBanner';
 import { LockoutBanner } from '@/components/tier/LockoutBanner';
@@ -392,7 +393,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
           <div className="flex-1 overflow-auto">
             <div className="p-lg md:p-xl max-w-[1400px] w-full">
-              <ShellErrorBoundary>{children}</ShellErrorBoundary>
+              <FontScaleProvider>
+                <ShellErrorBoundary>{children}</ShellErrorBoundary>
+              </FontScaleProvider>
             </div>
           </div>
         </main>
