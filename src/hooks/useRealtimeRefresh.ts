@@ -32,7 +32,7 @@ export function useRealtimeInvalidation(
       channel.on(
         'postgres_changes',
         { event: cfg.event ?? '*', schema: 'public', table: cfg.table, ...(cfg.filter ? { filter: cfg.filter } : {}) },
-        () => queryClient.invalidateQueries({ queryKey }),
+        () => queryClient.invalidateQueries({ queryKey, exact: false }),
       );
     }
     channel.subscribe();
@@ -57,7 +57,7 @@ export function useVisibilityRefetch(queryKey?: string[]) {
     const refetch = () => {
       if (Date.now() - lastRefetch <= 5000) return;
       lastRefetch = Date.now();
-      if (queryKey) queryClient.invalidateQueries({ queryKey });
+      if (queryKey) queryClient.invalidateQueries({ queryKey, exact: false });
       else queryClient.invalidateQueries();
     };
     const onVisibility = () => {
