@@ -232,7 +232,7 @@ export default function LiveMap({ positions, selectedUserId, onSelect, onError }
         mapId: MAP_ID,
         disableDefaultUI: false,
         zoomControl: true,
-        mapTypeControl: false,
+        mapTypeControl: true,
         streetViewControl: false,
         fullscreenControl: false,
         scrollwheel: false,
