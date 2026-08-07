@@ -90,11 +90,12 @@ export async function getWebTripList(
   days = 30,
   memberId?: string | null,
 ): Promise<TripListItem[]> {
-  const { data, error } = await supabase.rpc('get_web_trip_list', {
+  const params: Record<string, unknown> = {
     p_crew_id: crewId,
     p_days: days,
-    p_member_id: memberId ?? null,
-  });
+  };
+  if (memberId) params.p_member_id = memberId;
+  const { data, error } = await supabase.rpc('get_web_trip_list', params);
   if (error) throw error;
   return (data as TripListItem[]) ?? [];
 }
