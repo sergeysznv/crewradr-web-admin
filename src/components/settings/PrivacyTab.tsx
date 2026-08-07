@@ -148,8 +148,12 @@ export function PrivacyTab() {
       // performs the final auth-level deletion, which cascades to the app
       // user row. Runs before the client-side purge so sign-out only happens
       // after full erasure.
+      const { data: { session: s } } = await supabase.auth.getSession();
+      const hdr: Record<string, string> = {};
+      if (s?.access_token) hdr['Authorization'] = `Bearer ${s.access_token}`;
       const { error: fnError } = await supabase.functions.invoke('delete_account', {
         body: { email: user.email },
+        headers: hdr,
       });
       if (fnError) throw fnError;
       // Client-side purge (GDPR Art. 17): wipe local storage, drop all

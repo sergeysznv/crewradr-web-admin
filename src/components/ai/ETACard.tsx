@@ -26,8 +26,14 @@ export function ETACard({ memberId }: ETACardProps) {
     queryKey: ['etaPrediction', crewId, memberId],
     queryFn: async () => {
       if (!crewId) return null;
+      const { data: { session } } = await supabase.auth.getSession();
+      const headers: Record<string, string> = {};
+      if (session?.access_token) {
+        headers['Authorization'] = `Bearer ${session.access_token}`;
+      }
       const { data, error } = await supabase.functions.invoke('predict-eta', {
         body: { member_id: memberId, crew_id: crewId },
+        headers,
       });
       if (error) throw error;
       return (data ?? {}) as EtaPayload;

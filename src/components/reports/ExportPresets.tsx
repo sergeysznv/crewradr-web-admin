@@ -176,6 +176,9 @@ export function ExportPresets() {
       // S8: generate-fleet-export Edge Function performs the captain gate,
       // generates the file, uploads it to private storage, writes the audit
       // trail, and returns a signed download URL synchronously.
+      const { data: { session } } = await supabase.auth.getSession();
+      const fnHeaders: Record<string, string> = {};
+      if (session?.access_token) fnHeaders['Authorization'] = `Bearer ${session.access_token}`;
       const { data, error } = await supabase.functions.invoke('generate-fleet-export', {
         body: {
           crew_id: crewId,
@@ -183,6 +186,7 @@ export function ExportPresets() {
           kind: FLEET_KINDS[option.id] ?? 'all',
           date_range: { days },
         },
+        headers: fnHeaders,
       });
       if (error) {
         const ctx = (error as { context?: unknown }).context;
@@ -310,12 +314,16 @@ export function ExportPresets() {
                   if (!emailTo) return;
                   setEmailing(true);
                   try {
+                    const { data: { session: s } } = await supabase.auth.getSession();
+                    const h: Record<string, string> = {};
+                    if (s?.access_token) h['Authorization'] = `Bearer ${s.access_token}`;
                     const { error } = await supabase.functions.invoke('send-email', {
                       body: {
                         to: [emailTo],
                         subject: `CrewRadr Fleet Export — ${new Date().toISOString().slice(0, 10)}`,
                         text: `Your fleet export is ready. Download it here: ${notice.downloadUrl}`,
                       },
+                      headers: h,
                     });
                     if (error) throw error;
                     setEmailTo('');
