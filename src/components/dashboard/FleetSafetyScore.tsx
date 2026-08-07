@@ -41,17 +41,17 @@ const BUCKET_COLORS: Record<keyof Distribution, string> = {
   poor: 'bg-error',
 };
 
-export function FleetSafetyScore() {
+export function FleetSafetyScore({ days = 90 }: { days?: number }) {
   const { t } = useT();
   const { crewId } = useCrew();
   const supabase = useSupabase();
 
   const { data: rankings = [], isLoading } = useQuery({
-    queryKey: ['fleetSafetyScore', crewId],
+    queryKey: ['fleetSafetyScore', crewId, days],
     queryFn: async () => {
       const { data, error } = await supabase.rpc('get_web_crew_rankings', {
         p_crew_id: crewId,
-        p_days: 90,
+        p_days: days,
       });
       if (error) throw error;
       return (data ?? []) as CrewRanking[];

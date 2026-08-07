@@ -12,18 +12,19 @@ interface TrendChartProps {
   metric: TrendMetric;
   crewId: string;
   label: string;
+  /** Override the tier-based history window. When omitted, falls back to settings.historyDays / tierHistoryDays. */
+  days?: number;
 }
 
 const CHART_W = 100;
 const CHART_H = 120;
 
-export function TrendChart({ metric, crewId, label }: TrendChartProps) {
+export function TrendChart({ metric, crewId, label, days: daysOverride }: TrendChartProps) {
   const { t } = useT();
   const { settings, tier } = useTier();
   const supabase = useSupabase();
-  // settings.historyDays is server-computed from the crew's tier; fall back to
-  // the tier ladder only when settings haven't loaded yet.
-  const days = settings?.historyDays ?? tierHistoryDays(tier);
+  // Prefer explicit override, then settings.historyDays, then tier ladder.
+  const days = daysOverride ?? settings?.historyDays ?? tierHistoryDays(tier);
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
 

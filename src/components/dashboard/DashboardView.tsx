@@ -63,13 +63,13 @@ export function DashboardView() {
           <KpiStrip data={dashboard.data} />
           {/* Fleet-wide aggregate safety score (captain+ tier) */}
           <TierGateGuard minTier="captain" fallback={null}>
-            <FleetSafetyScore />
+            <FleetSafetyScore days={days} />
           </TierGateGuard>
-          {/* Trends — one card per metric, tier-clamped history window */}
+          {/* Trends — one card per metric, synced to dashboard time selector */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-sz-lg">
-            <TrendChart metric="miles" crewId={crewId!} label={t('webOverviewTrendMiles')} />
-            <TrendChart metric="hours" crewId={crewId!} label={t('webOverviewTrendHours')} />
-            <TrendChart metric="alerts" crewId={crewId!} label={t('webOverviewTrendAlerts')} />
+            <TrendChart metric="miles" crewId={crewId!} label={t('webOverviewTrendMiles')} days={days} />
+            <TrendChart metric="hours" crewId={crewId!} label={t('webOverviewTrendHours')} days={days} />
+            <TrendChart metric="alerts" crewId={crewId!} label={t('webOverviewTrendAlerts')} days={days} />
           </div>
           {/* Weekly activity + live map */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-sz-lg">
@@ -79,7 +79,7 @@ export function DashboardView() {
           <AlertFeed alerts={dashboard.data.recent_alerts} />
           {/* Admiral tier: AI anomaly feed — self-gates via AICard */}
           <AnomalyCard />
-          <ActivityTimeline />
+          <ActivityTimeline days={days} />
           {/* Captain+ tier AND captain/co-captain role: custom alert rules
               (save_alert_rule is role-gated server-side) */}
           <RoleGate>

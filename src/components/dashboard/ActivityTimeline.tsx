@@ -13,13 +13,13 @@ import { formatDistanceMeters } from '@/lib/units';
 import { Clock, Route, Car } from 'lucide-react';
 import type { TripListItem } from '@/types/tier';
 
-export function ActivityTimeline() {
+export function ActivityTimeline({ days: daysOverride }: { days?: number }) {
   const { crewId } = useCrew();
   const supabase = useSupabase();
   const { t } = useT();
   const { system } = useMeasurementSystem();
   const { settings, tier } = useTier();
-  const days = settings?.historyDays ?? tierHistoryDays(tier);
+  const days = daysOverride ?? settings?.historyDays ?? tierHistoryDays(tier);
 
   const tripsQuery = useQuery({
     queryKey: ['recentTrips', crewId, days],
