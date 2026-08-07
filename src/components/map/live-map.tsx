@@ -17,50 +17,107 @@ function markerColor(now: number, createdAt: string): string {
   return '#EF4444'; // stale — red
 }
 
-const escapeHTML = (s: string): string =>
-  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-
-// Build inner HTML for an AdvancedMarkerElement's content node.
-function buildMarkerHTML(
-  color: string,
-  selected: boolean,
-  stale: boolean,
-  labelText: string,
-): string {
-  const safeLabel = escapeHTML(labelText);
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
-      <circle cx="20" cy="18" r="15" fill="${color}" stroke="#fff" stroke-width="2.5"
-        opacity="${stale ? 0.45 : 1}" />
-      ${selected ? `<circle cx="20" cy="18" r="19" fill="none" stroke="${color}" stroke-width="2.5" stroke-dasharray="5 3" opacity="0.6"/>` : ''}
-      <polygon points="18,33 22,33 20,27" fill="${color}" stroke="#fff" stroke-width="1.5"
-        opacity="${stale ? 0.45 : 1}" />
-    </svg>
-    <span style="position:absolute;top:4px;left:50%;transform:translateX(-50%);color:#fff;font-size:14px;font-weight:700;pointer-events:none;text-shadow:0 1px 2px rgba(0,0,0,0.5);">${safeLabel}</span>`;
-}
-
 function createMarkerContent(
+  avatarUrl: string | null,
   color: string,
   selected: boolean,
   stale: boolean,
   labelText: string,
+  displayName: string,
 ): HTMLElement {
-  const div = document.createElement('div');
-  div.style.position = 'relative';
-  div.style.width = '40px';
-  div.style.height = '40px';
-  div.style.cursor = 'pointer';
-  div.innerHTML = buildMarkerHTML(color, selected, stale, labelText);
-  return div;
+  const size = selected ? 52 : 42;
+  const opacity = stale ? '0.45' : '1';
+
+  const wrapper = document.createElement('div');
+  wrapper.style.display = 'flex';
+  wrapper.style.flexDirection = 'column';
+  wrapper.style.alignItems = 'center';
+  wrapper.style.cursor = 'pointer';
+
+  // Circle
+  const circle = document.createElement('div');
+  circle.style.width = `${size}px`;
+  circle.style.height = `${size}px`;
+  circle.style.borderRadius = '50%';
+  circle.style.display = 'flex';
+  circle.style.alignItems = 'center';
+  circle.style.justifyContent = 'center';
+  circle.style.overflow = 'hidden';
+  circle.style.boxSizing = 'border-box';
+  circle.style.border = '2.5px solid #fff';
+  circle.style.opacity = opacity;
+
+  if (avatarUrl) {
+    const img = document.createElement('img');
+    img.src = avatarUrl;
+    img.alt = displayName;
+    img.style.width = '100%';
+    img.style.height = '100%';
+    img.style.objectFit = 'cover';
+    img.style.borderRadius = '50%';
+    img.referrerPolicy = 'no-referrer';
+    circle.appendChild(img);
+  } else {
+    circle.style.background = color;
+    const letter = document.createElement('span');
+    letter.textContent = labelText;
+    letter.style.color = '#fff';
+    letter.style.fontSize = selected ? '20px' : '16px';
+    letter.style.fontWeight = '700';
+    letter.style.lineHeight = '1';
+    circle.appendChild(letter);
+  }
+
+  if (selected) {
+    circle.style.boxShadow = `0 0 0 4px ${color}, 0 2px 8px rgba(0,0,0,0.3)`;
+  } else {
+    circle.style.boxShadow = '0 1px 4px rgba(0,0,0,0.25)';
+  }
+
+  // Pointer triangle
+  const pointer = document.createElement('div');
+  pointer.style.width = '0';
+  pointer.style.height = '0';
+  pointer.style.borderLeft = '6px solid transparent';
+  pointer.style.borderRight = '6px solid transparent';
+  pointer.style.borderTop = `8px solid ${avatarUrl ? '#fff' : color}`;
+  pointer.style.marginTop = '-1px';
+  pointer.style.opacity = opacity;
+
+  // Name pill
+  const pill = document.createElement('span');
+  pill.textContent = displayName;
+  pill.style.background = 'rgba(0,0,0,0.78)';
+  pill.style.color = '#fff';
+  pill.style.fontSize = '11px';
+  pill.style.fontWeight = '600';
+  pill.style.padding = '2px 8px';
+  pill.style.borderRadius = '10px';
+  pill.style.whiteSpace = 'nowrap';
+  pill.style.maxWidth = '140px';
+  pill.style.overflow = 'hidden';
+  pill.style.textOverflow = 'ellipsis';
+  pill.style.marginTop = '2px';
+  pill.style.pointerEvents = 'none';
+
+  wrapper.appendChild(circle);
+  wrapper.appendChild(pointer);
+  wrapper.appendChild(pill);
+
+  return wrapper;
 }
 
 function updateMarkerContent(
   el: HTMLElement,
+  avatarUrl: string | null,
   color: string,
   selected: boolean,
   stale: boolean,
   labelText: string,
+  displayName: string,
 ): void {
-  el.innerHTML = buildMarkerHTML(color, selected, stale, labelText);
+  const newEl = createMarkerContent(avatarUrl, color, selected, stale, labelText, displayName);
+  el.replaceChildren(...Array.from(newEl.childNodes));
 }
 
 interface LiveMapProps {
@@ -77,9 +134,27 @@ export default function LiveMap({ positions, selectedUserId, onSelect, onError }
   const didFitRef = useRef(false);
   const pendingMarkersRef = useRef<LivePosition[]>([]);
   const loadErrorRef = useRef(false);
+  // Stable ref for the currently selected user — keeps gmp-click handler
+  // closures from re-registering on every render.
+  const selectedRef = useRef<string | null>(selectedUserId);
+  selectedRef.current = selectedUserId;
 
-  // Declared before use so the purity lint sees a stable binding (runtime
-  // behavior identical — function declarations are hoisted).
+  function fitAllMarkers(map: google.maps.Map) {
+    const markers = markersRef.current;
+    if (markers.size === 0) return;
+    const bounds = new google.maps.LatLngBounds();
+    for (const marker of markers.values()) {
+      const pos = marker.position;
+      if (pos) bounds.extend(pos);
+    }
+    if (markers.size === 1) {
+      map.fitBounds(bounds, { top: 40, right: 40, bottom: 160, left: 40 });
+      map.setZoom(Math.min(map.getZoom() ?? 14, 14));
+    } else {
+      map.fitBounds(bounds, { top: 80, right: 80, bottom: 160, left: 80 });
+    }
+  }
+
   function syncMarkers(map: google.maps.Map, positions: LivePosition[]) {
     const markers = markersRef.current;
     const currentIds = new Set(positions.map((p) => p.user_id));
@@ -95,13 +170,9 @@ export default function LiveMap({ positions, selectedUserId, onSelect, onError }
 
     // Fit bounds on first data
     if (!didFitRef.current && positions.length > 0) {
-      const bounds = new google.maps.LatLngBounds();
-      for (const pos of positions) {
-        bounds.extend({ lat: pos.latitude, lng: pos.longitude });
-      }
-      map.fitBounds(bounds, { top: 40, right: 40, bottom: 40, left: 40 });
-      if (positions.length === 1) map.setZoom(14);
       didFitRef.current = true;
+      // Defer so the map has finished rendering its first frame.
+      setTimeout(() => fitAllMarkers(map), 100);
     }
 
     for (const pos of positions) {
@@ -110,23 +181,33 @@ export default function LiveMap({ positions, selectedUserId, onSelect, onError }
       const initial = pos.display_name?.charAt(0)?.toUpperCase() ?? '?';
       const labelText = pos.profile_emoji || initial;
       const color = markerColor(now, pos.created_at);
+      const displayName = pos.display_name || initial;
 
       const existing = markers.get(pos.user_id);
       if (existing) {
         existing.position = { lat: pos.latitude, lng: pos.longitude };
         existing.zIndex = isSelected ? 1000 : 1;
-        existing.title = pos.display_name || initial;
-        updateMarkerContent(existing.content as HTMLElement, color, isSelected, isStale, labelText);
+        updateMarkerContent(
+          existing.content as HTMLElement,
+          pos.avatar_url,
+          color,
+          isSelected,
+          isStale,
+          labelText,
+          displayName,
+        );
       } else {
-        const content = createMarkerContent(color, isSelected, isStale, labelText);
+        const content = createMarkerContent(pos.avatar_url, color, isSelected, isStale, labelText, displayName);
         const marker = new google.maps.marker.AdvancedMarkerElement({
           map,
           position: { lat: pos.latitude, lng: pos.longitude },
           content,
-          title: pos.display_name || initial,
           zIndex: isSelected ? 1000 : 1,
         });
-        marker.addListener('gmp-click', () => onSelect(pos));
+        marker.addListener('gmp-click', () => {
+          // Toggle: if already selected, deselect
+          onSelect(selectedRef.current === pos.user_id ? null : pos);
+        });
         markers.set(pos.user_id, marker);
       }
     }
@@ -151,7 +232,7 @@ export default function LiveMap({ positions, selectedUserId, onSelect, onError }
         mapId: MAP_ID,
         disableDefaultUI: false,
         zoomControl: true,
-        mapTypeControl: true,
+        mapTypeControl: false,
         streetViewControl: false,
         fullscreenControl: false,
         scrollwheel: false,
@@ -191,7 +272,21 @@ export default function LiveMap({ positions, selectedUserId, onSelect, onError }
       return;
     }
     syncMarkers(map, positions);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [positions, selectedUserId]);
+
+  // Zoom to all on deselect
+  const prevSelectedRef = useRef<string | null>(null);
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const prev = prevSelectedRef.current;
+    prevSelectedRef.current = selectedUserId;
+    // Zoom to all when transitioning from selected → null
+    if (prev !== null && selectedUserId === null) {
+      fitAllMarkers(map);
+    }
+  }, [selectedUserId]);
 
   return <div ref={containerRef} style={{ width: '100%', height: '100%' }} />;
 }
