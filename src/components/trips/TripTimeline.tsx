@@ -4,11 +4,14 @@
 import { useState } from 'react';
 import { useT } from '@/hooks/use-translations';
 import { SpeedGraph } from './SpeedGraph';
+import { formatSpeedMps } from '@/lib/units';
+import { useMeasurementSystem } from '@/hooks/useMeasurementSystem';
 import type { TripDetail } from '@/types/tier';
 
 export function TripTimeline({ trip }: { trip: TripDetail }) {
   const { t } = useT();
   const [selectedStop, setSelectedStop] = useState<number | null>(null);
+  const { system } = useMeasurementSystem();
 
   return (
     <div className="space-y-6">
@@ -35,6 +38,13 @@ export function TripTimeline({ trip }: { trip: TripDetail }) {
       <div>
         <h3 className="mb-2 text-base font-semibold text-on-surface">{t('webTripsSpeed')}</h3>
         <SpeedGraph samples={trip.speedSamples} />
+        {/* Fallback when no detailed speed samples exist but trip-level max/avg are available */}
+        {trip.speedSamples.length === 0 && trip.maxSpeedMs > 0 && (
+          <p className="mt-2 text-sm text-on-surface-variant">
+            {t('webTripsMaxSpeed')}: {formatSpeedMps(trip.maxSpeedMs, system)}
+            {trip.avgSpeedMs > 0 && ` · ${t('webTripsAvgSpeed')}: ${formatSpeedMps(trip.avgSpeedMs, system)}`}
+          </p>
+        )}
       </div>
 
       {/* Stops */}

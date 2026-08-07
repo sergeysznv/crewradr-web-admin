@@ -166,6 +166,8 @@ export interface TripDetail {
   isLive: boolean;
   polyline: [number, number][];
   speedSamples: { timestamp: string; speedMph: number }[];
+  maxSpeedMs: number;
+  avgSpeedMs: number;
   stops: { lat: number; lng: number; durationMin: number; timestamp: string }[];
   alerts: { type: string; timestamp: string; description: string }[];
 }
@@ -179,5 +181,7 @@ export interface TripListItem {
   ended_at: string | null;
   distance_miles: number;
   duration_min: number;
+  max_speed_ms: number;
+  avg_speed_ms: number;
   alert_count: number;
 }

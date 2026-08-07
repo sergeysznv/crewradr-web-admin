@@ -543,6 +543,8 @@
 	"webTripsMember": "Member",
 	"webTripsMemberTripTitle": "{name}'s Trip",
 	"webTripsMiles": "{n} mi",
+	"webTripsMaxSpeed": "Max",
+	"webTripsAvgSpeed": "Avg",
 	"webTripsNoSpeedData": "No speed data available",
 	"webTripsNoTripSelected": "No trip selected",
 	"webTripsNoTripSelectedDesc": "Choose a trip from the list to explore its timeline, speed, stops, and alerts.",

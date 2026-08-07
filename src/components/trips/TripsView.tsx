@@ -9,15 +9,18 @@ import { TripTimeline } from '@/components/trips/TripTimeline';
 import { RiskPredictionCard } from '@/components/ai/RiskPredictionCard';
 import { ETACard } from '@/components/ai/ETACard';
 import { EmptyState } from '@/components/shared/EmptyState';
+import { formatSpeedMps } from '@/lib/units';
+import { useMeasurementSystem } from '@/hooks/useMeasurementSystem';
 import { tierRank } from '@/lib/utils';
 import { tierHistoryDays } from '@/lib/tier';
 import type { CrewTier } from '@/types/tier';
-import { Route, Lock, Loader2, TriangleAlert, MapPin } from 'lucide-react';
+import { Route, Lock, Loader2, TriangleAlert, MapPin, Gauge } from 'lucide-react';
 
 export function TripsView() {
   const { t } = useT();
   const { tier, crewId } = useCrew();
   const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
+  const { system } = useMeasurementSystem();
   // Days requested = the tier's full history window; the RPC clamps it
   // server-side (7/30/90/365) in case of pending downgrades.
   const { data: trips, isLoading: isListLoading, isError: isListError, refetch: refetchList } =
@@ -103,6 +106,13 @@ export function TripsView() {
                             <>
                               <span aria-hidden="true">·</span>
                               {t('webTripsDurationMin', { n: tr.duration_min })}
+                            </>
+                          )}
+                          {tr.max_speed_ms > 0 && (
+                            <>
+                              <span aria-hidden="true">·</span>
+                              <Gauge className="h-3 w-3" aria-hidden="true" />
+                              {formatSpeedMps(tr.max_speed_ms, system)}
                             </>
                           )}
                         </span>
