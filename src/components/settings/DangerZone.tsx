@@ -105,7 +105,7 @@ export function DangerZone() {
   }
 
   return (
-    <div className="border border-error/20 rounded-lg p-lg space-y-4">
+    <div className="border border-error/20 rounded-lg p-sz-lg space-y-4">
       <h3 className="font-heading font-bold text-sm text-error">{t('webSettingsDangerZoneTitle')}</h3>
 
       {/* Transfer Ownership */}

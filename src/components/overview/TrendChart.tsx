@@ -60,7 +60,7 @@ export function TrendChart({ metric, crewId, label }: TrendChartProps) {
   }
 
   return (
-    <div className="rounded-lg bg-surface border border-outline p-lg">
+    <div className="rounded-lg bg-surface border border-outline p-sz-lg">
       <div className="flex items-center justify-between">
         <span className="text-[10px] uppercase tracking-wider font-semibold text-on-surface-variant">{label}</span>
         <span className="text-[10px] text-on-surface-variant/60">{t('webOverviewTrendDays', { days })}</span>

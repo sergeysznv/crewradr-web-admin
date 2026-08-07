@@ -43,13 +43,13 @@ export function TripsView() {
   }
 
   return (
-    <div className="space-y-lg animate-fade-in">
+    <div className="space-y-sz-lg animate-fade-in">
       <h1 className="text-2xl font-bold text-on-surface">{t('webTripsTitle')}</h1>
 
-      <div className="grid grid-cols-1 gap-lg lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-sz-lg lg:grid-cols-3">
         {/* Trip list */}
         <div className="lg:col-span-1">
-          <div className="rounded-xl border border-outline bg-surface p-lg">
+          <div className="rounded-xl border border-outline bg-surface p-sz-lg">
             <h2 className="text-base font-semibold text-on-surface">{t('webTripsListTitle')}</h2>
 
             {isListLoading ? (

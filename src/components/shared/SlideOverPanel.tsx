@@ -32,7 +32,7 @@ export function SlideOverPanel({ open, onClose, children }: SlideOverPanelProps)
 
       {/* Panel */}
       <div className="absolute right-0 top-0 bottom-0 w-full max-w-[400px] bg-surface shadow-xl border-l border-outline overflow-y-auto animate-slide-in-right">
-        <div className="flex items-center justify-between p-lg border-b border-outline-variant">
+        <div className="flex items-center justify-between p-sz-lg border-b border-outline-variant">
           <span className="font-heading font-bold text-sm text-on-surface" />
           <button
             onClick={onClose}
@@ -42,7 +42,7 @@ export function SlideOverPanel({ open, onClose, children }: SlideOverPanelProps)
             <X className="h-5 w-5" />
           </button>
         </div>
-        <div className="p-lg">{children}</div>
+        <div className="p-sz-lg">{children}</div>
       </div>
     </div>
   );

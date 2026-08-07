@@ -37,7 +37,7 @@ export function WebhookManager() {
   const { t } = useT();
   return (
     <div className="space-y-4">
-      <div className="rounded-2xl border border-dashed border-outline bg-surface p-lg">
+      <div className="rounded-2xl border border-dashed border-outline bg-surface p-sz-lg">
         <Webhook className="h-8 w-8 text-on-surface-variant opacity-40" aria-hidden="true" />
         <h3 className="mt-3 text-base font-semibold text-on-surface">{t('webWebhooksNotAvailable')}</h3>
         <p className="mt-1 text-sm text-on-surface-variant">

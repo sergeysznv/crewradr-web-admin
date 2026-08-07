@@ -12,7 +12,7 @@ export default function ReportsPage() {
   const { t } = useT();
 
   return (
-    <div className="space-y-lg animate-fade-in">
+    <div className="space-y-sz-lg animate-fade-in">
       <h1 className="text-2xl font-bold text-on-surface">{t('webReportsTitle')}</h1>
 
       <ExportPresets />
@@ -21,7 +21,7 @@ export default function ReportsPage() {
           (save_report_template is role-gated server-side) */}
       <RoleGate>
         <TierGateGuard minTier="captain" fallback={null}>
-          <section className="space-y-md">
+          <section className="space-y-sz-md">
             <div>
               <h2 className="font-heading text-base font-bold text-on-surface">{t('webReportsBuilderTitle')}</h2>
               <p className="mt-1 text-xs text-on-surface-variant">{t('webReportsBuilderDesc')}</p>

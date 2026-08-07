@@ -88,11 +88,11 @@ export function AccountView() {
   const initial = (displayNameValue || email).charAt(0).toUpperCase() || '?';
 
   return (
-    <div className="max-w-3xl space-y-lg animate-fade-in">
+    <div className="max-w-3xl space-y-sz-lg animate-fade-in">
       <h1 className="text-2xl font-bold text-on-surface">{t('webAccountTitle')}</h1>
 
       {/* Profile Card */}
-      <div className="bg-surface border border-outline rounded-lg p-lg md:p-xl">
+      <div className="bg-surface border border-outline rounded-lg p-sz-lg md:p-sz-xl">
         <div className="flex items-start gap-4">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary-container text-xl font-bold text-primary overflow-hidden">
             {profile?.avatar_url ? (
@@ -133,7 +133,7 @@ export function AccountView() {
       </div>
 
       {/* Language */}
-      <div className="bg-surface border border-outline rounded-lg p-lg md:p-xl">
+      <div className="bg-surface border border-outline rounded-lg p-sz-lg md:p-sz-xl">
         <div className="flex items-center gap-2 mb-4">
           <Globe className="h-5 w-5 text-primary" />
           <h2 className="font-semibold text-on-surface">{t('webAccountLanguage')}</h2>
@@ -160,7 +160,7 @@ export function AccountView() {
       <MeasurementToggle />
 
       {/* Crews */}
-      <div className="bg-surface border border-outline rounded-lg p-lg md:p-xl">
+      <div className="bg-surface border border-outline rounded-lg p-sz-lg md:p-sz-xl">
         <div className="flex items-center gap-2 mb-4">
           <Users className="h-5 w-5 text-primary" />
           <h2 className="font-semibold text-on-surface">{t('webAccountYourCrews')}</h2>
@@ -192,7 +192,7 @@ export function AccountView() {
       </div>
 
       {/* Sign out */}
-      <div className="pt-lg border-t border-outline-variant flex justify-end">
+      <div className="pt-sz-lg border-t border-outline-variant flex justify-end">
         <button
           onClick={() => signOut()}
           className="inline-flex items-center gap-2 rounded-xl border border-error/30 px-4 py-2 text-sm font-semibold text-error hover:bg-error-container"

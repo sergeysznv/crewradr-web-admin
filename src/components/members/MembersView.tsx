@@ -133,7 +133,7 @@ export function MembersView() {
   }
 
   return (
-    <div className="space-y-lg animate-fade-in">
+    <div className="space-y-sz-lg animate-fade-in">
       <h1 className="text-2xl font-bold text-on-surface">{t('webMembersTitle')}</h1>
         {/* Controls */}
         <div className="flex flex-col md:flex-row gap-3 items-start md:items-center justify-between">
@@ -159,9 +159,9 @@ export function MembersView() {
         {/* Desktop table */}
         <div className="hidden md:block bg-surface border border-outline rounded-lg overflow-hidden">
           {isLoading ? (
-            <div className="p-lg text-sm text-on-surface-variant">{t('webMembersLoading')}</div>
+            <div className="p-sz-lg text-sm text-on-surface-variant">{t('webMembersLoading')}</div>
           ) : isError ? (
-            <div className="p-lg text-center">
+            <div className="p-sz-lg text-center">
               <p className="text-sm text-on-surface-variant">{t('webMembersFailedToLoad')}</p>
               <button onClick={() => refetch()} className="mt-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-on-primary">{t('webSharedRetry')}</button>
             </div>

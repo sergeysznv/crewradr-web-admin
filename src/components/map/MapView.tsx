@@ -126,7 +126,7 @@ export function MapView() {
 
   if (positionsQuery.isLoading) {
     return (
-      <div className="space-y-lg animate-fade-in" role="status" aria-label="Loading live map">
+      <div className="space-y-sz-lg animate-fade-in" role="status" aria-label="Loading live map">
         <div className="h-8 w-48 bg-surface-container rounded-lg animate-pulse" />
         <div className="h-[calc(100vh-12rem)] min-h-[480px] rounded-xl bg-surface-container animate-pulse" />
       </div>
@@ -170,7 +170,7 @@ export function MapView() {
         )}
       </header>
 
-      <div className="relative mt-lg flex-1">
+      <div className="relative mt-sz-lg flex-1">
         <div className="h-[calc(100vh-12rem)] min-h-[480px] overflow-hidden rounded-xl border border-outline bg-surface-container shadow-sm">
           <LiveMap
             positions={positions}

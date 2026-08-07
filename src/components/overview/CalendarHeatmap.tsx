@@ -47,7 +47,7 @@ export function CalendarHeatmap({ crewId }: { crewId: string }) {
 
   if (isError) {
     return (
-      <div className="rounded-lg border border-outline bg-surface p-lg text-center">
+      <div className="rounded-lg border border-outline bg-surface p-sz-lg text-center">
         <p className="text-xs text-error">{t('webErrorLoading')}</p>
       </div>
     );
@@ -55,7 +55,7 @@ export function CalendarHeatmap({ crewId }: { crewId: string }) {
 
   if (data.length === 0 || data.every((d) => d.activeHours === 0)) {
     return (
-      <div className="rounded-lg border border-outline bg-surface p-lg text-center">
+      <div className="rounded-lg border border-outline bg-surface p-sz-lg text-center">
         <CheckCircle2 className="mx-auto h-8 w-8 text-success" aria-hidden="true" />
         <p className="mt-2 text-sm font-semibold text-on-surface-variant">{t('webOverviewNoActivity')}</p>
         <p className="mt-1 text-xs text-on-surface-variant/60">{t('webOverviewNoActivityDesc')}</p>
@@ -64,7 +64,7 @@ export function CalendarHeatmap({ crewId }: { crewId: string }) {
   }
 
   return (
-    <div className="rounded-lg border border-outline bg-surface p-lg">
+    <div className="rounded-lg border border-outline bg-surface p-sz-lg">
       <h3 className="mb-3 text-sm font-bold text-on-surface">{t('webOverviewThisWeek')}</h3>
       <div className="grid grid-cols-7 gap-1">
         {data.map((cell) => (

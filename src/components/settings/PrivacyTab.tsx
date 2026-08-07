@@ -171,7 +171,7 @@ export function PrivacyTab() {
   return (
     <div className="space-y-4">
       {/* ── Personal Data Export — always available (GDPR Art. 20) ── */}
-      <div className="border border-outline rounded-lg p-lg">
+      <div className="border border-outline rounded-lg p-sz-lg">
         <div className="flex items-center gap-2">
           <Download className="h-4 w-4 text-on-surface-variant" aria-hidden="true" />
           <h3 className="font-heading font-bold text-sm text-on-surface">{t('webPrivacyExportTitle')}</h3>
@@ -203,7 +203,7 @@ export function PrivacyTab() {
           server-side) ── */}
       <RoleGate>
       <TierGateGuard minTier="captain" fallback={null}>
-        <div className="border border-outline rounded-lg p-lg">
+        <div className="border border-outline rounded-lg p-sz-lg">
           <h3 className="font-heading font-bold text-sm text-on-surface">{t('webPrivacyRetentionTitle')}</h3>
           <p className="mt-1 text-xs text-on-surface-variant">{t('webPrivacyRetentionHint')}</p>
 
@@ -262,7 +262,7 @@ export function PrivacyTab() {
       </RoleGate>
 
       {/* ── Delete Account — always available (GDPR Art. 17) ── */}
-      <div className="border border-error/20 rounded-lg p-lg bg-error/5">
+      <div className="border border-error/20 rounded-lg p-sz-lg bg-error/5">
         <h3 className="font-heading font-bold text-sm text-error">{t('webSettingsDeleteAccount')}</h3>
         <p className="mt-1 text-xs text-on-surface-variant">{t('webSettingsDeleteAccountHint')}</p>
         <button

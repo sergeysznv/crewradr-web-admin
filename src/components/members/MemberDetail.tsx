@@ -58,7 +58,7 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
   }
 
   return (
-    <div className="space-y-lg">
+    <div className="space-y-sz-lg">
       <div className="flex items-center gap-4">
         <div className="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-xl font-bold text-primary overflow-hidden">
           {member.avatar_url ? (
@@ -75,7 +75,7 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
         </div>
       </div>
 
-      <div className="bg-surface-container rounded-lg p-lg space-y-3">
+      <div className="bg-surface-container rounded-lg p-sz-lg space-y-3">
         <div className="flex justify-between items-center">
           <span className="text-sm text-on-surface-variant">{t('webMembersDetailRole')}</span>
           <span className="text-sm font-semibold text-on-surface">{member.role}</span>
@@ -153,7 +153,7 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
           </div>
         </div>
 
-        <div className="pt-lg border-t border-outline-variant">
+        <div className="pt-sz-lg border-t border-outline-variant">
           <button onClick={() => setShowRemove(true)}
             className="w-full px-4 py-2 rounded-xl border border-error/30 text-error text-sm font-semibold hover:bg-error-container">
             {t('webMembersRemoveFromCrew')}

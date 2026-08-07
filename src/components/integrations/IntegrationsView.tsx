@@ -25,7 +25,7 @@ export function IntegrationsView() {
   const { t } = useT();
   return (
     <TierGateGuard minTier="admiral" fallback={<LockedFallback />}>
-      <div className="space-y-lg animate-fade-in">
+      <div className="space-y-sz-lg animate-fade-in">
         <h1 className="text-2xl font-bold text-on-surface">{t('webIntegrationsTitle')}</h1>
 
         <div>

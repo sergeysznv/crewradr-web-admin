@@ -79,7 +79,7 @@ export function ReportBuilder() {
   };
 
   return (
-    <div className="space-y-md">
+    <div className="space-y-sz-md">
       {/* Template name */}
       <div>
         <label htmlFor="report-template-name" className="text-sm font-semibold text-on-surface">

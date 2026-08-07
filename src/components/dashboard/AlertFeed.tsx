@@ -10,11 +10,11 @@ const SEVERITY_MAP: Record<string, Severity> = {
 export function AlertFeed({ alerts }: { alerts: FleetDashboard['recent_alerts'] }) {
   const { t } = useT();
   return (
-    <div className="bg-surface border border-outline rounded-lg p-lg">
+    <div className="bg-surface border border-outline rounded-lg p-sz-lg">
       <div className="font-heading font-bold text-sm text-on-surface mb-3">{t('webFleetRecentAlerts')}</div>
       <div className="flex flex-col gap-2 max-h-[320px] overflow-y-auto">
         {alerts.length === 0 && (
-          <p className="text-sm text-on-surface-variant text-center py-lg">{t('webFleetNoAlerts')}</p>
+          <p className="text-sm text-on-surface-variant text-center py-sz-lg">{t('webFleetNoAlerts')}</p>
         )}
         {alerts.map(alert => (
           <SeverityBadge

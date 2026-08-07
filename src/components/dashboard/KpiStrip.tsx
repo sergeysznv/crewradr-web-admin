@@ -36,7 +36,7 @@ export function KpiStrip({ data }: { data: FleetDashboard }) {
   const safetyScore = avgScore != null ? Math.round(avgScore) : null;
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-lg">
+    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-sz-lg">
       <StatTile label={t('webFleetFleetSize')} value={data.member_count} />
       <StatTile
         label={t('webFleetActiveNow')}

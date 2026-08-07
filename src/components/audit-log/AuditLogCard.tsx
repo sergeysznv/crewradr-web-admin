@@ -9,7 +9,7 @@ const ACTION_COLORS: Record<string, string> = {
 
 export function AuditLogCard({ log }: { log: AuditLogEntry }) {
   return (
-    <div className="bg-surface border border-outline rounded-lg p-md space-y-2">
+    <div className="bg-surface border border-outline rounded-lg p-sz-md space-y-2">
       <div className="flex justify-between items-start">
         <span className={`px-2 py-0.5 rounded-xl text-2xs font-semibold ${ACTION_COLORS[log.action] ?? 'bg-surface-container text-on-surface-variant'}`}>
           {log.action}

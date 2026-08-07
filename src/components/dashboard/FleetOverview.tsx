@@ -32,7 +32,7 @@ export function FleetOverview({ dashboard }: FleetOverviewProps) {
   const alertCount = dashboard.total_alert_count;
 
   return (
-    <div className="bg-surface border border-outline rounded-lg p-lg flex flex-col justify-between min-h-[240px]">
+    <div className="bg-surface border border-outline rounded-lg p-sz-lg flex flex-col justify-between min-h-[240px]">
       <div>
         <div className="flex items-center gap-2 mb-4">
           <MapPin className="h-5 w-5 text-[var(--brand-seed)]" aria-hidden="true" />

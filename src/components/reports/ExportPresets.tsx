@@ -208,14 +208,14 @@ export function ExportPresets() {
     });
 
   return (
-    <div className="space-y-lg">
+    <div className="space-y-sz-lg">
       {/* Personal data — GDPR Art. 20, always available, no tier gate */}
-      <section className="space-y-md">
+      <section className="space-y-sz-md">
         <div>
           <h2 className="font-heading text-base font-bold text-on-surface">{t('webReportsMyDataTitle')}</h2>
           <p className="mt-1 text-xs text-on-surface-variant">{t('webReportsMyDataDesc')}</p>
         </div>
-        <div className="grid grid-cols-1 gap-md sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-sz-md sm:grid-cols-2">
           {PERSONAL_EXPORT_OPTIONS.map((opt) => (
             <ExportCard key={opt.id} option={opt} busy={exporting === opt.id} onExport={handlePersonalExport} />
           ))}
@@ -249,12 +249,12 @@ export function ExportPresets() {
             </section>
           }
         >
-          <section className="space-y-md">
+          <section className="space-y-sz-md">
             <div>
               <h2 className="font-heading text-base font-bold text-on-surface">{t('webReportsFleetTitle')}</h2>
               <p className="mt-1 text-xs text-on-surface-variant">{t('webReportsFleetDesc', { days })}</p>
             </div>
-            <div className="grid grid-cols-1 gap-md sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-sz-md sm:grid-cols-3">
               {FLEET_EXPORT_OPTIONS.map((opt) => (
                 <ExportCard
                   key={opt.id}

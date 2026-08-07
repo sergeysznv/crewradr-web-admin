@@ -33,7 +33,7 @@ export function ActivityTimeline() {
   const isError = tripsQuery.isError;
 
   return (
-    <div className="bg-surface border border-outline rounded-lg p-lg">
+    <div className="bg-surface border border-outline rounded-lg p-sz-lg">
       <div className="flex items-center gap-2 mb-3">
         <Clock className="h-4 w-4 text-[var(--brand-seed)]" aria-hidden="true" />
         <h2 className="font-heading font-bold text-sm text-on-surface">{t('webFleetRecentActivity')}</h2>

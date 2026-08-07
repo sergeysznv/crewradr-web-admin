@@ -62,7 +62,7 @@ export function FleetSafetyScore() {
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-outline bg-surface p-lg animate-pulse">
+      <div className="rounded-xl border border-outline bg-surface p-sz-lg animate-pulse">
         <div className="h-4 w-32 bg-surface-container rounded mb-4" />
         <div className="h-20 bg-surface-container rounded" />
       </div>
@@ -71,7 +71,7 @@ export function FleetSafetyScore() {
 
   if (rankings.length === 0) {
     return (
-      <div className="rounded-xl border border-outline bg-surface p-lg text-center">
+      <div className="rounded-xl border border-outline bg-surface p-sz-lg text-center">
         <p className="text-sm text-on-surface-variant">{t('webFleetSafetyNoData')}</p>
       </div>
     );
@@ -83,7 +83,7 @@ export function FleetSafetyScore() {
   const worst = rankings[rankings.length - 1];
 
   return (
-    <div className="rounded-xl border border-outline bg-surface p-lg">
+    <div className="rounded-xl border border-outline bg-surface p-sz-lg">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="text-sm font-bold text-on-surface">{t('webFleetSafetyScoreTitle')}</h2>
@@ -94,7 +94,7 @@ export function FleetSafetyScore() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-lg">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-sz-lg">
         {/* Average score */}
         <div className="flex flex-col items-center justify-center rounded-lg bg-surface-container p-4">
           <span className="text-xs text-on-surface-variant uppercase tracking-wider">

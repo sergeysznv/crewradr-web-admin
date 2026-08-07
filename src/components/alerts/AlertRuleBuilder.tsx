@@ -46,7 +46,7 @@ export function AlertRuleBuilder() {
   };
 
   return (
-    <div className="space-y-md">
+    <div className="space-y-sz-md">
       {isError && (
         <p className="text-xs text-error">{t('webErrorLoading')}</p>
       )}

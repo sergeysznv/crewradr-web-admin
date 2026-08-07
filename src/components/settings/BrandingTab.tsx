@@ -87,7 +87,7 @@ export function BrandingTab({ seedColor = null, logoUrl = null }: { seedColor?: 
   }
 
   return (
-    <div className="space-y-lg">
+    <div className="space-y-sz-lg">
       <div>
         <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">{t('webSettingsPrimaryColor')}</label>
         <div className="flex items-center gap-4 mt-2">
@@ -133,7 +133,7 @@ export function BrandingTab({ seedColor = null, logoUrl = null }: { seedColor?: 
           <button
             onClick={() => fileRef.current?.click()}
             disabled={uploading}
-            className="mt-2 w-full border-2 border-dashed border-outline rounded-lg p-xl text-center hover:border-primary/40 transition-colors"
+            className="mt-2 w-full border-2 border-dashed border-outline rounded-lg p-sz-xl text-center hover:border-primary/40 transition-colors"
           >
             {uploading ? (
               <Loader2 size={28} className="mx-auto mb-2 text-on-surface-variant animate-spin" />
@@ -158,7 +158,7 @@ export function BrandingTab({ seedColor = null, logoUrl = null }: { seedColor?: 
 
       <div>
         <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">{t('webSettingsLivePreview')}</label>
-        <div className="mt-2 bg-surface border border-outline rounded-lg p-lg flex items-center justify-between">
+        <div className="mt-2 bg-surface border border-outline rounded-lg p-sz-lg flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-sm font-bold overflow-hidden"
               style={{ backgroundColor: `${color}20`, color }}>
@@ -177,7 +177,7 @@ export function BrandingTab({ seedColor = null, logoUrl = null }: { seedColor?: 
         </div>
       </div>
 
-      <div className="flex items-center gap-3 pt-lg border-t border-outline-variant">
+      <div className="flex items-center gap-3 pt-sz-lg border-t border-outline-variant">
         {!isAdmiral ? (
           <p className="text-xs text-on-surface-variant">{t('webSettingsAdmiralRequired')}</p>
         ) : (

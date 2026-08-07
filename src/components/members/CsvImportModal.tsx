@@ -33,13 +33,13 @@ export function CsvImportModal({ open, onClose }: { open: boolean; onClose: () =
     <>
       <div className="fixed inset-0 bg-black/20 z-50" onClick={onClose} />
       <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
-        <div className="bg-surface border border-outline rounded-xxl p-xl max-w-[520px] w-full mx-lg pointer-events-auto shadow-xl">
-          <div className="flex items-center justify-between mb-lg">
+        <div className="bg-surface border border-outline rounded-xxl p-sz-xl max-w-[520px] w-full mx-sz-lg pointer-events-auto shadow-xl">
+          <div className="flex items-center justify-between mb-sz-lg">
             <h2 className="font-heading font-extrabold text-lg text-on-surface">{t('webMembersImportDialogTitle')}</h2>
             <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-surface-container"><X size={18} /></button>
           </div>
 
-          <div className="border-2 border-dashed border-outline rounded-lg p-xl text-center mb-lg">
+          <div className="border-2 border-dashed border-outline rounded-lg p-sz-xl text-center mb-sz-lg">
             <Upload size={32} className="mx-auto mb-2 text-on-surface-variant opacity-40" />
             <p className="text-sm text-on-surface-variant">{t('webMembersImportPaste')}</p>
             <p className="text-2xs text-on-surface-variant mt-1">{t('webMembersImportFormat')}</p>
@@ -50,7 +50,7 @@ export function CsvImportModal({ open, onClose }: { open: boolean; onClose: () =
             className="w-full h-32 rounded-lg border border-outline bg-surface-container p-3 text-sm font-mono resize-none"
           />
 
-          <div className="flex gap-3 mt-lg justify-end">
+          <div className="flex gap-3 mt-sz-lg justify-end">
             <button onClick={onClose}
               className="px-4 py-2 rounded-xl border border-outline text-sm font-semibold text-on-surface-variant hover:bg-surface-container">{t('webMembersImportCancel')}</button>
             <button onClick={handleImport} disabled={!text.trim() || importMutation.isPending}
@@ -60,7 +60,7 @@ export function CsvImportModal({ open, onClose }: { open: boolean; onClose: () =
           </div>
 
           {(importMutation.data || importDone) && importMutation.data && (
-            <div className={`mt-lg p-3 rounded-lg text-sm ${importMutation.data.errors.length ? 'bg-warning-container text-warning' : 'bg-primary-container text-primary'}`}>
+            <div className={`mt-sz-lg p-3 rounded-lg text-sm ${importMutation.data.errors.length ? 'bg-warning-container text-warning' : 'bg-primary-container text-primary'}`}>
               {t('webMembersImportResult', { added: importMutation.data.added })}
               {importMutation.data.errors.length > 0 && ` · ${t('webMembersImportErrors', { errors: importMutation.data.errors.length })}`}
             </div>

@@ -17,7 +17,7 @@ export function FontScalePicker() {
   const { scale, setAndSync } = useFontScale();
 
   return (
-    <div className="bg-surface border border-outline rounded-lg p-lg md:p-xl">
+    <div className="bg-surface border border-outline rounded-lg p-sz-lg md:p-sz-xl">
       <div className="flex items-center gap-2 mb-4">
         <Type className="h-5 w-5 text-primary" />
         <h2 className="font-semibold text-on-surface">{t('webFontScaleTitle')}</h2>

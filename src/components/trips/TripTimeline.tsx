@@ -46,7 +46,7 @@ export function TripTimeline({ trip }: { trip: TripDetail }) {
               <button
                 key={i}
                 onClick={() => setSelectedStop(selectedStop === i ? null : i)}
-                className={`w-full rounded-xl border p-lg text-left transition-colors ${
+                className={`w-full rounded-xl border p-sz-lg text-left transition-colors ${
                   selectedStop === i
                     ? 'border-primary bg-primary-container'
                     : 'border-outline bg-surface hover:border-outline-variant hover:bg-surface-container'
@@ -75,7 +75,7 @@ export function TripTimeline({ trip }: { trip: TripDetail }) {
           <h3 className="mb-2 text-base font-semibold text-on-surface">{t('webTripsAlerts')}</h3>
           <div className="space-y-2">
             {trip.alerts.map((alert, i) => (
-              <div key={i} className="rounded-xl border border-error/20 bg-error-container p-lg">
+              <div key={i} className="rounded-xl border border-error/20 bg-error-container p-sz-lg">
                 <span className="text-sm font-semibold text-error">{alert.type}</span>
                 <p className="mt-0.5 text-sm text-on-surface-variant">{alert.description}</p>
                 <p className="mt-1 text-xs text-on-surface-variant/60">

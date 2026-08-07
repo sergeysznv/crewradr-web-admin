@@ -393,7 +393,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </header>
 
           <div className="flex-1 overflow-auto">
-            <div className="p-lg md:p-xl max-w-[1400px] w-full">
+            <div className="p-sz-lg md:p-sz-xl max-w-[1400px] w-full">
               <FontScaleProvider>
                 <MeasurementProvider>
                   <ShellErrorBoundary>{children}</ShellErrorBoundary>

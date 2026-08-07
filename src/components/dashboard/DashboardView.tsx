@@ -38,12 +38,12 @@ export function DashboardView() {
   return (
     <>
       {dashboard.isLoading ? (
-        <div className="space-y-lg">
+        <div className="space-y-sz-lg">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3"><Skeleton className="h-20" /><Skeleton className="h-20" /><Skeleton className="h-20" /><Skeleton className="h-20" /></div>
           <Skeleton className="h-[320px] rounded-lg" />
         </div>
       ) : dashboard.data ? (
-        <div className="space-y-lg animate-fade-in">
+        <div className="space-y-sz-lg animate-fade-in">
           <h1 className="text-2xl font-bold text-on-surface">{t('webNavFleet')}</h1>
           <KpiStrip data={dashboard.data} />
           {/* Fleet-wide aggregate safety score (captain+ tier) */}
@@ -51,13 +51,13 @@ export function DashboardView() {
             <FleetSafetyScore />
           </TierGateGuard>
           {/* Trends — one card per metric, tier-clamped history window */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-lg">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-sz-lg">
             <TrendChart metric="miles" crewId={crewId!} label={t('webOverviewTrendMiles')} />
             <TrendChart metric="hours" crewId={crewId!} label={t('webOverviewTrendHours')} />
             <TrendChart metric="alerts" crewId={crewId!} label={t('webOverviewTrendAlerts')} />
           </div>
           {/* Weekly activity + live map */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-lg">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-sz-lg">
             <div className="md:col-span-1"><CalendarHeatmap crewId={crewId!} /></div>
             <div className="md:col-span-2"><FleetOverview dashboard={dashboard.data} /></div>
           </div>
@@ -69,7 +69,7 @@ export function DashboardView() {
               (save_alert_rule is role-gated server-side) */}
           <RoleGate>
             <TierGateGuard minTier="captain" fallback={null}>
-              <section className="space-y-md">
+              <section className="space-y-sz-md">
                 <h2 className="font-heading text-base font-bold text-on-surface">{t('webAlertsRulesTitle')}</h2>
                 <AlertRuleBuilder />
               </section>

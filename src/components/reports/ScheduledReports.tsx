@@ -78,7 +78,7 @@ export function ScheduledReports() {
 
   return (
     <TierGateGuard minTier="admiral" fallback={null}>
-      <section className="space-y-md">
+      <section className="space-y-sz-md">
         <div>
           <h2 className="font-heading text-base font-bold text-on-surface">{t('webReportsScheduledTitle')}</h2>
           <p className="mt-1 text-xs text-on-surface-variant">{t('webReportsScheduledDesc')}</p>

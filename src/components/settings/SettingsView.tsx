@@ -54,9 +54,9 @@ export function SettingsView() {
   );
 
   return (
-    <div className="max-w-3xl space-y-lg animate-fade-in">
+    <div className="max-w-3xl space-y-sz-lg animate-fade-in">
       <FilterChips options={TABS.map((tab) => ({ ...tab, label: t(tab.labelKey) }))} selected={tab} onSelect={setTab} />
-      <div className="bg-surface border border-outline rounded-lg p-lg md:p-xl">
+      <div className="bg-surface border border-outline rounded-lg p-sz-lg md:p-sz-xl">
         {tab === 'general' && <GeneralTab subscription={settings?.subscription ?? null} />}
         {tab === 'branding' && <BrandingTab seedColor={settings?.branding?.seed_color ?? null} logoUrl={settings?.branding?.logo_url ?? null} />}
         {tab === 'privacy' && <PrivacyTab />}

@@ -15,7 +15,7 @@ export function GeneralTab({
   const { crewName, tier } = useCrew();
 
   return (
-    <div className="space-y-lg">
+    <div className="space-y-sz-lg">
       <div>
         <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
           {t('webSettingsCrewName')}
@@ -30,7 +30,7 @@ export function GeneralTab({
         </p>
       </div>
 
-      <div className="flex items-center justify-between bg-surface-container rounded-lg p-lg">
+      <div className="flex items-center justify-between bg-surface-container rounded-lg p-sz-lg">
         <div>
           <div className="text-sm font-semibold text-on-surface">{t('webSettingsSubscriptionTier')}</div>
           <div className="text-xs text-on-surface-variant mt-0.5">{t('webSettingsCurrentPlan')}</div>
@@ -44,7 +44,7 @@ export function GeneralTab({
       </div>
 
       {subscription && (
-        <div className="bg-surface-container rounded-lg p-lg space-y-3">
+        <div className="bg-surface-container rounded-lg p-sz-lg space-y-3">
           <div className="flex justify-between items-center">
             <span className="text-sm text-on-surface-variant">{t('webSettingsStatus')}</span>
             <span className="text-sm font-semibold text-on-surface capitalize">
@@ -70,7 +70,7 @@ export function GeneralTab({
         </div>
       )}
 
-      <div className="bg-surface-container rounded-lg p-lg">
+      <div className="bg-surface-container rounded-lg p-sz-lg">
         <div className="text-sm font-semibold text-on-surface">{t('webSettingsBilling')}</div>
         <div className="text-xs text-on-surface-variant mt-0.5">
           {t('webSettingsBillingHint')}

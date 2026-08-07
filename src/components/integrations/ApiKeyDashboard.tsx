@@ -150,7 +150,7 @@ export function ApiKeyDashboard() {
   return (
     <div className="space-y-4">
       {/* ── Create key ── */}
-      <div className="rounded-2xl border border-outline bg-surface p-lg">
+      <div className="rounded-2xl border border-outline bg-surface p-sz-lg">
         <h3 className="text-base font-semibold text-on-surface">{t('webApiKeyCreateTitle')}</h3>
         <div className="mt-3 space-y-3">
           <input
