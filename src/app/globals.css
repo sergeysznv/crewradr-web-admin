@@ -1,12 +1,11 @@
-@import "tailwindcss";
-@import "../lib/tokens.css";
-
 /*
- * Tailwind v4 loads JS configs via @config; without this directive the
- * theme extensions in tailwind.config.ts (CrewBeacon tokens) are ignored.
- * Path is relative to this CSS file (src/app/globals.css).
+ * Tailwind v4 requires @config BEFORE @import — otherwise the JS config
+ * (tailwind.config.ts) is silently ignored and all custom tokens are lost.
  */
 @config "../../tailwind.config.ts";
+
+@import "tailwindcss";
+@import "../lib/tokens.css";
 
 /*
  * The redesign themes via the `data-theme` attribute (tokens.css), not the
