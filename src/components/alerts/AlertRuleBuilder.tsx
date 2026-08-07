@@ -1,22 +1,33 @@
 // src/components/alerts/AlertRuleBuilder.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useT } from '@/hooks/use-translations';
 import { useTier } from '@/hooks/useTier';
+import { useCrew } from '@/hooks/useCrew';
 import { useAlertRules, useSaveAlertRule } from '@/hooks/queries/useAlertRules';
+import { useFleetPolicy } from '@/hooks/queries/useFleetPolicy';
 import { useSnackbar } from '@/components/shared/Snackbar';
+import { FLEET_POLICY_DEFAULTS } from '@/types/tier';
 
 export function AlertRuleBuilder() {
   const { t } = useT();
   const { settings } = useTier();
+  const { crewId } = useCrew();
   const { showSuccess, showError } = useSnackbar();
-  const crewId = settings?.crewId ?? null;
+  const { data: fleetPolicy } = useFleetPolicy(crewId);
+
+  const defaultSpeed = fleetPolicy?.extreme_speed_mph ?? FLEET_POLICY_DEFAULTS.extreme_speed_mph;
 
   const [name, setName] = useState('');
-  const [speedMph, setSpeedMph] = useState<number>(80);
+  const [speedMph, setSpeedMph] = useState<number>(defaultSpeed);
   const [durationMin, setDurationMin] = useState<number>(5);
+
+  // Sync default speed when fleet policy loads or changes
+  useEffect(() => {
+    setSpeedMph(defaultSpeed);
+  }, [defaultSpeed]);
 
   const { data: rules = [], isError } = useAlertRules(crewId);
   const saveMutation = useSaveAlertRule(crewId);
@@ -119,6 +130,9 @@ export function AlertRuleBuilder() {
                 onChange={(e) => setSpeedMph(Number(e.target.value))}
                 className="mt-1 w-full rounded-lg border border-outline bg-surface px-4 py-2.5 text-sm text-on-surface focus:border-primary/50 focus:outline-none"
               />
+              <p className="mt-1 text-xs text-on-surface-variant/70">
+                {t('webAlertsRulesSpeedHint', { default: defaultSpeed })}
+              </p>
             </div>
             <div>
               <label htmlFor="alert-rule-duration" className="text-sm font-semibold text-on-surface">

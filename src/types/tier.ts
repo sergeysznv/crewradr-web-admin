@@ -102,6 +102,26 @@ export interface AlertRule {
   createdAt: string;
 }
 
+export interface FleetPolicy {
+  id?: string;
+  crew_id?: string;
+  mode: 'consumer' | 'enterprise';
+  fatigue_limit_hours: number;
+  extreme_speed_mph: number;
+  phone_policy: 'warn' | 'penalize';
+  scoring_mode: 'consumer' | 'enterprise';
+  audit_retention_days: number;
+}
+
+export const FLEET_POLICY_DEFAULTS: FleetPolicy = {
+  mode: 'consumer',
+  fatigue_limit_hours: 8,
+  extreme_speed_mph: 85,
+  phone_policy: 'warn',
+  scoring_mode: 'consumer',
+  audit_retention_days: 365,
+};
+
 export interface ReportTemplate {
   id: string;
   crewId: string;

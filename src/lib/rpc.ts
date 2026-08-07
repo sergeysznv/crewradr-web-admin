@@ -6,8 +6,9 @@ import type {
 } from '@/types/rpc';
 import type {
   AlertRule, TripDetail, TripListItem, TrendDataPoint, ReportTemplate, ReportWidget,
-  ScheduledReport, RiskPrediction, Anomaly,
+  ScheduledReport, RiskPrediction, Anomaly, FleetPolicy
 } from '@/types/tier';
+import { FLEET_POLICY_DEFAULTS } from '@/types/tier';
 
 type RpcFn = SupabaseClient['rpc'];
 
@@ -260,6 +261,25 @@ export async function saveAlertRule(
   });
   if (error) throw error;
   return data as string;
+}
+
+export async function getFleetPolicy(supabase: SupabaseClient, crewId: string): Promise<FleetPolicy> {
+  const { data, error } = await supabase.rpc('get_web_fleet_policy', { p_crew_id: crewId });
+  if (error) throw error;
+  return (data as FleetPolicy) ?? { ...FLEET_POLICY_DEFAULTS };
+}
+
+export async function saveFleetPolicy(
+  supabase: SupabaseClient,
+  crewId: string,
+  policy: Partial<FleetPolicy>,
+): Promise<boolean> {
+  const { data, error } = await supabase.rpc('save_web_fleet_policy', {
+    p_crew_id: crewId,
+    p_policy: policy,
+  });
+  if (error) throw error;
+  return data as boolean;
 }
 
 /**
