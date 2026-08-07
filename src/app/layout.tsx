@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: 'CrewRadr Admin',
   description: 'Fleet management dashboard',
   icons: {
-    icon: '/favicon.ico',
+    icon: '/logo-32.png',
     apple: '/logo-96.png',
   },
 };
