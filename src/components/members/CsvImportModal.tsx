@@ -4,7 +4,19 @@ import { useState } from 'react';
 import { useBulkImport } from '@/hooks/queries/useMutations';
 import { useCrew } from '@/hooks/useCrew';
 import { useT } from '@/hooks/use-translations';
-import { X, Upload } from 'lucide-react';
+import { X, Upload, Download } from 'lucide-react';
+
+const CSV_TEMPLATE = 'email,role\ncrewmate@example.com,member\nfirst.mate@example.com,co-captain\ndriver@example.com,member\n';
+
+function downloadTemplate() {
+  const blob = new Blob([CSV_TEMPLATE], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'crewradr-member-import-template.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 export function CsvImportModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { t } = useT();
@@ -43,6 +55,13 @@ export function CsvImportModal({ open, onClose }: { open: boolean; onClose: () =
             <Upload size={32} className="mx-auto mb-2 text-on-surface-variant opacity-40" />
             <p className="text-sm text-on-surface-variant">{t('webMembersImportPaste')}</p>
             <p className="text-2xs text-on-surface-variant mt-1">{t('webMembersImportFormat')}</p>
+            <button
+              onClick={downloadTemplate}
+              className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-outline px-3 py-1.5 text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-colors"
+            >
+              <Download size={12} />
+              {t('webMembersImportDownloadTemplate')}
+            </button>
           </div>
 
           <textarea value={text} onChange={e => setText(e.target.value)}

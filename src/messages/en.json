@@ -274,6 +274,7 @@
 	"webMembersExportCsv": "Export CSV",
 	"webMembersFailedToLoad": "Failed to load members",
 	"webMembersImportButton": "Import CSV",
+	"webMembersImportDownloadTemplate": "Download template CSV",
 	"webMembersImportCancel": "Cancel",
 	"webMembersImportCsv": "Import CSV",
 	"webMembersImportDialogTitle": "Import Members",
