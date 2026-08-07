@@ -127,11 +127,11 @@ function ExportCard({ option, busy, soon, disabled, onExport }: {
 }
 
 export function ExportPresets() {
-  const { t } = useT();
+  const { t, locale } = useT();
   const { tier, settings } = useTier();
   const supabase = useSupabase();
   const [exporting, setExporting] = useState<string | null>(null);
-  const [notice, setNotice] = useState<{ kind: 'success' | 'error'; text: string; href?: string; downloadUrl?: string } | null>(null);
+  const [notice, setNotice] = useState<{ kind: 'success' | 'error'; text: string; href?: string; downloadUrl?: string; fileName?: string } | null>(null);
   const [emailTo, setEmailTo] = useState('');
   const [emailing, setEmailing] = useState(false);
 
@@ -202,12 +202,12 @@ export function ExportPresets() {
         fileName: string;
       } | null;
       if (!payload?.downloadUrl) throw new Error(t('webReportsExportFailed'));
-      await downloadFromUrl(payload.downloadUrl, payload.fileName);
       setNotice({
         kind: 'success',
         text: t('webReportsExportReady', { filename: payload.fileName }),
         href: payload.downloadUrl,
         downloadUrl: payload.downloadUrl,
+        fileName: payload.fileName,
       });
     });
 
@@ -288,48 +288,44 @@ export function ExportPresets() {
           ) : (
             <TriangleAlert className="h-4 w-4 shrink-0" aria-hidden="true" />
           )}
-          {notice.href ? (
-            <a
-              href={notice.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline underline-offset-2 hover:opacity-80"
-            >
-              {notice.text}
-            </a>
-          ) : (
-            notice.text
-          )}
+          <span className="flex-1">{notice.text}</span>
           {notice.kind === 'success' && notice.downloadUrl && (
             <div className="ml-auto flex items-center gap-2 shrink-0">
+              <a
+                href={notice.downloadUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-lg border border-success/30 bg-white px-3 py-1.5 text-xs font-semibold text-success hover:bg-success/10 transition-colors dark:bg-zinc-800"
+              >
+                {t('webReportsDownload')}
+              </a>
               <input
                 type="email"
                 value={emailTo}
                 onChange={(e) => setEmailTo(e.target.value)}
                 placeholder="recipient@example.com"
-                className="rounded-lg border border-success/30 bg-white px-3 py-1.5 text-xs text-on-surface dark:bg-zinc-800 dark:text-zinc-100"
+                className="rounded-lg border border-success/30 bg-white px-3 py-1.5 text-xs text-on-surface w-36 dark:bg-zinc-800 dark:text-zinc-100"
               />
               <button
                 onClick={async () => {
                   if (!emailTo) return;
                   setEmailing(true);
                   try {
-                    const { data: { session: s } } = await supabase.auth.getSession();
-                    const h: Record<string, string> = {};
-                    if (s?.access_token) h['Authorization'] = `Bearer ${s.access_token}`;
                     const { error } = await supabase.functions.invoke('send-email', {
                       body: {
                         to: [emailTo],
-                        subject: `CrewRadr Fleet Export — ${new Date().toISOString().slice(0, 10)}`,
-                        text: `Your fleet export is ready. Download it here: ${notice.downloadUrl}`,
+                        subject: `Fleet Export — ${notice.fileName ?? new Date().toISOString().slice(0, 10)}`,
+                        text: `Your fleet export is ready.`,
+                        downloadUrl: notice.downloadUrl,
+                        fileName: notice.fileName,
+                        lang: locale,
                       },
-                      headers: h,
                     });
                     if (error) throw error;
                     setEmailTo('');
-                    alert('Report emailed!');
+                    alert(t('webReportsEmailSent'));
                   } catch {
-                    alert('Failed to send email');
+                    alert(t('webReportsEmailFailed'));
                   }
                   setEmailing(false);
                 }}
