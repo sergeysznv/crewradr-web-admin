@@ -5,6 +5,7 @@ import { Loader } from '@googlemaps/js-api-loader';
 import type { LivePosition } from '@/types/rpc';
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '';
+const MAP_ID = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID ?? 'DEMO_MAP_ID';
 
 const STALE_AFTER_MS = 15 * 60 * 1000;
 const IDLE_AFTER_MS = 5 * 60 * 1000;
@@ -125,7 +126,7 @@ export default function LiveMap({ positions, selectedUserId, onSelect, onError }
           title: pos.display_name || initial,
           zIndex: isSelected ? 1000 : 1,
         });
-        marker.addListener('click', () => onSelect(pos));
+        marker.addListener('gmp-click', () => onSelect(pos));
         markers.set(pos.user_id, marker);
       }
     }
@@ -147,6 +148,7 @@ export default function LiveMap({ positions, selectedUserId, onSelect, onError }
       const map = new google.maps.Map(containerRef.current, {
         center: { lat: 39.8, lng: -98.5 },
         zoom: 4,
+        mapId: MAP_ID,
         disableDefaultUI: false,
         zoomControl: true,
         mapTypeControl: true,
