@@ -26,10 +26,14 @@ body {
 :root {
   --brand-surface: #F3F0E9;
   --brand-glow: rgba(142, 165, 149, 0.25);
+  --brand-seed: #8EA595;
+  --brand-accent: #D4A017;
 }
 [data-theme="dark"] {
   --brand-surface: #1A2327;
   --brand-glow: rgba(142, 165, 149, 0.12);
+  --brand-seed: #8EA595;
+  --brand-accent: #D4A017;
 }
 
 /* Brand radial glow (matches landing page .glow) */
