@@ -228,6 +228,10 @@ export function CsvImportModal({ open, onClose }: { open: boolean; onClose: () =
             </div>
           )}
 
+          <p className="mt-sz-md text-2xs text-on-surface-variant/60 leading-relaxed">
+            {t('webMembersImportNote')}
+          </p>
+
           <div className="flex gap-3 mt-sz-lg justify-end">
             <button onClick={onClose}
               className="px-4 py-2 rounded-xl border border-outline text-sm font-semibold text-on-surface-variant hover:bg-surface-container">{t('webMembersImportCancel')}</button>
