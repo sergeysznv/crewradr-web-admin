@@ -220,7 +220,7 @@ export default function LiveMap({ positions, selectedUserId, onSelect, onError }
 
     const loader = new Loader({
       apiKey: GOOGLE_MAPS_API_KEY,
-      version: 'weekly',
+      version: 'quarterly',
       libraries: ['marker'],
     });
 
