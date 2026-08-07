@@ -4,14 +4,17 @@
 import { useQuery } from '@tanstack/react-query';
 import { useCrew } from '@/hooks/useCrew';
 import { useSupabase } from '@/hooks/useSupabase';
-import { useT } from '@/hooks/use-translations';
+import { useT, formatDistance } from '@/hooks/use-translations';
 import { StatTile } from '@/components/shared/StatTile';
 import type { FleetDashboard } from '@/types/rpc';
+
+const HOURS_FORMAT = new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 });
 
 export function KpiStrip({ data }: { data: FleetDashboard }) {
   const { crewId } = useCrew();
   const supabase = useSupabase();
   const { t } = useT();
+  const { trip_stats: ts, total_alert_count } = data;
 
   // Trips started today (UTC midnight — matches server current_date)
   const todayQuery = useQuery({
@@ -32,7 +35,7 @@ export function KpiStrip({ data }: { data: FleetDashboard }) {
     refetchInterval: 60_000,
   });
 
-  const avgScore = data.trip_stats?.avg_score;
+  const avgScore = ts.avg_score;
   const safetyScore = avgScore != null ? Math.round(avgScore) : null;
 
   return (
@@ -43,10 +46,12 @@ export function KpiStrip({ data }: { data: FleetDashboard }) {
         value={data.active_trips}
         tone={data.active_trips > 0 ? 'good' : 'neutral'}
       />
+      <StatTile label={t('webFleetTotalDistance')} value={formatDistance(ts.total_distance_km)} />
+      <StatTile label={t('webFleetDrivingHours')} value={HOURS_FORMAT.format(ts.total_driving_hours)} />
       <StatTile
         label={t('webFleetRecentAlerts')}
-        value={data.total_alert_count}
-        tone={data.total_alert_count > 0 ? 'bad' : 'good'}
+        value={total_alert_count}
+        tone={total_alert_count > 0 ? 'bad' : 'good'}
       />
       <StatTile
         label={t('webFleetTripsToday')}

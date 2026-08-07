@@ -3,19 +3,22 @@ export interface AccountProfile {
   crews: Array<{ crew_id: string; role: string; joined_at: string; crew_name: string; tier: string }>;
 }
 
+export interface FleetDashboardTripStats {
+  total_trips: number;
+  total_distance_km: number;
+  total_driving_hours: number;
+  total_fatigue_warnings: number;
+  avg_score: number | null;
+}
+
 export interface FleetDashboard {
   crew_name: string;
   member_count: number;
   active_trips: number;
   total_alert_count: number;
+  effective_days: number;
   recent_alerts: Array<{ id: string; alert_type: string; severity: string; message: string; created_at: string; display_name: string | null }>;
-  trip_stats?: {
-    total_trips: number;
-    total_distance_km: number;
-    total_driving_hours: number;
-    total_fatigue_warnings: number;
-    avg_score: number | null;
-  } | null;
+  trip_stats: FleetDashboardTripStats;
 }
 
 export interface CrewMember {

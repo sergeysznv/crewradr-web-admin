@@ -1,5 +1,6 @@
 // src/components/dashboard/DashboardView.tsx
 'use client';
+import { useState } from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { useCrew } from '@/hooks/useCrew';
 import { useT } from '@/hooks/use-translations';
@@ -14,15 +15,28 @@ import { CalendarHeatmap } from '@/components/overview/CalendarHeatmap';
 import { TrendChart } from '@/components/overview/TrendChart';
 import { FleetSafetyScore } from '@/components/dashboard/FleetSafetyScore';
 import { Skeleton } from '@/components/shared/Skeleton';
+import { FilterChips } from '@/components/shared/FilterChips';
 import { TierGateGuard } from '@/components/tier/TierGateGuard';
 import { RoleGate } from '@/components/tier/RoleGate';
 import { AlertRuleBuilder } from '@/components/alerts/AlertRuleBuilder';
+
+type TimeRange = 1 | 7 | 15 | 30 | 60 | 90;
+
+const TIME_RANGES: { value: TimeRange; label: string }[] = [
+  { value: 1, label: '24h' },
+  { value: 7, label: '7d' },
+  { value: 15, label: '15d' },
+  { value: 30, label: '30d' },
+  { value: 60, label: '60d' },
+  { value: 90, label: '90d' },
+];
 
 export function DashboardView() {
   // Crew seeding happens once at app mount in CrewLoader — not per page.
   const { crewId } = useCrew();
   const { t } = useT();
-  const dashboard = useFleetDashboard(crewId);
+  const [days, setDays] = useState<TimeRange>(30);
+  const dashboard = useFleetDashboard(crewId, days);
 
   // Realtime — silent background refresh on trip session / safety alert changes.
   useRealtimeInvalidation(
@@ -45,6 +59,7 @@ export function DashboardView() {
       ) : dashboard.data ? (
         <div className="space-y-sz-lg animate-fade-in">
           <h1 className="text-2xl font-bold text-on-surface">{t('webNavFleet')}</h1>
+          <FilterChips<TimeRange> options={TIME_RANGES} selected={days} onSelect={setDays} />
           <KpiStrip data={dashboard.data} />
           {/* Fleet-wide aggregate safety score (captain+ tier) */}
           <TierGateGuard minTier="captain" fallback={null}>

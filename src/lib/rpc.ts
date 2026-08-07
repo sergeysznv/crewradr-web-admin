@@ -17,8 +17,8 @@ export async function getAccountProfile(supabase: SupabaseClient): Promise<Accou
   return data;
 }
 
-export async function getFleetDashboard(supabase: SupabaseClient, crewId: string): Promise<FleetDashboard> {
-  const { data, error } = await supabase.rpc('get_web_fleet_dashboard', { p_crew_id: crewId }).single<FleetDashboard>();
+export async function getFleetDashboard(supabase: SupabaseClient, crewId: string, days?: number): Promise<FleetDashboard> {
+  const { data, error } = await supabase.rpc('get_web_fleet_dashboard', { p_crew_id: crewId, p_days: days ?? 30 }).single<FleetDashboard>();
   if (error) throw error;
   return data;
 }

@@ -1,12 +1,12 @@
 // src/components/shared/FilterChips.tsx
 import { cn } from '@/lib/utils';
 
-interface Option<V extends string> {
+interface Option<V extends string | number> {
   value: V;
   label: string;
 }
 
-export function FilterChips<V extends string>({
+export function FilterChips<V extends string | number = string>({
   options,
   selected,
   onSelect,
