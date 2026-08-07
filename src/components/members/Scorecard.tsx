@@ -7,6 +7,9 @@ import { useTier } from '@/hooks/useTier';
 import { useT } from '@/hooks/use-translations';
 import { tierHistoryDays } from '@/lib/tier';
 import type { MemberScorecard } from '@/types/tier';
+import { useState } from 'react';
+
+const DAY_OPTIONS = [7, 30, 90, 365] as const;
 
 // Units match get_web_member_scorecard: braking = events per 100 miles,
 // speeding/phone = events per trip, night = share of driving time.
@@ -27,10 +30,8 @@ export function Scorecard({ memberId }: { memberId: string }) {
   const { t } = useT();
   const supabase = useSupabase();
   const { tier, settings } = useTier();
-  // settings.historyDays is authoritative (snake_case tiers like 'first_mate'
-  // are not keyed in tierHistoryDays); fall back to the tier ladder only
-  // before settings have loaded.
-  const days = settings?.historyDays ?? tierHistoryDays(tier);
+  const maxDays = settings?.historyDays ?? tierHistoryDays(tier);
+  const [days, setDays] = useState(maxDays);
 
   const { data, isLoading } = useQuery({
     queryKey: ['member_scorecard', memberId, days],
@@ -62,6 +63,23 @@ export function Scorecard({ memberId }: { memberId: string }) {
       <div className="flex items-center justify-between">
         <h3 className="font-heading font-bold text-sm text-on-surface">{data.memberName}</h3>
         <span className="text-xs text-on-surface-variant">{t('webScorecardPeriod', { days })}</span>
+      </div>
+
+      {/* Day selector */}
+      <div className="mt-3 flex gap-1">
+        {DAY_OPTIONS.filter(d => d <= maxDays).map(d => (
+          <button
+            key={d}
+            onClick={() => setDays(d)}
+            className={`px-2 py-0.5 rounded text-[10px] font-semibold transition-colors ${
+              d === days
+                ? 'bg-primary text-on-primary'
+                : 'text-on-surface-variant hover:bg-surface-container'
+            }`}
+          >
+            {d}d
+          </button>
+        ))}
       </div>
 
       {/* Overall score */}

@@ -87,7 +87,7 @@ export function FleetSafetyScore({ days = 90 }: { days?: number }) {
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="text-sm font-bold text-on-surface">{t('webFleetSafetyScoreTitle')}</h2>
-          <p className="text-xs text-on-surface-variant">{t('webFleetSafetyScoreDesc')}</p>
+          <p className="text-xs text-on-surface-variant">{t('webFleetSafetyScoreDesc', { days })}</p>
         </div>
         <p className="text-xs text-on-surface-variant">
           {t('webFleetSafetyMembers', { count: rankings.length })}
