@@ -4,6 +4,7 @@ import { useT } from '@/hooks/use-translations';
 import { useTier } from '@/hooks/useTier';
 import { useRiskPredictions } from '@/hooks/queries/useRiskPredictions';
 import { AICard } from './AICard';
+import { Info } from 'lucide-react';
 
 export function RiskPredictionCard({ memberId }: { memberId: string }) {
   const { t } = useT();
@@ -22,6 +23,9 @@ export function RiskPredictionCard({ memberId }: { memberId: string }) {
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant">
               {t('webAiRiskPredictionTitle')}
+              <span title={t('webAiRiskTooltip')} className="cursor-help">
+                <Info className="ml-1 inline-block h-3 w-3 text-on-surface-variant/50 hover:text-on-surface-variant/80" />
+              </span>
             </span>
             <span className="text-[10px] text-on-surface-variant/60">
               {t('webAiRiskConfidence', { pct: Math.round(pred.confidence * 100) })}

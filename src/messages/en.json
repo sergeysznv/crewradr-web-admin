@@ -577,6 +577,7 @@
 	"webAiRiskIncidentToday": "incident risk today",
 	"webAiRiskNoData": "No risk data available for this member",
 	"webAiRiskPredictionTitle": "Risk Prediction",
+	"webAiRiskTooltip": "Risk is scored 0–100% across four factors: Speed (35% — speeding events from recent driving), Fatigue (25% — nighttime driving & alerts), Weather (15% — seasonal road conditions), Route (25% — safety alerts & incident history). Confidence (30–90%) reflects how much driving data is available — low confidence means few trips or no telemetry. Scores only differentiate once the mobile app logs driving data (speed, nighttime driving, trip duration). Looks back 7 days for driving data, 30 days for safety alerts.",
 	"webAlertsRulesTitle": "Custom Alert Rules",
 	"webAlertsRulesYourRules": "Your Rules",
 	"webAlertsRulesCreateRule": "Create Rule",
