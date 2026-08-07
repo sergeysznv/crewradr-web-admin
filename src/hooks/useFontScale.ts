@@ -124,10 +124,13 @@ export function useFontScale(): FontScaleResult {
 
   const setAndSync = useCallback(
     async (next: FontScale) => {
-      const prev = scale;
-      // Optimistic update
+      // Always persist locally — localStorage is the source of truth.
       setScale(next);
       localStorage.setItem(STORAGE_KEY, String(next));
+
+      // Sync to Supabase only when we have both a session and a profile row.
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session || !profile?.user_id) return;
 
       const { error } = await supabaseClient.from('profiles').upsert(
         {
@@ -138,9 +141,6 @@ export function useFontScale(): FontScaleResult {
       );
 
       if (error) {
-        // Revert on failure
-        setScale(prev);
-        localStorage.setItem(STORAGE_KEY, String(prev));
         console.error('Failed to sync font scale:', error);
       }
     },

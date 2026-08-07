@@ -135,10 +135,13 @@ export function useMeasurementSystem(): MeasurementSystemResult {
 
   const setAndSync = useCallback(
     async (next: MeasurementSystem) => {
-      const prev = system;
-      // Optimistic update
+      // Always persist locally — localStorage is the source of truth.
       setSystem(next);
       localStorage.setItem(STORAGE_KEY, next);
+
+      // Sync to Supabase only when we have both a session and a profile row.
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session || !profile?.user_id) return;
 
       const { error } = await supabase.from('profiles').upsert(
         {
@@ -149,9 +152,6 @@ export function useMeasurementSystem(): MeasurementSystemResult {
       );
 
       if (error) {
-        // Revert on failure
-        setSystem(prev);
-        localStorage.setItem(STORAGE_KEY, prev);
         console.error('Failed to sync measurement system:', error);
       }
     },
