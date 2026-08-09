@@ -153,7 +153,9 @@ export function MapView() {
   // Staleness uses the query's dataUpdatedAt as "now" (refreshes with the
   // 30s refetchInterval) so render stays pure.
   const selectedIsStale =
-    selected && positionsQuery.dataUpdatedAt > 0 &&
+    selected &&
+    selected.created_at &&
+    positionsQuery.dataUpdatedAt > 0 &&
     positionsQuery.dataUpdatedAt - new Date(selected.created_at).getTime() > STALE_AFTER_MS;
 
   return (
@@ -196,6 +198,11 @@ export function MapView() {
               </div>
             </div>
           )}
+          {positions.length > 0 && positions.every((p) => p.is_stale) && (
+            <div className="pointer-events-none absolute bottom-3 left-3 z-[1100] rounded-lg bg-surface-container/90 px-3 py-2 text-xs text-on-surface-variant backdrop-blur-sm">
+              {t('webMapAllStale')}
+            </div>
+          )}
         </div>
 
         {selected && (
@@ -228,13 +235,22 @@ export function MapView() {
             <dl className="mt-3 space-y-1 text-sm">
               <dt className="sr-only">{t('webMapLastSeen')}</dt>
               <dd className="text-on-surface-variant">
-                {t('webMapLastSeen', { time: formatRelativeTime(selected.created_at) })}
+                {selected.created_at
+                  ? t('webMapLastSeen', { time: formatRelativeTime(selected.created_at) })
+                  : t('webMapNeverSeen')}
               </dd>
-              <dd className="text-xs text-on-surface-variant">
-                {t('webMapCoordinates')}: {selected.latitude.toFixed(5)}, {selected.longitude.toFixed(5)}
-              </dd>
-              {selectedIsStale && (
-                <dd className="text-xs text-amber-500">{t('webMapStale', { minutes: 15 })}</dd>
+              {selected.latitude != null && selected.longitude != null && (
+                <dd className="text-xs text-on-surface-variant">
+                  {t('webMapCoordinates')}: {selected.latitude.toFixed(5)}, {selected.longitude.toFixed(5)}
+                </dd>
+              )}
+              {selected.last_seen_at && selected.is_stale && (
+                <dd className="text-xs text-amber-500">
+                  {t('webMapStale', { minutes: 15 })}
+                </dd>
+              )}
+              {!selected.last_seen_at && (
+                <dd className="text-xs text-red-400">{t('webMapNoRecentFix')}</dd>
               )}
             </dl>
           </aside>

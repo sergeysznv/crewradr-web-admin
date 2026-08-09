@@ -168,19 +168,32 @@ export default function LiveMap({ positions, selectedUserId, onSelect, onError }
       }
     }
 
-    // Fit bounds on first data
-    if (!didFitRef.current && positions.length > 0) {
+    // Fit bounds on first data — fitAllMarkers handles null positions internally.
+    if (!didFitRef.current && positions.some((p) => p.latitude != null && p.longitude != null)) {
       didFitRef.current = true;
       // Defer so the map has finished rendering its first frame.
       setTimeout(() => fitAllMarkers(map), 100);
     }
 
     for (const pos of positions) {
-      const isStale = now - new Date(pos.created_at).getTime() > STALE_AFTER_MS;
+      // Members without a location fix (lat/lng null) cannot be placed on the
+      // map — remove any existing marker and skip.
+      if (pos.latitude == null || pos.longitude == null) {
+        const old = markers.get(pos.user_id);
+        if (old) {
+          old.map = null;
+          markers.delete(pos.user_id);
+        }
+        continue;
+      }
+
+      const isStale = pos.created_at
+        ? now - new Date(pos.created_at).getTime() > STALE_AFTER_MS
+        : true;
       const isSelected = pos.user_id === selectedUserId;
       const initial = pos.display_name?.charAt(0)?.toUpperCase() ?? '?';
       const labelText = pos.profile_emoji || initial;
-      const color = markerColor(now, pos.created_at);
+      const color = pos.created_at ? markerColor(now, pos.created_at) : '#6B7280';
       const displayName = pos.display_name || initial;
 
       const existing = markers.get(pos.user_id);

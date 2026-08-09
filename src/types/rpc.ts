@@ -85,10 +85,12 @@ export interface LivePosition {
   profile_emoji: string | null;
   avatar_url: string | null;
   role: string;
-  latitude: number;
-  longitude: number;
+  latitude: number | null;
+  longitude: number | null;
   event_type: string | null;
-  created_at: string;
+  created_at: string | null;
+  is_stale: boolean;
+  last_seen_at: string | null;
 }
 
 export interface ProvisioningLink {
