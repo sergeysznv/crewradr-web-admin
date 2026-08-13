@@ -16,10 +16,10 @@ export function OfflineBanner() {
   if (!offline) return null;
 
   return (
-    <div className="sticky top-0 z-50 flex items-center justify-center gap-2 bg-warning/90 px-4 py-2 text-sm font-semibold text-white">
+    <div className="sticky top-0 z-50 flex items-center justify-center gap-2 bg-warning px-4 py-2 text-sm font-semibold text-on-warning">
       <WifiOff className="h-4 w-4" aria-hidden="true" />
       {t('webOfflineBanner')}
-      <span className="ml-2 h-2 w-2 animate-pulse rounded-full bg-white" />
+      <span className="ml-2 h-2 w-2 animate-pulse rounded-full bg-on-warning" />
     </div>
   );
 }
