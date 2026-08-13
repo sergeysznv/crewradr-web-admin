@@ -181,7 +181,7 @@ export function FleetPolicyTab() {
         type="button"
         onClick={handleSave}
         disabled={saveMutation.isPending}
-        className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-2.5 text-sm font-bold text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+        className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-2.5 text-sm font-bold text-on-primary transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
       >
         {saveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
         {saveMutation.isPending ? t('saving') : t('webSave')}

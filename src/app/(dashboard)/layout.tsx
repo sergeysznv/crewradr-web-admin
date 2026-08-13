@@ -180,7 +180,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {loadError ? t('webShellConnectionErrorDesc') : t('webAccessRestrictedDesc')}
           </p>
           {loadError && (
-            <button onClick={() => loadCrews()} className="mt-4 rounded-lg bg-[var(--brand-seed)] px-6 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90">
+            <button onClick={() => loadCrews()} className="mt-4 rounded-lg bg-[var(--brand-seed)] px-6 py-2 text-sm font-semibold text-on-brand transition-opacity hover:opacity-90">
               {t('retry')}
             </button>
           )}
@@ -442,7 +442,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             <p className="text-xs text-on-surface-variant text-center mb-4">{t('webUpgradeFooter')}</p>
             <button onClick={() => setShowUpgrade(false)}
-              className="w-full rounded-xl bg-[var(--brand-seed)] px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90">
+              className="w-full rounded-xl bg-[var(--brand-seed)] px-4 py-2.5 text-sm font-semibold text-on-brand hover:opacity-90">
               {t('webUpgradeCta')}
             </button>
           </div>

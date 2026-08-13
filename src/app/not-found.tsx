@@ -18,7 +18,7 @@ export default function NotFound() {
         </p>
         <Link
           href="/fleet"
-          className="mt-6 inline-block rounded-xl bg-[var(--brand-seed)] px-6 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          className="mt-6 inline-block rounded-xl bg-[var(--brand-seed)] px-6 py-2.5 text-sm font-semibold text-on-brand transition-opacity hover:opacity-90"
         >
           {t('webNotFoundCta')}
         </Link>

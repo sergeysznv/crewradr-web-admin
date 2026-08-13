@@ -254,7 +254,7 @@ export function PrivacyTab() {
               <button
                 onClick={handleSaveRetention}
                 disabled={savingRetention || retentionDraft === policy.retentionDays}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary text-white hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary text-on-primary hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {savingRetention && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                 {t('webPrivacyRetentionSave')}
@@ -272,7 +272,7 @@ export function PrivacyTab() {
         <button
           onClick={() => setShowDelete(true)}
           disabled={!user}
-          className="mt-3 px-3 py-1.5 rounded-lg text-xs font-semibold bg-error text-white hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="mt-3 px-3 py-1.5 rounded-lg text-xs font-semibold bg-error text-on-error hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {t('webSettingsDeleteAccountButton')}
         </button>

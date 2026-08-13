@@ -116,10 +116,10 @@ export function ConfirmDialog({
           <button
             onClick={onConfirm}
             disabled={isConfirmDisabled}
-            className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white disabled:opacity-50 ${
+            className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold disabled:opacity-50 ${
               destructive
-                ? 'bg-error hover:opacity-90'
-                : 'bg-primary hover:opacity-90'
+                ? 'bg-error text-on-error hover:opacity-90'
+                : 'bg-primary text-on-primary hover:opacity-90'
             }`}
           >
             {pending && <Loader2 className="h-4 w-4 animate-spin" />}

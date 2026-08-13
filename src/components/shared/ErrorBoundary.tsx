@@ -86,7 +86,7 @@ export function ShellErrorBoundary({ children }: { children: ReactNode }) {
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="mt-6 rounded-full bg-primary px-6 py-3 text-lg font-bold text-white"
+              className="mt-6 rounded-full bg-primary px-6 py-3 text-lg font-bold text-on-primary"
             >
               {t('webErrorBoundaryReload')}
             </button>

@@ -330,7 +330,7 @@ export function ExportPresets() {
                   setEmailing(false);
                 }}
                 disabled={emailing || !emailTo}
-                className="rounded-lg bg-success px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90 disabled:opacity-50"
+                className="rounded-lg bg-success px-3 py-1.5 text-xs font-semibold text-on-success hover:opacity-90 disabled:opacity-50"
               >
                 {emailing ? 'Sending…' : 'Email'}
               </button>

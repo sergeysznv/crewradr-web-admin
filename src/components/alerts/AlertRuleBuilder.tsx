@@ -152,7 +152,7 @@ export function AlertRuleBuilder() {
             type="button"
             onClick={handleSave}
             disabled={!name.trim() || saveMutation.isPending}
-            className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-2.5 text-sm font-bold text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-2.5 text-sm font-bold text-on-primary transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
           >
             {saveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
             {saveMutation.isPending ? t('webAlertsRulesSaving') : t('webAlertsRulesSave')}

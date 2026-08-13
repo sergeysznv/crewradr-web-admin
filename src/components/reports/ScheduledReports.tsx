@@ -203,7 +203,7 @@ export function ScheduledReports() {
                     onClick={() => setFrequency(f)}
                     className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
                       frequency === f
-                        ? 'bg-primary text-white'
+                        ? 'bg-primary text-on-primary'
                         : 'bg-surface-container text-on-surface hover:bg-surface-container-hover'
                     }`}
                   >
@@ -321,7 +321,7 @@ export function ScheduledReports() {
               type="button"
               onClick={handleCreate}
               disabled={!canCreate || isInLockout || saveMutation.isPending}
-              className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-2.5 text-sm font-bold text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-2.5 text-sm font-bold text-on-primary transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
             >
               {saveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
               {saveMutation.isPending ? t('webReportsScheduledSaving') : t('webReportsScheduledAdd')}

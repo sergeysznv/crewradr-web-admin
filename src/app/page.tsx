@@ -159,7 +159,7 @@ export default function LoginPage() {
                 className="mb-6 w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500"
                 autoComplete="current-password" />
               <button type="submit" disabled={busy}
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--brand-seed)] px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50">
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--brand-seed)] px-4 py-2.5 text-sm font-semibold text-on-brand transition-opacity hover:opacity-90 disabled:opacity-50">
                 {busy && <Loader2 className="h-4 w-4 animate-spin" />}
                 {busy ? t('webLoginSigningIn') : t('webLoginSignIn')}
               </button>
@@ -194,7 +194,7 @@ export default function LoginPage() {
                 className="mb-4 w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-center text-2xl tracking-[0.5em] font-mono text-zinc-900 placeholder:text-zinc-400 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500"
                 placeholder="123456" autoComplete="one-time-code" autoFocus />
               <button type="submit" disabled={busy}
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--brand-seed)] px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50">
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--brand-seed)] px-4 py-2.5 text-sm font-semibold text-on-brand transition-opacity hover:opacity-90 disabled:opacity-50">
                 {busy && <Loader2 className="h-4 w-4 animate-spin" />} {t('webLoginMfaVerify')}
               </button>
             </form>

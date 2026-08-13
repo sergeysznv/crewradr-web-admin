@@ -67,7 +67,7 @@ export function FleetOverview({ dashboard }: FleetOverviewProps) {
       {isAdmiral ? (
         <button
           onClick={() => router.push('/map')}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--brand-seed)] px-4 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--brand-seed)] px-4 py-3 text-sm font-semibold text-on-brand transition-opacity hover:opacity-90"
         >
           {t('webNavLiveMap')}
           <ArrowRight className="h-4 w-4" />

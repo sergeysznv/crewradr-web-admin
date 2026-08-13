@@ -38,7 +38,7 @@ export function IdleWarningOverlay({ staySignedIn, onSignOut }: Props) {
 
           <button
             onClick={staySignedIn}
-            className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--brand-seed)] px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--brand-seed)] px-4 py-2.5 text-sm font-semibold text-on-brand transition-opacity hover:opacity-90"
           >
             {t('webSessionStaySignedIn')}
           </button>
@@ -73,7 +73,7 @@ export function SignedOutOverlay() {
 
           <button
             onClick={() => window.location.reload()}
-            className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--brand-seed)] px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--brand-seed)] px-4 py-2.5 text-sm font-semibold text-on-brand transition-opacity hover:opacity-90"
           >
             {t('webSessionSignInAgain')}
           </button>

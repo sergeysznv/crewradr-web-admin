@@ -147,7 +147,7 @@ export function DangerZone() {
         <button
           onClick={() => setShowDelete(true)}
           disabled={!isCaptain}
-          className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-error text-white hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-error text-on-error hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {t('webSettingsDeleteButton')}
         </button>

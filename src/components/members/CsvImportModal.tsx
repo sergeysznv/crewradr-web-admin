@@ -236,7 +236,7 @@ export function CsvImportModal({ open, onClose }: { open: boolean; onClose: () =
             <button onClick={onClose}
               className="px-4 py-2 rounded-xl border border-outline text-sm font-semibold text-on-surface-variant hover:bg-surface-container">{t('webMembersImportCancel')}</button>
             <button onClick={handleImport} disabled={!preview || preview.length === 0 || importMutation.isPending}
-              className="px-4 py-2 rounded-xl text-sm font-semibold text-white bg-primary hover:opacity-90 disabled:opacity-50">
+              className="px-4 py-2 rounded-xl text-sm font-semibold text-on-primary bg-primary hover:opacity-90 disabled:opacity-50">
               {importMutation.isPending ? t('webMembersImportImporting') : importDone ? t('webAccountProfileSaved') : t('webMembersImportCsv')}
             </button>
           </div>
