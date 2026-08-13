@@ -86,7 +86,7 @@ export function TripsView() {
                       onClick={() => setSelectedTripId(tr.id)}
                       className={`w-full rounded-lg border p-3 text-left transition-colors ${
                         tr.id === selectedTripId
-                          ? 'border-primary bg-primary-container/60'
+                          ? 'border-primary bg-primary-container'
                           : 'border-transparent hover:border-outline hover:bg-surface-variant'
                       }`}
                     >
@@ -117,7 +117,7 @@ export function TripsView() {
                           )}
                         </span>
                         {tr.alert_count > 0 && (
-                          <span className="shrink-0 rounded-full bg-error/10 px-2 py-0.5 text-xs font-semibold text-error">
+                          <span className="shrink-0 rounded-full bg-error-container px-2 py-0.5 text-xs font-semibold text-on-error-container">
                             {t('webTripsAlertCount', { n: tr.alert_count })}
                           </span>
                         )}

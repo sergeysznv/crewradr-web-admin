@@ -86,7 +86,7 @@ export function FleetPolicyTab() {
           />
           <span className="text-sm text-on-surface-variant">{t('webFleetPolicyMph')}</span>
         </div>
-        <p className="mt-1 text-xs text-on-surface-variant/70">{t('webFleetPolicyExtremeSpeedHint')}</p>
+        <p className="mt-1 text-xs text-on-surface-variant">{t('webFleetPolicyExtremeSpeedHint')}</p>
       </div>
 
       {/* Fatigue Limit */}
@@ -106,7 +106,7 @@ export function FleetPolicyTab() {
           />
           <span className="text-sm text-on-surface-variant">{t('webFleetPolicyHours')}</span>
         </div>
-        <p className="mt-1 text-xs text-on-surface-variant/70">{t('webFleetPolicyFatigueHint')}</p>
+        <p className="mt-1 text-xs text-on-surface-variant">{t('webFleetPolicyFatigueHint')}</p>
       </div>
 
       {/* Phone Policy */}
@@ -153,7 +153,7 @@ export function FleetPolicyTab() {
             </button>
           ))}
         </div>
-        <p className="mt-1 text-xs text-on-surface-variant/70">{t('webFleetPolicyScoringModeHint')}</p>
+        <p className="mt-1 text-xs text-on-surface-variant">{t('webFleetPolicyScoringModeHint')}</p>
       </div>
 
       {/* Audit Retention */}

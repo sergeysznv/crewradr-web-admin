@@ -175,7 +175,7 @@ export function CsvImportModal({ open, onClose }: { open: boolean; onClose: () =
 
           {/* Client-side validation errors */}
           {clientErrors.length > 0 && (
-            <div className="mt-sz-md rounded-lg border border-warning/30 bg-warning-container/50 p-3">
+            <div className="mt-sz-md rounded-lg border border-warning/30 bg-warning-container p-3">
               <div className="flex items-center gap-1.5 mb-2">
                 <AlertTriangle size={14} className="text-warning shrink-0" />
                 <span className="text-xs font-semibold text-warning">{t('webMembersImportErrors', { errors: clientErrors.length })}</span>
@@ -184,7 +184,7 @@ export function CsvImportModal({ open, onClose }: { open: boolean; onClose: () =
                 {clientErrors.map((e, i) => (
                   <li key={i} className="text-xs text-on-surface-variant">
                     <span className="font-mono text-on-surface">{e.email}</span>
-                    {e.line > 0 && <span className="text-on-surface-variant/60"> (line {e.line})</span>}
+                    {e.line > 0 && <span className="text-on-surface-variant"> (line {e.line})</span>}
                     {' — '}{e.error}
                   </li>
                 ))}
@@ -212,7 +212,7 @@ export function CsvImportModal({ open, onClose }: { open: boolean; onClose: () =
 
           {/* Server-side errors after import */}
           {importMutation.data && serverErrors.length > 0 && (
-            <div className="mt-sz-md rounded-lg border border-error/30 bg-error-container/30 p-3">
+            <div className="mt-sz-md rounded-lg border border-error/30 bg-error-container p-3">
               <div className="flex items-center gap-1.5 mb-2">
                 <AlertTriangle size={14} className="text-error shrink-0" />
                 <span className="text-xs font-semibold text-error">{t('webMembersImportErrors', { errors: serverErrors.length })}</span>
@@ -228,7 +228,7 @@ export function CsvImportModal({ open, onClose }: { open: boolean; onClose: () =
             </div>
           )}
 
-          <p className="mt-sz-md text-2xs text-on-surface-variant/60 leading-relaxed">
+          <p className="mt-sz-md text-2xs text-on-surface-variant leading-relaxed">
             {t('webMembersImportNote')}
           </p>
 

@@ -24,10 +24,10 @@ export function RiskPredictionCard({ memberId }: { memberId: string }) {
             <span className="text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant">
               {t('webAiRiskPredictionTitle')}
               <span title={t('webAiRiskTooltip')} className="cursor-help">
-                <Info className="ml-1 inline-block h-3 w-3 text-on-surface-variant/50 hover:text-on-surface-variant/80" />
+                <Info className="ml-1 inline-block h-3 w-3 text-on-surface-variant" />
               </span>
             </span>
-            <span className="text-[10px] text-on-surface-variant/60">
+            <span className="text-[10px] text-on-surface-variant">
               {t('webAiRiskConfidence', { pct: Math.round(pred.confidence * 100) })}
             </span>
           </div>

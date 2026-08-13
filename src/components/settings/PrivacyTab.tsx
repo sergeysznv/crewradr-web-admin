@@ -181,7 +181,7 @@ export function PrivacyTab() {
           <h3 className="font-heading font-bold text-sm text-on-surface">{t('webPrivacyExportTitle')}</h3>
         </div>
         <p className="mt-1 text-xs text-on-surface-variant">{t('webPrivacyExportHint')}</p>
-        <p className="mt-1 text-[10px] text-on-surface-variant/60">{t('webPrivacyExportRateLimit')}</p>
+        <p className="mt-1 text-[10px] text-on-surface-variant">{t('webPrivacyExportRateLimit')}</p>
         <div className="mt-3 flex gap-2">
           <button
             onClick={() => handlePersonalExport('json')}
@@ -245,7 +245,7 @@ export function PrivacyTab() {
                   className="w-full accent-primary"
                   aria-label={t('webPrivacyRetentionTitle')}
                 />
-                <div className="flex justify-between text-[10px] text-on-surface-variant/60">
+                <div className="flex justify-between text-[10px] text-on-surface-variant">
                   <span>1 {t('webPrivacyRetentionDayUnit')}</span>
                   <span>365 {t('webPrivacyRetentionDayUnit')}</span>
                 </div>

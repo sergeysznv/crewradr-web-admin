@@ -73,7 +73,7 @@ export function MultiCrewSwitcher({ crews, activeCrewId, onSelect }: MultiCrewSw
                       setOpen(false);
                     }}
                     className={cn(
-                      'flex w-full items-center justify-between gap-2 rounded-xl px-3 py-2 text-left transition-colors hover:bg-surface-container-high/60',
+                      'flex w-full items-center justify-between gap-2 rounded-xl px-3 py-2 text-left transition-colors hover:bg-surface-container-high',
                       selected && 'bg-[color-mix(in_srgb,var(--brand-seed)_10%,transparent)]'
                     )}
                   >

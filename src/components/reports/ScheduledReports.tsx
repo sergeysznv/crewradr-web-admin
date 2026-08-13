@@ -150,7 +150,7 @@ export function ScheduledReports() {
                       {s.schedule} · {s.format.toUpperCase()} · {s.recipients.length} recipient(s)
                     </span>
                     {s.lastRanAt && (
-                      <span className="mt-0.5 block text-[10px] text-on-surface-variant/60">
+                      <span className="mt-0.5 block text-[10px] text-on-surface-variant">
                         Last: {new Date(s.lastRanAt).toLocaleString()}
                         {s.nextRunAt && ` · Next: ${new Date(s.nextRunAt).toLocaleString()}`}
                       </span>
@@ -162,8 +162,8 @@ export function ScheduledReports() {
                     disabled={saveMutation.isPending || isInLockout}
                     className={`shrink-0 rounded-full px-3 py-1 text-xs font-bold transition-colors disabled:opacity-50 ${
                       s.enabled
-                        ? 'bg-success/15 text-success hover:bg-success/25'
-                        : 'bg-on-surface-variant/10 text-on-surface-variant hover:bg-on-surface-variant/20'
+                        ? 'bg-success-container text-on-success-container hover:bg-success/25'
+                        : 'bg-surface-container-high text-on-surface-variant hover:bg-on-surface-variant/20'
                     }`}
                   >
                     {s.enabled ? t('webAlertsRulesActive') : t('webAlertsRulesPaused')}
@@ -204,7 +204,7 @@ export function ScheduledReports() {
                     className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
                       frequency === f
                         ? 'bg-primary text-white'
-                        : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-hover'
+                        : 'bg-surface-container text-on-surface hover:bg-surface-container-hover'
                     }`}
                   >
                     {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -313,7 +313,7 @@ export function ScheduledReports() {
                 value={recipients}
                 onChange={(e) => setRecipients(e.target.value)}
                 placeholder={t('webReportsScheduledRecipientsPlaceholder')}
-                className="mt-1 w-full rounded-lg border border-outline bg-surface px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/60 focus:border-primary/50 focus:outline-none"
+                className="mt-1 w-full rounded-lg border border-outline bg-surface px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant focus:border-primary/50 focus:outline-none"
               />
             </div>
 
@@ -333,7 +333,7 @@ export function ScheduledReports() {
         {schedules.length === 0 && (
           <div className="rounded-lg border border-outline bg-surface p-8 text-center">
             <p className="text-sm font-medium text-on-surface-variant">{t('webReportsScheduledEmpty')}</p>
-            <p className="mt-1 text-xs text-on-surface-variant/60">{t('webReportsScheduledEmptyDesc')}</p>
+            <p className="mt-1 text-xs text-on-surface-variant">{t('webReportsScheduledEmptyDesc')}</p>
           </div>
         )}
       </section>

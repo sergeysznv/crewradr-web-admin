@@ -38,7 +38,7 @@ export function AnomalyCard() {
             >
               <div className="flex items-center justify-between">
                 <span className="text-sm font-semibold text-on-surface">{a.memberName}</span>
-                <span className="text-[10px] text-on-surface-variant/60">
+                <span className="text-[10px] text-on-surface-variant">
                   {new Date(a.timestamp).toLocaleDateString()}
                 </span>
               </div>

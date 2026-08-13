@@ -279,8 +279,8 @@ export function ExportPresets() {
           role="status"
           className={`flex items-center gap-2 rounded-lg border px-4 py-3 text-sm ${
             notice.kind === 'success'
-              ? 'border-success/30 bg-success/10 text-success'
-              : 'border-error/30 bg-error/10 text-error'
+              ? 'border-success/30 bg-success-container text-on-success-container'
+              : 'border-outline bg-error-container text-on-error-container'
           }`}
         >
           {notice.kind === 'success' ? (

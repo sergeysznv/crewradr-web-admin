@@ -64,7 +64,7 @@ export function TrendChart({ metric, crewId, label, days: daysOverride }: TrendC
     <div className="rounded-lg bg-surface border border-outline p-sz-lg">
       <div className="flex items-center justify-between">
         <span className="text-[10px] uppercase tracking-wider font-semibold text-on-surface-variant">{label}</span>
-        <span className="text-[10px] text-on-surface-variant/60">{t('webOverviewTrendDays', { days })}</span>
+        <span className="text-[10px] text-on-surface-variant">{t('webOverviewTrendDays', { days })}</span>
       </div>
       <div className="mt-1">
         <span className="text-2xl font-extrabold text-on-surface">

@@ -247,11 +247,11 @@ export function ApiKeyDashboard() {
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
                   <div className="text-right">
-                    <span className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-bold ${key.is_active ? 'bg-success/15 text-success' : 'bg-surface-container text-on-surface-variant'}`}>
+                    <span className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-bold ${key.is_active ? 'bg-success-container text-on-success-container' : 'bg-surface-container text-on-surface-variant'}`}>
                       {key.is_active ? t('webApiKeyActive') : t('webApiKeyRevokedStatus')}
                     </span>
                     {key.last_used_at && (
-                      <p className="mt-1 text-[10px] text-on-surface-variant/60">
+                      <p className="mt-1 text-[10px] text-on-surface-variant">
                         {t('webApiKeyLastUsed', { date: new Date(key.last_used_at).toLocaleDateString() })}
                       </p>
                     )}

@@ -88,8 +88,8 @@ export function AlertRuleBuilder() {
                   disabled={saveMutation.isPending}
                   className={`shrink-0 rounded-full px-3 py-1 text-xs font-bold transition-colors disabled:opacity-50 ${
                     rule.enabled
-                      ? 'bg-success/15 text-success hover:bg-success/25'
-                      : 'bg-on-surface-variant/10 text-on-surface-variant hover:bg-on-surface-variant/20'
+                      ? 'bg-success-container text-on-success-container hover:bg-success/25'
+                      : 'bg-surface-container-high text-on-surface-variant hover:bg-on-surface-variant/20'
                   }`}
                 >
                   {rule.enabled ? t('webAlertsRulesActive') : t('webAlertsRulesPaused')}
@@ -114,7 +114,7 @@ export function AlertRuleBuilder() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder={t('webAlertsRulesNamePlaceholder')}
-              className="mt-1 w-full rounded-lg border border-outline bg-surface px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/60 focus:border-primary/50 focus:outline-none"
+              className="mt-1 w-full rounded-lg border border-outline bg-surface px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant focus:border-primary/50 focus:outline-none"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -130,7 +130,7 @@ export function AlertRuleBuilder() {
                 onChange={(e) => setSpeedMph(Number(e.target.value))}
                 className="mt-1 w-full rounded-lg border border-outline bg-surface px-4 py-2.5 text-sm text-on-surface focus:border-primary/50 focus:outline-none"
               />
-              <p className="mt-1 text-xs text-on-surface-variant/70">
+              <p className="mt-1 text-xs text-on-surface-variant">
                 {t('webAlertsRulesSpeedHint', { default: defaultSpeed })}
               </p>
             </div>
@@ -163,7 +163,7 @@ export function AlertRuleBuilder() {
       {rules.length === 0 && (
         <div className="rounded-lg border border-outline bg-surface p-8 text-center">
           <p className="text-sm font-medium text-on-surface-variant">{t('webAlertsRulesEmpty')}</p>
-          <p className="mt-1 text-xs text-on-surface-variant/60">{t('webAlertsRulesEmptyDesc')}</p>
+          <p className="mt-1 text-xs text-on-surface-variant">{t('webAlertsRulesEmptyDesc')}</p>
         </div>
       )}
     </div>

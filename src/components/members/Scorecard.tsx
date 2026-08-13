@@ -53,7 +53,7 @@ export function Scorecard({ memberId }: { memberId: string }) {
     return (
       <div className="rounded-xl border border-outline bg-surface-container p-6 text-center">
         <p className="text-sm text-on-surface-variant">{t('webScorecardNoData')}</p>
-        <p className="mt-1 text-xs text-on-surface-variant/60">{t('webScorecardNoDataHint')}</p>
+        <p className="mt-1 text-xs text-on-surface-variant">{t('webScorecardNoDataHint')}</p>
       </div>
     );
   }

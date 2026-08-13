@@ -91,7 +91,7 @@ export function ReportBuilder() {
           value={templateName}
           onChange={(e) => setTemplateName(e.target.value)}
           placeholder={t('webReportsBuilderNamePlaceholder')}
-          className="mt-1 w-full rounded-lg border border-outline bg-surface px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/60 focus:border-primary/50 focus:outline-none"
+          className="mt-1 w-full rounded-lg border border-outline bg-surface px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant focus:border-primary/50 focus:outline-none"
         />
       </div>
 
@@ -168,7 +168,7 @@ export function ReportBuilder() {
                 type="button"
                 onClick={() => removeWidget(i)}
                 aria-label={t('webReportsBuilderRemoveWidget')}
-                className="ml-auto rounded p-1 text-on-surface-variant/60 transition-colors hover:text-error"
+                className="ml-auto rounded p-1 text-on-surface-variant transition-colors hover:text-error"
               >
                 <Trash2 className="h-4 w-4" />
               </button>

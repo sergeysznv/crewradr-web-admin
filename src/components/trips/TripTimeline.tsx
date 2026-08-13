@@ -21,7 +21,7 @@ export function TripTimeline({ trip }: { trip: TripDetail }) {
           {t('webTripsMemberTripTitle', { name: trip.memberName || t('webTripsMember') })}
         </h2>
         {trip.isLive && (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-success/15 px-2.5 py-0.5 text-xs font-bold text-success">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-success-container px-2.5 py-0.5 text-xs font-bold text-on-success-container">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-success" />
             {t('webTripsLive')}
           </span>
@@ -88,7 +88,7 @@ export function TripTimeline({ trip }: { trip: TripDetail }) {
               <div key={i} className="rounded-xl border border-error/20 bg-error-container p-sz-lg">
                 <span className="text-sm font-semibold text-error">{alert.type}</span>
                 <p className="mt-0.5 text-sm text-on-surface-variant">{alert.description}</p>
-                <p className="mt-1 text-xs text-on-surface-variant/60">
+                <p className="mt-1 text-xs text-on-surface-variant">
                   {new Date(alert.timestamp).toLocaleTimeString()}
                 </p>
               </div>

@@ -65,7 +65,7 @@ export function ETACard({ memberId }: ETACardProps) {
             <span className="text-2xl font-extrabold text-primary">{eta.eta_minutes}</span>
             <span className="text-sm text-on-surface-variant">min</span>
           </div>
-          <p className="text-[10px] text-on-surface-variant/60">
+          <p className="text-[10px] text-on-surface-variant">
             ±{Math.round((1 - (eta.confidence ?? 0.5)) * 100)}% margin
           </p>
         </>

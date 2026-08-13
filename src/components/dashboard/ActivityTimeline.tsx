@@ -89,7 +89,7 @@ export function ActivityTimeline({ days: daysOverride }: { days?: number }) {
                   </p>
                 </div>
                 {trip.alert_count > 0 && (
-                  <span className="shrink-0 rounded-full bg-warning-container px-2 py-0.5 text-[10px] font-semibold text-warning">
+                  <span className="shrink-0 rounded-full bg-warning-container px-2 py-0.5 text-[10px] font-semibold text-on-warning-container">
                     {t('webFleetAlertsCount', { count: trip.alert_count, plural: trip.alert_count > 1 ? 's' : '' })}
                   </span>
                 )}
