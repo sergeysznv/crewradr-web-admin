@@ -20,11 +20,11 @@ function getWeekdayLabel(isoDate: string): string {
 }
 
 function getIntensity(activeHours: number): string {
-  if (activeHours === 0) return 'bg-surface-container-highest/20';
-  if (activeHours < 2) return 'bg-primary/20';
-  if (activeHours < 5) return 'bg-primary/40';
-  if (activeHours < 10) return 'bg-primary/60';
-  return 'bg-primary/80';
+  if (activeHours === 0) return 'bg-surface-container';
+  if (activeHours < 2) return 'bg-primary-container';
+  if (activeHours < 5) return 'bg-[color-mix(in_srgb,var(--color-primary)_40%,var(--color-surface))]';
+  if (activeHours < 10) return 'bg-[color-mix(in_srgb,var(--color-primary)_70%,var(--color-surface))]';
+  return 'bg-primary';
 }
 
 export function CalendarHeatmap({ crewId }: { crewId: string }) {
@@ -58,7 +58,7 @@ export function CalendarHeatmap({ crewId }: { crewId: string }) {
       <div className="rounded-lg border border-outline bg-surface p-sz-lg text-center">
         <CheckCircle2 className="mx-auto h-8 w-8 text-success" aria-hidden="true" />
         <p className="mt-2 text-sm font-semibold text-on-surface-variant">{t('webOverviewNoActivity')}</p>
-        <p className="mt-1 text-xs text-on-surface-variant/60">{t('webOverviewNoActivityDesc')}</p>
+        <p className="mt-1 text-xs text-on-surface-variant">{t('webOverviewNoActivityDesc')}</p>
       </div>
     );
   }
@@ -87,11 +87,11 @@ export function CalendarHeatmap({ crewId }: { crewId: string }) {
       </div>
       <div className="mt-3 flex items-center justify-end gap-1 text-[9px] text-on-surface-variant">
         <span>{t('webOverviewLess')}</span>
-        <div className="h-3 w-3 rounded bg-surface-container-highest/20" />
-        <div className="h-3 w-3 rounded bg-primary/20" />
-        <div className="h-3 w-3 rounded bg-primary/40" />
-        <div className="h-3 w-3 rounded bg-primary/60" />
-        <div className="h-3 w-3 rounded bg-primary/80" />
+        <div className="h-3 w-3 rounded bg-surface-container" />
+        <div className="h-3 w-3 rounded bg-primary-container" />
+        <div className="h-3 w-3 rounded bg-[color-mix(in_srgb,var(--color-primary)_40%,var(--color-surface))]" />
+        <div className="h-3 w-3 rounded bg-[color-mix(in_srgb,var(--color-primary)_70%,var(--color-surface))]" />
+        <div className="h-3 w-3 rounded bg-primary" />
         <span>{t('webOverviewMore')}</span>
       </div>
     </div>

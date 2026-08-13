@@ -61,7 +61,7 @@ export function DataTable<T extends { id: string }>({
                       data.every((d) => selectedIds?.has(d.id))
                     }
                     onChange={onToggleSelectAll}
-                    className="rounded border-outline"
+                    className="rounded border-outline accent-primary"
                     aria-label={t('webSharedSelectAll')}
                   />
                 </th>
@@ -93,7 +93,7 @@ export function DataTable<T extends { id: string }>({
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => onToggleSelect?.(row.id)}
-                        className="rounded border-outline"
+                        className="rounded border-outline accent-primary"
                         aria-label={t('webSharedSelectItem', { id: row.id })}
                       />
                     </td>
