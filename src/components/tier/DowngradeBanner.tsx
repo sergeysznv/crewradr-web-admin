@@ -25,7 +25,7 @@ export function DowngradeBanner() {
             plural: graceDaysRemaining !== 1 ? 's' : '',
           })}
         </span>
-        <span className="text-xs text-on-warning opacity-80">{excessMembers}</span>
+        <span className="text-xs text-on-warning">{excessMembers}</span>
       </div>
       <div className="flex items-center gap-2">
         <a href="/members" className="rounded-full bg-black/25 px-3 py-1 text-xs font-bold text-on-warning transition-colors hover:bg-black/35">

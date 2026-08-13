@@ -147,7 +147,7 @@ export function ProvisioningView() {
         ) : linksQuery.isError ? (
           <div className="flex items-center justify-center py-24 text-center">
             <div>
-              <AlertTriangle className="mx-auto h-10 w-10 text-amber-500" aria-hidden="true" />
+              <AlertTriangle className="mx-auto h-10 w-10 text-warning" aria-hidden="true" />
               <p className="mt-2 text-sm text-on-surface-variant">{t('webErrorLoading')}</p>
               <button onClick={() => linksQuery.refetch()} className="mt-4 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-on-primary">{t('webRetry')}</button>
             </div>

@@ -94,7 +94,7 @@ export function DashboardView() {
       ) : dashboard.isError ? (
         <div className="flex items-center justify-center py-24" role="status">
           <div className="text-center">
-            <AlertTriangle className="mx-auto h-10 w-10 text-amber-500" aria-hidden="true" />
+            <AlertTriangle className="mx-auto h-10 w-10 text-warning" aria-hidden="true" />
             <p className="mt-2 text-sm text-on-surface-variant">{t('webErrorLoading')}</p>
             <button onClick={() => dashboard.refetch()} className="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-on-primary">
               <RefreshCw className="h-4 w-4" /> Retry
