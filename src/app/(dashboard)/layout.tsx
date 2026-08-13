@@ -61,7 +61,7 @@ function NavItems({ items, pathname, t, mobile, onNavigate }: {
         onClick={() => onNavigate(item.href)}
         className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
           active
-            ? 'bg-[color-mix(in_srgb,var(--brand-seed)_10%,transparent)] text-[var(--brand-seed)] dark:bg-[color-mix(in_srgb,var(--brand-seed)_15%,transparent)] dark:text-[color-mix(in_srgb,var(--brand-seed)_75%,white)]'
+            ? 'bg-primary-container text-on-primary-container'
             : 'text-zinc-500 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800'
         } ${mobile ? 'py-3' : 'py-2.5'}`}
       >
@@ -377,7 +377,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               activeCrew && (
                 <span className="text-sm font-medium">
                   {activeCrew.crew_name}
-                  <span className="ml-2 inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold" style={{ backgroundColor: `${tierColor(activeCrew.tier)}20`, color: tierColor(activeCrew.tier) }}>
+                  <span className="ml-2 inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold" style={{ backgroundColor: tierColor(activeCrew.tier), color: '#fff' }}>
                     {tierLabel(activeCrew.tier)}
                   </span>
                 </span>
@@ -418,7 +418,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="space-y-3 mb-4">
               <div className="rounded-xl border border-outline p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ backgroundColor: `${tierColor('captain')}20`, color: tierColor('captain') }}>{t('webTierCaptain')}</span>
+                  <span className="rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ backgroundColor: tierColor('captain'), color: '#fff' }}>{t('webTierCaptain')}</span>
                   <span className="text-xs font-semibold text-on-surface">{t('webUpgradeTierFree')}</span>
                 </div>
                 <ul className="space-y-1.5 text-xs text-on-surface-variant">
@@ -428,7 +428,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </div>
               <div className="rounded-xl border border-[var(--brand-accent,#D4A017)]/30 p-4" style={{ background: 'color-mix(in srgb, var(--brand-accent, #D4A017) 5%, transparent)' }}>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ backgroundColor: `${tierColor('admiral')}20`, color: tierColor('admiral') }}>{t('webTierAdmiral')}</span>
+                  <span className="rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ backgroundColor: tierColor('admiral'), color: '#fff' }}>{t('webTierAdmiral')}</span>
                   <span className="text-xs font-semibold text-on-surface">{t('webUpgradeTierPaid')}</span>
                 </div>
                 <ul className="space-y-1.5 text-xs text-on-surface-variant">

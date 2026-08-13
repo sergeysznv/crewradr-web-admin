@@ -170,7 +170,7 @@ export function ApiKeyDashboard() {
                   onClick={() => toggleScope(scope)}
                   className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                     scopes.includes(scope)
-                      ? 'bg-primary/20 text-primary border border-primary/30'
+                      ? 'bg-primary-container text-on-primary-container border border-outline'
                       : 'bg-surface-container text-on-surface-variant border border-outline'
                   }`}
                 >
@@ -236,7 +236,7 @@ export function ApiKeyDashboard() {
                   </p>
                   <div className="mt-1 flex flex-wrap gap-1">
                     {key.scopes.map((s) => (
-                      <span key={s} className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] text-primary">
+                      <span key={s} className="rounded-full bg-primary-container px-2 py-0.5 text-[10px] text-on-primary-container">
                         {s}
                       </span>
                     ))}

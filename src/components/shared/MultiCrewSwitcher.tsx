@@ -83,7 +83,7 @@ export function MultiCrewSwitcher({ crews, activeCrewId, onSelect }: MultiCrewSw
                     </span>
                     <span
                       className="inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[10px] font-bold"
-                      style={{ backgroundColor: `${tierColor(crew.tier)}20`, color: tierColor(crew.tier) }}
+                      style={{ backgroundColor: tierColor(crew.tier), color: '#fff' }}
                     >
                       {tierLabel(crew.tier)}
                     </span>

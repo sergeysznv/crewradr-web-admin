@@ -60,7 +60,7 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
   return (
     <div className="space-y-sz-lg">
       <div className="flex items-center gap-4">
-        <div className="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-xl font-bold text-primary overflow-hidden">
+        <div className="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-xl font-bold text-on-primary-container overflow-hidden">
           {member.avatar_url ? (
             <img src={member.avatar_url} alt="" className="w-full h-full object-cover" />
           ) : member.profile_emoji ? (
@@ -146,7 +146,7 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
               <button key={role} disabled={role === member.role}
                 onClick={() => updateRole.mutate({ memberId: member.id, newRole: role })}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold border
-                  ${role === member.role ? 'bg-primary-container text-primary border-primary/30' : 'border-outline text-on-surface-variant hover:bg-surface-container'}`}>
+                  ${role === member.role ? 'bg-primary-container text-on-primary-container border-outline' : 'border-outline text-on-surface-variant hover:bg-surface-container'}`}>
                 {role}
               </button>
             ))}

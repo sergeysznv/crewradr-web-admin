@@ -178,7 +178,7 @@ export function DangerZone() {
                 key={m.id}
                 className={`flex items-center gap-2 rounded-md px-3 py-2 cursor-pointer text-sm transition-colors ${
                   transferTarget === m.user_id
-                    ? 'bg-primary/10 text-primary font-semibold'
+                    ? 'bg-primary-container text-on-primary-container font-semibold'
                     : 'text-on-surface hover:bg-surface-container'
                 }`}
               >

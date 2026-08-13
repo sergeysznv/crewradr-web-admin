@@ -94,7 +94,7 @@ export function AccountView() {
       {/* Profile Card */}
       <div className="bg-surface border border-outline rounded-lg p-sz-lg md:p-sz-xl">
         <div className="flex items-start gap-4">
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary-container text-xl font-bold text-primary overflow-hidden">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary-container text-xl font-bold text-on-primary-container overflow-hidden">
             {profile?.avatar_url ? (
               <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
             ) : (

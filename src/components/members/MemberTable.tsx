@@ -24,7 +24,7 @@ export function MemberTable({ members, total, offset, limit, onOffsetChange, onR
       key: 'name', header: t('webMembersColMember'),
       render: (m: CrewMember) => (
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-sm font-bold text-primary overflow-hidden">
+          <div className="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-sm font-bold text-on-primary-container overflow-hidden">
             {m.avatar_url ? (
               <img src={m.avatar_url} alt="" className="w-full h-full object-cover" />
             ) : m.profile_emoji ? (

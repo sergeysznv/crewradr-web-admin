@@ -228,9 +228,9 @@ export function PrivacyTab() {
                   <div className="text-on-surface-variant">{t('webPrivacyRetentionConfigured')}</div>
                   <div className="mt-0.5 text-sm font-bold text-on-surface">{t('webPrivacyRetentionDays', { days: policy.retentionDays })}</div>
                 </div>
-                <div className="bg-primary/10 rounded-lg p-3">
-                  <div className="text-primary/80">{t('webPrivacyRetentionEffective')}</div>
-                  <div className="mt-0.5 text-sm font-bold text-primary">{t('webPrivacyRetentionDays', { days: effectiveHistoryDays(tierKey, policy.retentionDays) })}</div>
+                <div className="bg-primary-container rounded-lg p-3">
+                  <div className="text-on-primary-container">{t('webPrivacyRetentionEffective')}</div>
+                  <div className="mt-0.5 text-sm font-bold text-on-primary-container">{t('webPrivacyRetentionDays', { days: effectiveHistoryDays(tierKey, policy.retentionDays) })}</div>
                 </div>
               </div>
 

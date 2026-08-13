@@ -64,7 +64,7 @@ export function ActivityTimeline({ days: daysOverride }: { days?: number }) {
             const initial = displayName.charAt(0).toUpperCase();
             return (
               <div key={`${trip.id}-${i}`} className="flex items-center gap-3 py-2.5">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-container text-xs font-bold text-primary">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-container text-xs font-bold text-on-primary-container">
                   {initial}
                 </div>
                 <div className="flex-1 min-w-0">
