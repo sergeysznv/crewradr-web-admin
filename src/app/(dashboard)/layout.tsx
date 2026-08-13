@@ -310,19 +310,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               const active = pathname === item.href;
               const Icon = item.icon;
               const isDark = resolved === 'dark';
-              const activeStyle = active
-                ? {
-                    backgroundColor: isDark
-                      ? 'color-mix(in srgb, var(--brand-seed) 15%, transparent)'
-                      : 'color-mix(in srgb, var(--brand-seed) 10%, transparent)',
-                    color: isDark
-                      ? 'color-mix(in srgb, var(--brand-seed) 75%, white)'
-                      : 'var(--brand-seed)',
-                  }
-                : { color: isDark ? '#a1a1aa' : '#71717a' };
+              const activeStyle = active ? undefined : { color: isDark ? '#a1a1aa' : '#71717a' };
               return (
                 <button key={item.href} onClick={() => router.push(item.href)}
-                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+                  className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${active ? 'bg-primary-container text-on-primary-container' : ''}`}
                   style={activeStyle}
                   onMouseEnter={(e) => { if (!active) { e.currentTarget.style.backgroundColor = isDark ? '#27272a' : '#f4f4f5'; e.currentTarget.style.color = isDark ? '#d4d4d8' : '#3f3f46'; } }}
                   onMouseLeave={(e) => { if (!active) { e.currentTarget.style.backgroundColor = ''; e.currentTarget.style.color = isDark ? '#a1a1aa' : '#71717a'; } }}
@@ -427,7 +418,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   <li className="flex items-center gap-1.5"><Settings className="h-3.5 w-3.5 text-primary" /> {t('webUpgradeCaptainFeature2')}</li>
                 </ul>
               </div>
-              <div className="rounded-xl border border-[var(--brand-accent,#D4A017)]/30 p-4" style={{ background: 'color-mix(in srgb, var(--brand-accent, #D4A017) 5%, transparent)' }}>
+              <div className="rounded-xl border border-[var(--brand-accent,#D4A017)]/30 bg-surface-container p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ backgroundColor: tierColor('admiral'), color: tierOnColor('admiral') }}>{t('webTierAdmiral')}</span>
                   <span className="text-xs font-semibold text-on-surface">{t('webUpgradeTierPaid')}</span>
