@@ -113,9 +113,6 @@ export default function LoginPage() {
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center p-6 bg-[var(--brand-surface)] dark:bg-[var(--brand-surface)]">
-      {/* Brand glow */}
-      <div className="brand-glow" />
-
       {/* Theme toggle */}
       <button
         onClick={toggleTheme}
@@ -132,7 +129,6 @@ export default function LoginPage() {
           <img
             src="/logo-96.png" alt="CrewRadr" width={96} height={96}
             className="mx-auto mb-9 rounded-[22px]"
-            style={{ boxShadow: '0 8px 40px color-mix(in srgb, var(--brand-seed) 25%, transparent)' }}
           />
           <h1 className="text-[clamp(2rem,5vw,3.2rem)] font-bold tracking-[-0.02em] text-zinc-900 dark:text-zinc-100">
             CrewRadr<span className="text-[var(--brand-accent)]"> Web</span>
