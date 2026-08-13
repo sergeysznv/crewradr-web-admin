@@ -76,7 +76,7 @@ export function ConfirmDialog({
       <div className="relative z-10 mx-4 w-full max-w-sm rounded-2xl bg-surface p-6 shadow-sm border border-outline">
         <div className="flex items-start gap-3">
           {destructive && (
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-error/10">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-error-container">
               <AlertTriangle className="h-5 w-5 text-error" aria-hidden="true" />
             </div>
           )}

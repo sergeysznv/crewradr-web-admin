@@ -34,7 +34,7 @@ export function AnomalyCard() {
           {recentAnomalies.map(a => (
             <div
               key={a.id}
-              className={`rounded-lg border-l-2 bg-surface-container-highest/10 p-2 pl-3 ${SEVERITY_COLORS[a.severity]}`}
+              className={`rounded-lg border-l-2 bg-surface-container p-2 pl-3 ${SEVERITY_COLORS[a.severity]}`}
             >
               <div className="flex items-center justify-between">
                 <span className="text-sm font-semibold text-on-surface">{a.memberName}</span>

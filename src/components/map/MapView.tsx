@@ -137,7 +137,7 @@ export function MapView() {
     return (
       <div className="flex flex-1 items-center justify-center py-24" role="status">
         <div className="text-center">
-          <AlertTriangle className="mx-auto h-10 w-10 text-amber-500" aria-hidden="true" />
+          <AlertTriangle className="mx-auto h-10 w-10 text-warning" aria-hidden="true" />
           <p className="mt-2 text-sm text-on-surface-variant">{t('webMapFailed')}</p>
           <button
             onClick={() => positionsQuery.refetch()}
@@ -183,7 +183,7 @@ export function MapView() {
           {mapLoadError && (
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-xl border border-outline bg-surface-container" role="alert">
               <div className="text-center">
-                <AlertTriangle className="mx-auto h-10 w-10 text-amber-500" aria-hidden="true" />
+                <AlertTriangle className="mx-auto h-10 w-10 text-warning" aria-hidden="true" />
                 <p className="mt-2 text-sm text-on-surface-variant">{t('webMapFailed')}</p>
                 <p className="mt-1 text-xs text-on-surface-variant opacity-70">{mapLoadError}</p>
               </div>

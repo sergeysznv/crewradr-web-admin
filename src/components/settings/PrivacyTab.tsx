@@ -266,7 +266,7 @@ export function PrivacyTab() {
       </RoleGate>
 
       {/* ── Delete Account — always available (GDPR Art. 17) ── */}
-      <div className="border border-error/20 rounded-lg p-sz-lg bg-error/5">
+      <div className="border border-error/20 rounded-lg p-sz-lg bg-error-container">
         <h3 className="font-heading font-bold text-sm text-error">{t('webSettingsDeleteAccount')}</h3>
         <p className="mt-1 text-xs text-on-surface-variant">{t('webSettingsDeleteAccountHint')}</p>
         <button

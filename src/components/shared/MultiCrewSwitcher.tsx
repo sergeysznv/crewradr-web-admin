@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { TierGateGuard } from '@/components/tier/TierGateGuard';
 import { useTier } from '@/hooks/useTier';
+import { tierOnColor } from '@/lib/tier';
 import { cn, tierColor, tierLabel } from '@/lib/utils';
 import type { CrewSummary } from '@/types';
 
@@ -74,7 +75,7 @@ export function MultiCrewSwitcher({ crews, activeCrewId, onSelect }: MultiCrewSw
                     }}
                     className={cn(
                       'flex w-full items-center justify-between gap-2 rounded-xl px-3 py-2 text-left transition-colors hover:bg-surface-container-high',
-                      selected && 'bg-[color-mix(in_srgb,var(--brand-seed)_10%,transparent)]'
+                      selected && 'bg-primary-container'
                     )}
                   >
                     <span className="min-w-0">
@@ -83,7 +84,7 @@ export function MultiCrewSwitcher({ crews, activeCrewId, onSelect }: MultiCrewSw
                     </span>
                     <span
                       className="inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[10px] font-bold"
-                      style={{ backgroundColor: tierColor(crew.tier), color: '#fff' }}
+                      style={{ backgroundColor: tierColor(crew.tier), color: tierOnColor(crew.tier) }}
                     >
                       {tierLabel(crew.tier)}
                     </span>

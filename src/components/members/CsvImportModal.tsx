@@ -145,7 +145,7 @@ export function CsvImportModal({ open, onClose }: { open: boolean; onClose: () =
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
             className={`border-2 border-dashed rounded-lg p-sz-xl text-center mb-sz-lg cursor-pointer transition-colors ${
-              dragOver ? 'border-primary bg-primary-container/20' : 'border-outline hover:bg-surface-container'
+              dragOver ? 'border-primary bg-primary-container' : 'border-outline hover:bg-surface-container'
             }`}
           >
             <input
@@ -177,8 +177,8 @@ export function CsvImportModal({ open, onClose }: { open: boolean; onClose: () =
           {clientErrors.length > 0 && (
             <div className="mt-sz-md rounded-lg border border-warning/30 bg-warning-container p-3">
               <div className="flex items-center gap-1.5 mb-2">
-                <AlertTriangle size={14} className="text-warning shrink-0" />
-                <span className="text-xs font-semibold text-warning">{t('webMembersImportErrors', { errors: clientErrors.length })}</span>
+                <AlertTriangle size={14} className="text-on-warning-container shrink-0" />
+                <span className="text-xs font-semibold text-on-warning-container">{t('webMembersImportErrors', { errors: clientErrors.length })}</span>
               </div>
               <ul className="space-y-1 max-h-32 overflow-y-auto">
                 {clientErrors.map((e, i) => (
@@ -214,8 +214,8 @@ export function CsvImportModal({ open, onClose }: { open: boolean; onClose: () =
           {importMutation.data && serverErrors.length > 0 && (
             <div className="mt-sz-md rounded-lg border border-error/30 bg-error-container p-3">
               <div className="flex items-center gap-1.5 mb-2">
-                <AlertTriangle size={14} className="text-error shrink-0" />
-                <span className="text-xs font-semibold text-error">{t('webMembersImportErrors', { errors: serverErrors.length })}</span>
+                <AlertTriangle size={14} className="text-on-error-container shrink-0" />
+                <span className="text-xs font-semibold text-on-error-container">{t('webMembersImportErrors', { errors: serverErrors.length })}</span>
               </div>
               <ul className="space-y-1 max-h-32 overflow-y-auto">
                 {serverErrors.map((e, i) => (

@@ -85,7 +85,7 @@ export function DataTable<T extends { id: string }>({
                   onClick={() => onRowClick?.(row)}
                   className={`border-b border-outline-variant transition-colors ${
                     onRowClick ? 'cursor-pointer hover:bg-surface-container' : ''
-                  } ${isSelected ? 'bg-primary/5' : ''}`}
+                  } ${isSelected ? 'bg-primary-container' : ''}`}
                 >
                   {showCheckbox && (
                     <td className="px-3 py-3" onClick={(e) => e.stopPropagation()}>

@@ -20,6 +20,7 @@ import { LockoutBanner } from '@/components/tier/LockoutBanner';
 import { MultiCrewSwitcher } from '@/components/shared/MultiCrewSwitcher';
 import { useTabFocus } from '@/hooks/useTabFocus';
 import { supabase } from '@/lib/supabase/client';
+import { tierOnColor } from '@/lib/tier';
 import { tierColor, tierLabel } from '@/lib/utils';
 import {
   LayoutDashboard, Users, Settings, ShieldCheck, FileText, Link, MapPin, LogOut,
@@ -286,7 +287,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   {crews.map((c) => (
                     <button key={c.crew_id} onClick={() => switchCrew(c.crew_id)}
                       className="flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold"
-                      style={{ backgroundColor: `${tierColor(c.tier)}20`, color: tierColor(c.tier), ...(c.crew_id === activeCrewId ? { border: `2px solid ${tierColor(c.tier)}` } : { opacity: 0.5 }) }}
+                      style={{ backgroundColor: tierColor(c.tier), color: tierOnColor(c.tier), ...(c.crew_id === activeCrewId ? { border: `2px solid ${tierColor(c.tier)}` } : { opacity: 0.5 }) }}
                       title={c.crew_name}>{c.crew_name.charAt(0).toUpperCase()}</button>
                   ))}
                 </div>
@@ -295,7 +296,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   {crews.map((c) => (
                     <button key={c.crew_id} onClick={() => switchCrew(c.crew_id)}
                       className="shrink-0 rounded-full px-3 py-1 text-xs font-medium"
-                      style={c.crew_id === activeCrewId ? { backgroundColor: tierColor(c.tier), color: '#fff' } : { backgroundColor: '#e4e4e7', color: '#71717a' }}>
+                      style={c.crew_id === activeCrewId ? { backgroundColor: tierColor(c.tier), color: tierOnColor(c.tier) } : { backgroundColor: '#e4e4e7', color: '#71717a' }}>
                       {c.crew_name.length > 10 ? c.crew_name.slice(0, 10) + '…' : c.crew_name}
                     </button>
                   ))}
@@ -377,7 +378,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               activeCrew && (
                 <span className="text-sm font-medium">
                   {activeCrew.crew_name}
-                  <span className="ml-2 inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold" style={{ backgroundColor: tierColor(activeCrew.tier), color: '#fff' }}>
+                  <span className="ml-2 inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold" style={{ backgroundColor: tierColor(activeCrew.tier), color: tierOnColor(activeCrew.tier) }}>
                     {tierLabel(activeCrew.tier)}
                   </span>
                 </span>
@@ -418,7 +419,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="space-y-3 mb-4">
               <div className="rounded-xl border border-outline p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ backgroundColor: tierColor('captain'), color: '#fff' }}>{t('webTierCaptain')}</span>
+                  <span className="rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ backgroundColor: tierColor('captain'), color: tierOnColor('captain') }}>{t('webTierCaptain')}</span>
                   <span className="text-xs font-semibold text-on-surface">{t('webUpgradeTierFree')}</span>
                 </div>
                 <ul className="space-y-1.5 text-xs text-on-surface-variant">
@@ -428,7 +429,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </div>
               <div className="rounded-xl border border-[var(--brand-accent,#D4A017)]/30 p-4" style={{ background: 'color-mix(in srgb, var(--brand-accent, #D4A017) 5%, transparent)' }}>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ backgroundColor: tierColor('admiral'), color: '#fff' }}>{t('webTierAdmiral')}</span>
+                  <span className="rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ backgroundColor: tierColor('admiral'), color: tierOnColor('admiral') }}>{t('webTierAdmiral')}</span>
                   <span className="text-xs font-semibold text-on-surface">{t('webUpgradeTierPaid')}</span>
                 </div>
                 <ul className="space-y-1.5 text-xs text-on-surface-variant">

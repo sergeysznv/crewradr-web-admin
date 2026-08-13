@@ -1,4 +1,5 @@
 import type { CrewTier } from '@/types/tier';
+import type { CrewTier as ApiCrewTier } from '@/types/index';
 
 export const TIER_RANKS: Record<CrewTier, number> = {
   deckhand: 1,
@@ -6,6 +7,12 @@ export const TIER_RANKS: Record<CrewTier, number> = {
   captain: 3,
   admiral: 4,
 };
+
+export function tierOnColor(tier: CrewTier | ApiCrewTier): string {
+  if (tier === 'captain') return '#2A1A00'; // dark ink on gold #D4A017 (7.1:1)
+  if (tier === 'first_mate' || tier === 'firstMate') return '#0B1F33'; // dark ink on blue #4A90D9 (5.1:1)
+  return '#FFFFFF'; // admiral #7B2FBE (7.0:1) and any other tier
+}
 
 export function hasMinTier(currentTier: CrewTier, minTier: CrewTier): boolean {
   return (TIER_RANKS[currentTier] ?? 1) >= (TIER_RANKS[minTier] ?? 1);
