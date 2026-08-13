@@ -19,7 +19,7 @@ export function BulkActionBar({ count, working, onRemove, onRoleChange, onClear 
   if (count === 0) return null;
 
   return (
-    <div className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-30 bg-surface border border-outline rounded-xl shadow-lg px-sz-lg py-3 flex items-center gap-4">
+    <div className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-30 bg-surface border border-outline rounded-xl shadow-sm px-sz-lg py-3 flex items-center gap-4">
       <span className="text-sm font-semibold text-on-surface">{t('webMembersBulkSelected', { count })}</span>
       <div className="flex items-center gap-2">
         <label className="text-2xs text-on-surface-variant uppercase tracking-wider" htmlFor="bulk-role">{t('webMembersBulkRole')}</label>

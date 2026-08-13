@@ -229,7 +229,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-40 md:hidden">
           <div className="absolute inset-0 bg-black/40" onClick={() => setMobileMenuOpen(false)} />
-          <div className="absolute inset-y-0 left-0 w-64 bg-white shadow-xl dark:bg-zinc-900">
+          <div className="absolute inset-y-0 left-0 w-64 bg-white shadow-sm dark:bg-zinc-900">
             <div className="flex h-14 items-center justify-between border-b border-zinc-200 px-4 dark:border-zinc-700">
               <span className="font-bold text-sm">{t('webAdminTitle')}</span>
               <button onClick={() => setMobileMenuOpen(false)} aria-label={t('webShellCloseMenu')} className="text-zinc-500">
@@ -286,7 +286,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   {crews.map((c) => (
                     <button key={c.crew_id} onClick={() => switchCrew(c.crew_id)}
                       className="flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold"
-                      style={{ backgroundColor: `${tierColor(c.tier)}20`, color: tierColor(c.tier), ...(c.crew_id === activeCrewId ? { boxShadow: `0 0 0 2px ${tierColor(c.tier)}` } : { opacity: 0.5 }) }}
+                      style={{ backgroundColor: `${tierColor(c.tier)}20`, color: tierColor(c.tier), ...(c.crew_id === activeCrewId ? { border: `2px solid ${tierColor(c.tier)}` } : { opacity: 0.5 }) }}
                       title={c.crew_name}>{c.crew_name.charAt(0).toUpperCase()}</button>
                   ))}
                 </div>
@@ -408,7 +408,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {showUpgrade && (
         <div className="fixed inset-0 z-[9000] flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40" onClick={() => setShowUpgrade(false)} />
-          <div className="relative z-10 mx-4 w-full max-w-md rounded-2xl bg-surface p-6 shadow-xl border border-outline">
+          <div className="relative z-10 mx-4 w-full max-w-md rounded-2xl bg-surface p-6 shadow-sm border border-outline">
             <div className="flex items-center gap-2 mb-4">
               <Crown className="h-5 w-5 text-[var(--brand-accent,#D4A017)]" aria-hidden="true" />
               <h2 className="font-heading font-bold text-lg text-on-surface">{t('webUpgradeTitle')}</h2>

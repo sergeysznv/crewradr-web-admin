@@ -132,7 +132,7 @@ export function CsvImportModal({ open, onClose }: { open: boolean; onClose: () =
     <>
       <div className="fixed inset-0 bg-black/20 z-50" onClick={onClose} />
       <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
-        <div className="bg-surface border border-outline rounded-xxl p-sz-xl max-w-[560px] w-full mx-sz-lg pointer-events-auto shadow-xl max-h-[90vh] overflow-y-auto">
+        <div className="bg-surface border border-outline rounded-xxl p-sz-xl max-w-[560px] w-full mx-sz-lg pointer-events-auto shadow-sm max-h-[90vh] overflow-y-auto">
           <div className="flex items-center justify-between mb-sz-lg">
             <h2 className="font-heading font-extrabold text-lg text-on-surface">{t('webMembersImportDialogTitle')}</h2>
             <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-surface-container"><X size={18} /></button>

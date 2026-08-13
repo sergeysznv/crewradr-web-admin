@@ -275,7 +275,7 @@ export function ApiKeyDashboard() {
       {createdKey && (
         <div className="fixed inset-0 z-[8000] flex items-center justify-center" role="dialog" aria-modal="true" aria-label={t('webApiKeyCreated')}>
           <div className="absolute inset-0 bg-black/40" onClick={() => setCreatedKey(null)} />
-          <div className="relative z-10 mx-4 w-full max-w-md rounded-2xl bg-surface p-6 shadow-xl border border-outline">
+          <div className="relative z-10 mx-4 w-full max-w-md rounded-2xl bg-surface p-6 shadow-sm border border-outline">
             <KeyRound className="h-6 w-6 text-primary" aria-hidden="true" />
             <h2 className="mt-3 text-lg font-bold text-on-surface">{t('webApiKeyCreated')}</h2>
             <p className="mt-1 text-sm text-on-surface-variant">

@@ -31,7 +31,7 @@ export function SlideOverPanel({ open, onClose, children }: SlideOverPanelProps)
       <div className="absolute inset-0 bg-black/20" onClick={onClose} />
 
       {/* Panel */}
-      <div className="absolute right-0 top-0 bottom-0 w-full max-w-[400px] bg-surface shadow-xl border-l border-outline overflow-y-auto animate-slide-in-right">
+      <div className="absolute right-0 top-0 bottom-0 w-full max-w-[400px] bg-surface shadow-sm border-l border-outline overflow-y-auto animate-slide-in-right">
         <div className="flex items-center justify-between p-sz-lg border-b border-outline-variant">
           <span className="font-heading font-bold text-sm text-on-surface" />
           <button

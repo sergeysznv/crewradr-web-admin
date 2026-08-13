@@ -58,7 +58,7 @@ export function MultiCrewSwitcher({ crews, activeCrewId, onSelect }: MultiCrewSw
             <div
               role="listbox"
               aria-label="Crews"
-              className="absolute right-0 z-50 mt-2 w-64 rounded-2xl border border-outline bg-surface p-2 shadow-lg dark:border-zinc-700"
+              className="absolute right-0 z-50 mt-2 w-64 rounded-2xl border border-outline bg-surface p-2 shadow-sm dark:border-zinc-700"
             >
               {crews.map((crew) => {
                 const selected = crew.crew_id === currentId;

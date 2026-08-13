@@ -73,7 +73,7 @@ export function ConfirmDialog({
       <div className="absolute inset-0 bg-black/20" onClick={onCancel} />
 
       {/* Dialog */}
-      <div className="relative z-10 mx-4 w-full max-w-sm rounded-2xl bg-surface p-6 shadow-xl border border-outline">
+      <div className="relative z-10 mx-4 w-full max-w-sm rounded-2xl bg-surface p-6 shadow-sm border border-outline">
         <div className="flex items-start gap-3">
           {destructive && (
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-error/10">

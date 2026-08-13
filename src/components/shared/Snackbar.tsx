@@ -60,7 +60,7 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
           <div
             key={item.id}
             role="alert"
-            className="pointer-events-auto flex items-center gap-3 rounded-xl border border-outline bg-surface px-4 py-3 shadow-lg animate-fade-in max-w-sm"
+            className="pointer-events-auto flex items-center gap-3 rounded-xl border border-outline bg-surface px-4 py-3 shadow-sm animate-fade-in max-w-sm"
           >
             {item.type === 'success' ? (
               <Check className="h-4 w-4 shrink-0 text-success" aria-hidden="true" />
