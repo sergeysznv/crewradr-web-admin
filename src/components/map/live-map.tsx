@@ -12,9 +12,9 @@ const IDLE_AFTER_MS = 5 * 60 * 1000;
 
 function markerColor(now: number, createdAt: string): string {
   const age = now - new Date(createdAt).getTime();
-  if (age <= IDLE_AFTER_MS) return '#34D399'; // active — green
-  if (age <= STALE_AFTER_MS) return '#F59E0B'; // idle — amber
-  return '#EF4444'; // stale — red
+  if (age <= IDLE_AFTER_MS) return 'var(--color-success)'; // active — green
+  if (age <= STALE_AFTER_MS) return 'var(--color-warning)'; // idle — amber
+  return 'var(--color-error)'; // stale — red
 }
 
 function createMarkerContent(
@@ -69,9 +69,10 @@ function createMarkerContent(
   }
 
   if (selected) {
-    circle.style.boxShadow = `0 0 0 4px ${color}, 0 2px 8px rgba(0,0,0,0.3)`;
-  } else {
-    circle.style.boxShadow = '0 1px 4px rgba(0,0,0,0.25)';
+    // Flat selection ring: solid white border + status-color outline (no box-shadow on GPU-composited map markers)
+    circle.style.border = '2.5px solid #fff';
+    circle.style.outline = `2px solid ${color}`;
+    circle.style.outlineOffset = '2px';
   }
 
   // Pointer triangle
@@ -87,7 +88,7 @@ function createMarkerContent(
   // Name pill
   const pill = document.createElement('span');
   pill.textContent = displayName;
-  pill.style.background = 'rgba(0,0,0,0.78)';
+  pill.style.background = '#000000';
   pill.style.color = '#fff';
   pill.style.fontSize = '11px';
   pill.style.fontWeight = '600';
@@ -193,7 +194,7 @@ export default function LiveMap({ positions, selectedUserId, onSelect, onError }
       const isSelected = pos.user_id === selectedUserId;
       const initial = pos.display_name?.charAt(0)?.toUpperCase() ?? '?';
       const labelText = pos.profile_emoji || initial;
-      const color = pos.created_at ? markerColor(now, pos.created_at) : '#6B7280';
+      const color = pos.created_at ? markerColor(now, pos.created_at) : 'var(--color-on-surface-variant)';
       const displayName = pos.display_name || initial;
 
       const existing = markers.get(pos.user_id);

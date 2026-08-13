@@ -162,7 +162,7 @@ export function MapView() {
     <div className="flex h-full flex-col animate-fade-in">
       <header className="flex flex-wrap items-center gap-3 pb-2">
         <h1 className="text-2xl font-bold text-on-surface">{t('webMapTitle')}</h1>
-        <span className="rounded-full bg-primary-container px-2.5 py-0.5 text-xs font-semibold text-primary">
+        <span className="rounded-full bg-primary-container px-2.5 py-0.5 text-xs font-semibold text-on-primary-container">
           {t('webMapMembersTracked', { count: positions.length })}
         </span>
         {lastUpdated > 0 && (
@@ -181,7 +181,7 @@ export function MapView() {
             onError={(err) => setMapLoadError(err.message)}
           />
           {mapLoadError && (
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-xl bg-surface-container/80" role="alert">
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-xl border border-outline bg-surface-container" role="alert">
               <div className="text-center">
                 <AlertTriangle className="mx-auto h-10 w-10 text-amber-500" aria-hidden="true" />
                 <p className="mt-2 text-sm text-on-surface-variant">{t('webMapFailed')}</p>
@@ -190,7 +190,7 @@ export function MapView() {
             </div>
           )}
           {positions.length === 0 && (
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-xl bg-surface-container/70" role="status">
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-xl border border-outline bg-surface-container" role="status">
               <div className="text-center">
                 <MapPin className="mx-auto h-10 w-10 text-on-surface-variant opacity-40" aria-hidden="true" />
                 <p className="mt-2 text-sm text-on-surface-variant">{t('webMapNoPositions')}</p>
@@ -199,14 +199,14 @@ export function MapView() {
             </div>
           )}
           {positions.length > 0 && positions.every((p) => p.is_stale) && (
-            <div className="pointer-events-none absolute bottom-3 left-3 z-[1100] rounded-lg bg-surface-container/90 px-3 py-2 text-xs text-on-surface-variant backdrop-blur-sm">
+            <div className="pointer-events-none absolute bottom-3 left-3 z-[1100] rounded-lg border border-outline bg-surface-container px-3 py-2 text-xs text-on-surface-variant">
               {t('webMapAllStale')}
             </div>
           )}
         </div>
 
         {selected && (
-          <aside className="absolute bottom-3 left-3 z-[1100] w-72 rounded-xl border border-outline bg-surface p-4 shadow-lg">
+          <aside className="absolute bottom-3 left-3 z-[1100] w-72 rounded-xl border border-outline bg-surface p-4 shadow-sm">
             <button
               onClick={() => setSelected(null)}
               aria-label="Close"
@@ -245,12 +245,12 @@ export function MapView() {
                 </dd>
               )}
               {selected.last_seen_at && selected.is_stale && (
-                <dd className="text-xs text-amber-500">
+                <dd className="text-xs text-warning">
                   {t('webMapStale', { minutes: 15 })}
                 </dd>
               )}
               {!selected.last_seen_at && (
-                <dd className="text-xs text-red-400">{t('webMapNoRecentFix')}</dd>
+                <dd className="text-xs text-error">{t('webMapNoRecentFix')}</dd>
               )}
             </dl>
           </aside>
