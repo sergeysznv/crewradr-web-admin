@@ -1,7 +1,10 @@
 // src/components/integrations/IntegrationsView.tsx
 'use client';
 
+import { useState } from 'react';
 import { ApiKeyDashboard } from '@/components/integrations/ApiKeyDashboard';
+import { WebhookManager } from '@/components/integrations/WebhookManager';
+import { FilterChips } from '@/components/shared/FilterChips';
 import { TierGateGuard } from '@/components/tier/TierGateGuard';
 import { useT } from '@/hooks/use-translations';
 import { Lock } from 'lucide-react';
@@ -23,18 +26,25 @@ function LockedFallback() {
 
 export function IntegrationsView() {
   const { t } = useT();
+  const [tab, setTab] = useState<'apiKeys' | 'webhooks'>('apiKeys');
+
   return (
     <TierGateGuard minTier="admiral" fallback={<LockedFallback />}>
       <div className="space-y-sz-lg animate-fade-in">
         <h1 className="text-2xl font-bold text-on-surface">{t('webIntegrationsTitle')}</h1>
 
-        <div>
-          <section>
-            <h2 className="text-lg font-bold text-on-surface">{t('webIntegrationsApiKeys')}</h2>
-            <div className="mt-4">
-              <ApiKeyDashboard />
-            </div>
-          </section>
+        <FilterChips
+          options={[
+            { value: 'apiKeys', label: t('webIntegrationsApiKeys') || 'API Keys' },
+            { value: 'webhooks', label: t('webIntegrationsWebhooks') || 'Webhooks' },
+          ]}
+          selected={tab}
+          onSelect={setTab}
+        />
+
+        <div className="bg-surface border border-outline rounded-lg p-sz-lg md:p-sz-xl mt-4">
+          {tab === 'apiKeys' && <ApiKeyDashboard />}
+          {tab === 'webhooks' && <WebhookManager />}
         </div>
       </div>
     </TierGateGuard>
