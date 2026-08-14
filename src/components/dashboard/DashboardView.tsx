@@ -44,7 +44,7 @@ export function DashboardView() {
     'fleet-dashboard',
     [
       { table: 'crew_trip_sessions', filter: `crew_id=eq.${crewId}` },
-      { table: 'safety_alerts', event: 'INSERT', filter: `crew_id=eq.${crewId}` },
+      { table: 'safety_alerts', filter: `crew_id=eq.${crewId}` },
     ],
     ['fleetDashboard'],
   );

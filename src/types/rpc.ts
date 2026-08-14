@@ -17,7 +17,19 @@ export interface FleetDashboard {
   active_trips: number;
   total_alert_count: number;
   effective_days: number;
-  recent_alerts: Array<{ id: string; alert_type: string; severity: string; message: string; created_at: string; display_name: string | null }>;
+  recent_alerts: Array<{
+    id: string;
+    alert_type: string;
+    severity: string;
+    message: string;
+    created_at: string;
+    display_name: string | null;
+    resolved: boolean;
+    resolved_at: string | null;
+    resolved_by: string | null;
+    resolution_notes: string | null;
+    resolved_by_name: string | null;
+  }>;
   trip_stats: FleetDashboardTripStats;
 }
 
