@@ -25,7 +25,7 @@ import { tierColor, tierLabel } from '@/lib/utils';
 import {
   LayoutDashboard, Users, Settings, ShieldCheck, FileText, Link, MapPin, LogOut,
   Loader2, ChevronLeft, ChevronRight, Menu, X, Sparkles, Crown, ArrowUp, Plug,
-  Route, BarChart3,
+  Route, BarChart3, Terminal,
 } from 'lucide-react';
 import type { CrewSummary } from '@/types';
 
@@ -90,6 +90,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState<string>('');
+  const [isDeveloper, setIsDeveloper] = useState(false);
   const [loadError, setLoadError] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
 
@@ -119,6 +120,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       const profile = data?.profile;
       if (profile?.avatar_url) setAvatarUrl(profile.avatar_url as string);
       if (profile?.display_name) setDisplayName(profile.display_name as string);
+      setIsDeveloper(!!profile?.is_developer);
     } catch { setLoadError(true); setCrews([]); }
   }, [activeCrewId, setCrew, setCrewContext]);
 
@@ -193,7 +195,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     );
   }
 
-  const visibleNav = NAV_ITEMS.filter((item) => userTier >= item.minTier);
+  const visibleNav = [
+    ...NAV_ITEMS.filter((item) => userTier >= item.minTier),
+    ...(isDeveloper ? [{ href: '/developer', label: 'webNavDeveloper', icon: Terminal, minTier: 0 }] : []),
+  ];
   const activeCrew = crews.find((c) => c.crew_id === activeCrewId);
   const userInitial = (displayName || user.email || '?').charAt(0).toUpperCase();
 
