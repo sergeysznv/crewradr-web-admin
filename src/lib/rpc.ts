@@ -334,3 +334,61 @@ export async function updateRetentionDays(
     .upsert({ crew_id: crewId, audit_retention_days: days }, { onConflict: 'crew_id' });
   if (error) throw error;
 }
+
+export interface ComplianceSettings {
+  crew_id: string;
+  dot_osha_mode: boolean;
+  dot_eld_enabled: boolean;
+  dot_dvir_enabled: boolean;
+  dot_drug_testing_enabled: boolean;
+  gdpr_enhanced_mode: boolean;
+  gdpr_consent_required: boolean;
+  gdpr_retention_days: number;
+  gdpr_anonymize_exports: boolean;
+  gdpr_breach_notify: boolean;
+  duty_cycle_masking_enabled: boolean;
+  geofencing_masking_enabled: boolean;
+  shift_hours_start: string;
+  shift_hours_end: string;
+}
+
+export async function getComplianceSettings(
+  supabase: SupabaseClient,
+  crewId: string,
+): Promise<ComplianceSettings> {
+  const { data, error } = await supabase
+    .from('crew_compliance_settings')
+    .select()
+    .eq('crew_id', crewId)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) {
+    return {
+      crew_id: crewId,
+      dot_osha_mode: false,
+      dot_eld_enabled: false,
+      dot_dvir_enabled: false,
+      dot_drug_testing_enabled: false,
+      gdpr_enhanced_mode: false,
+      gdpr_consent_required: false,
+      gdpr_retention_days: 30,
+      gdpr_anonymize_exports: true,
+      gdpr_breach_notify: false,
+      duty_cycle_masking_enabled: false,
+      geofencing_masking_enabled: false,
+      shift_hours_start: '08:00',
+      shift_hours_end: '17:00',
+    };
+  }
+  return data as ComplianceSettings;
+}
+
+export async function updateComplianceSettings(
+  supabase: SupabaseClient,
+  settings: Partial<ComplianceSettings> & { crew_id: string },
+): Promise<void> {
+  const { error } = await supabase
+    .from('crew_compliance_settings')
+    .upsert(settings, { onConflict: 'crew_id' });
+  if (error) throw error;
+}

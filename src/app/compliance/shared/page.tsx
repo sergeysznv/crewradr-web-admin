@@ -46,8 +46,9 @@ function ComplianceContent() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [oshaData, setOshaData] = useState<SafetyAlert[] | null>(null);
+  const [oshaData, setOshaData] = useState<any[] | null>(null);
   const [eldData, setEldData] = useState<TripSession[] | null>(null);
+  const [dotData, setDotData] = useState<any[] | null>(null);
   const [reportLabel, setReportLabel] = useState('');
 
   useEffect(() => {
@@ -65,14 +66,15 @@ function ComplianceContent() {
       try {
         if (type === 'osha') {
           setReportLabel('OSHA 300 Log');
+          const datePart = since ? since.split('T')[0] : '';
           const { data, error: qErr } = await supabase
-            .from('safety_alerts')
+            .from('osha_incident_reports')
             .select()
             .eq('crew_id', crew)
-            .gte('created_at', since)
-            .order('created_at', { ascending: false });
+            .gte('incident_date', datePart)
+            .order('incident_date', { ascending: false });
           if (qErr) throw qErr;
-          setOshaData((data ?? []) as SafetyAlert[]);
+          setOshaData((data ?? []) as any[]);
         } else if (type === 'eld') {
           setReportLabel('ELD Report');
           const { data, error: qErr } = await supabase
@@ -82,6 +84,25 @@ function ComplianceContent() {
             .gte('started_at', since);
           if (qErr) throw qErr;
           setEldData((data ?? []) as TripSession[]);
+        } else if (type === 'dot') {
+          setReportLabel('DOT Compliance Report');
+          const { data, error: qErr } = await supabase
+            .from('crew_trip_sessions')
+            .select(`
+              user_id,
+              started_at,
+              distance_m,
+              driving_seconds,
+              fatigue_warnings,
+              max_speed_ms,
+              nighttime_seconds,
+              weather_risk_level
+            `)
+            .eq('crew_id', crew)
+            .gte('started_at', since)
+            .order('started_at', { ascending: false });
+          if (qErr) throw qErr;
+          setDotData(data ?? []);
         } else {
           setError('Unknown report type.');
         }
@@ -96,7 +117,26 @@ function ComplianceContent() {
 
   const oshaRows = useMemo(() => {
     if (!oshaData) return [];
-    return oshaData.map((i) => [i.created_at, i.alert_type, i.severity, i.message, i.target_user_id ?? '']);
+    return oshaData.map((i) => {
+      let classification = 'Other Recordable';
+      if (i.was_fatality) classification = 'Fatality';
+      else if ((i.days_away ?? 0) > 0) classification = 'Days Away';
+      else if ((i.restricted_days ?? 0) > 0) classification = 'Restricted';
+      else if (i.was_hospitalization) classification = 'Hospitalization';
+
+      let details = i.description;
+      if (i.location) details += ` at ${i.location}`;
+      if (i.involved_personnel && i.involved_personnel.length > 0) {
+        details += ` (Involved: ${i.involved_personnel.join(', ')})`;
+      }
+
+      return [
+        i.incident_date,
+        i.incident_type,
+        classification,
+        details,
+      ];
+    });
   }, [oshaData]);
 
   const eldRows = useMemo(() => {
@@ -107,8 +147,29 @@ function ComplianceContent() {
       hours: ((s.driving_seconds ?? 0) / 3600).toFixed(1),
       distanceM: s.distance_m ?? 0,
       fatigue: String(s.fatigue_warnings ?? 0),
+      compliant: ((s.driving_seconds ?? 0) / 3600) <= 11.0 && (s.fatigue_warnings ?? 0) === 0,
     }));
   }, [eldData]);
+
+  const dotRows = useMemo(() => {
+    if (!dotData) return [];
+    return dotData.map((s) => {
+      const durationMin = Math.floor((s.driving_seconds ?? 0) / 60);
+      const fatigueWarnings = s.fatigue_warnings ?? 0;
+      const dotCompliant = durationMin <= 660 && fatigueWarnings === 0;
+      return {
+        userId: s.user_id,
+        startedAt: s.started_at,
+        distanceM: s.distance_m ?? 0,
+        durationMin,
+        fatigue: fatigueWarnings,
+        nighttimePct: `${Math.floor(((s.nighttime_seconds ?? 0) / 60))}%`,
+        maxSpeedMs: s.max_speed_ms ?? 0,
+        weather: s.weather_risk_level ?? 'none',
+        compliant: dotCompliant,
+      };
+    });
+  }, [dotData]);
 
   if (loading) return <LoadingFallback />;
 
@@ -183,6 +244,7 @@ function ComplianceContent() {
                     <th className="px-3 py-2 text-left font-semibold text-zinc-500">Hours</th>
                     <th className="px-3 py-2 text-left font-semibold text-zinc-500">Distance</th>
                     <th className="px-3 py-2 text-left font-semibold text-zinc-500">Fatigue</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
@@ -193,6 +255,17 @@ function ComplianceContent() {
                       <td className="px-3 py-1.5 text-zinc-700 dark:text-zinc-300">{row.hours}</td>
                       <td className="px-3 py-1.5 text-zinc-700 dark:text-zinc-300">{formatDistanceMeters(row.distanceM, system)}</td>
                       <td className="px-3 py-1.5 text-zinc-700 dark:text-zinc-300">{row.fatigue}</td>
+                      <td className="px-3 py-1.5 whitespace-nowrap">
+                        {row.compliant ? (
+                          <span className="inline-flex items-center rounded-md bg-green-50 px-1.5 py-0.5 text-[10px] font-medium text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-500/10 dark:text-green-400 dark:ring-green-500/20">
+                            Compliant
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center rounded-md bg-red-50 px-1.5 py-0.5 text-[10px] font-medium text-red-700 ring-1 ring-inset ring-red-600/10 dark:bg-red-500/10 dark:text-red-400 dark:ring-red-500/20">
+                            Violation
+                          </span>
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -200,6 +273,62 @@ function ComplianceContent() {
             </div>
           </div>
         )}
+        {/* DOT table */}
+        {dotData && (
+          <div className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900 overflow-hidden">
+            <div className="px-4 py-3 border-b border-zinc-200 dark:border-zinc-700">
+              <h2 className="font-semibold text-sm text-zinc-900 dark:text-zinc-100">DOT Compliance Report</h2>
+              <p className="text-xs text-zinc-500">{dotData.length} records</p>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800">
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">Driver</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">Date</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">{system === 'imperial' ? 'Distance (mi)' : 'Distance (km)'}</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">Duration (min)</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">Fatigue</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">Nighttime %</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">{system === 'imperial' ? 'Max Speed (mph)' : 'Max Speed (km/h)'}</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">Weather Risk</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
+                  {dotRows.map((row, i) => {
+                    const distVal = system === 'imperial' ? (row.distanceM / 1609.344).toFixed(1) : (row.distanceM / 1000).toFixed(1);
+                    const speedVal = system === 'imperial' ? (row.maxSpeedMs * 2.236936).toFixed(0) : (row.maxSpeedMs * 3.6).toFixed(0);
+                    return (
+                      <tr key={i} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
+                        <td className="px-3 py-1.5 text-zinc-700 dark:text-zinc-300 font-mono text-xs">{row.userId.slice(0, 8)}</td>
+                        <td className="px-3 py-1.5 text-zinc-700 dark:text-zinc-300 whitespace-nowrap">{new Date(row.startedAt).toLocaleDateString()}</td>
+                        <td className="px-3 py-1.5 text-zinc-700 dark:text-zinc-300">{distVal}</td>
+                        <td className="px-3 py-1.5 text-zinc-700 dark:text-zinc-300">{row.durationMin}</td>
+                        <td className="px-3 py-1.5 text-zinc-700 dark:text-zinc-300">{row.fatigue}</td>
+                        <td className="px-3 py-1.5 text-zinc-700 dark:text-zinc-300">{row.nighttimePct}</td>
+                        <td className="px-3 py-1.5 text-zinc-700 dark:text-zinc-300">{speedVal}</td>
+                        <td className="px-3 py-1.5 text-zinc-700 dark:text-zinc-300 capitalize">{row.weather}</td>
+                        <td className="px-3 py-1.5 whitespace-nowrap">
+                          {row.compliant ? (
+                            <span className="inline-flex items-center rounded-md bg-green-50 px-1.5 py-0.5 text-[10px] font-medium text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-500/10 dark:text-green-400 dark:ring-green-500/20">
+                              Compliant
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center rounded-md bg-red-50 px-1.5 py-0.5 text-[10px] font-medium text-red-700 ring-1 ring-inset ring-red-600/10 dark:bg-red-500/10 dark:text-red-400 dark:ring-red-500/20">
+                              Violation
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
 
         <p className="mt-8 text-center text-xs text-zinc-400">
           {t('webComplianceSharedDesc')} — CrewRadr

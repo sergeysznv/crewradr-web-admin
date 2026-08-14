@@ -10,6 +10,7 @@ import { GeneralTab } from '@/components/settings/GeneralTab';
 import { PrivacyTab } from '@/components/settings/PrivacyTab';
 import { DangerZone } from '@/components/settings/DangerZone';
 import { FleetPolicyTab } from '@/components/settings/FleetPolicyTab';
+import { ComplianceTab } from '@/components/settings/ComplianceTab';
 import { FilterChips } from '@/components/shared/FilterChips';
 import { Lock } from 'lucide-react';
 
@@ -20,6 +21,7 @@ const TABS = [
   { value: 'general' as const, labelKey: 'webSettingsGeneralTab' },
   { value: 'fleetPolicy' as const, labelKey: 'webSettingsFleetPolicyTab' },
   { value: 'privacy' as const, labelKey: 'webSettingsPrivacyTab' },
+  { value: 'compliance' as const, labelKey: 'webSettingsComplianceTab' },
   { value: 'danger' as const, labelKey: 'webSettingsDangerTab' },
 ];
 
@@ -60,6 +62,7 @@ export function SettingsView() {
         {tab === 'general' && <GeneralTab subscription={settings?.subscription ?? null} />}
         {tab === 'fleetPolicy' && <FleetPolicyTab />}
         {tab === 'privacy' && <PrivacyTab />}
+        {tab === 'compliance' && <ComplianceTab />}
         {tab === 'danger' && <DangerZone />}
       </div>
     </div>
