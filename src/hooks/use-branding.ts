@@ -41,89 +41,10 @@ export function normalizeSeedColor(c: string | number | null | undefined): strin
 }
 
 export function useBranding(crewId?: string | null, userTier?: number) {
-  const [palette, setPalette] = useState<BrandPalette>(FALLBACK);
+  const [palette] = useState<BrandPalette>(FALLBACK);
 
   useEffect(() => {
-    let cancelled = false;
-    let channel: ReturnType<typeof supabase.channel> | null = null;
-    const cacheKey = crewId ? `crewradr-branding-${crewId}` : 'crewradr-branding';
-
-    async function init() {
-      // 1. Load cached branding from localStorage for instant display
-      try {
-        const cached = localStorage.getItem(cacheKey);
-        if (cached) {
-          const p = JSON.parse(cached) as BrandPalette;
-          if (!cancelled) setPalette(p);
-          applyPalette(p);
-        }
-      } catch { /* ignore */ }
-
-      // Only fetch custom branding if user is Admiral tier (rank 3)
-      const tier = userTier ?? await getCrewTier();
-      if (tier >= 3) {
-        const id = crewId ?? await getCrewId();
-        if (id && !cancelled) {
-          try {
-            // 2. Fetch branding via get_web_crew_settings (seed + logo).
-            const settings = await getCrewSettings(supabase, id);
-            const seed = normalizeSeedColor(settings?.branding?.seed_color);
-            const logoUrl = settings?.branding?.logo_url ?? null;
-            if (seed) {
-              const p: BrandPalette = {
-                seed,
-                accent: FALLBACK.accent,
-                sandAccent: FALLBACK.sandAccent,
-                surfaceTint: FALLBACK.surfaceTint,
-                logoUrl,
-              };
-              if (!cancelled) { setPalette(p); applyPalette(p); }
-              localStorage.setItem(cacheKey, JSON.stringify(p));
-            }
-          } catch { /* fall back to cache/fallback */ }
-
-          // 3. Subscribe to Realtime filtered by this specific crew_id.
-          // Use a unique channel name per mount to prevent "cannot add
-          // callbacks after subscribe" when the effect re-runs before the
-          // previous channel is fully torn down.
-          channel = supabase
-            .channel(`crew_branding:${id}:${Date.now()}`)
-            .on(
-              'postgres_changes',
-              { event: '*', schema: 'public', table: 'crew_branding', filter: `crew_id=eq.${id}` },
-              (payload) => {
-                const record = payload.new as Record<string, unknown> | null;
-                if (!record || Object.keys(record).length === 0) {
-                  setPalette(FALLBACK);
-                  applyPalette(FALLBACK);
-                  return;
-                }
-                const seed = normalizeSeedColor(record.seed_color as string | number | null | undefined);
-                const p: BrandPalette = seed
-                  ? { seed, accent: FALLBACK.accent, sandAccent: FALLBACK.sandAccent, surfaceTint: FALLBACK.surfaceTint, logoUrl: (record.logo_url as string | null) ?? null }
-                  : FALLBACK;
-                setPalette(p);
-                applyPalette(p);
-                localStorage.setItem(cacheKey, JSON.stringify(p));
-                // Branding changed — reload to pick up new palette.
-                setTimeout(() => window.location.reload(), 300);
-              }
-            )
-            .subscribe();
-        }
-      } else {
-        // Not Admiral — ensure fallback is applied
-        applyPalette(FALLBACK);
-        setPalette(FALLBACK);
-      }
-    }
-
-    init();
-
-    return () => {
-      cancelled = true;
-      channel?.unsubscribe();
-    };
+    applyPalette(FALLBACK);
   }, [crewId, userTier]);
 
   return palette;
