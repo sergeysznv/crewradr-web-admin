@@ -1,6 +1,6 @@
 // src/components/trips/TripsView.tsx
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useT, isImperial } from '@/hooks/use-translations';
 import { useCrew } from '@/hooks/useCrew';
 import { useTripList } from '@/hooks/queries/useTripList';
@@ -21,6 +21,17 @@ export function TripsView() {
   const { tier, crewId } = useCrew();
   const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
   const { system } = useMeasurementSystem();
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tripId = params.get('tripId');
+      if (tripId) {
+        setSelectedTripId(tripId);
+      }
+    }
+  }, []);
+
   // Days requested = the tier's full history window; the RPC clamps it
   // server-side (7/30/90/365) in case of pending downgrades.
   const { data: trips, isLoading: isListLoading, isError: isListError, refetch: refetchList } =

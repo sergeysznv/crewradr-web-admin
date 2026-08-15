@@ -438,10 +438,10 @@ export function ComplianceView() {
               <tbody className="divide-y divide-outline-variant">
                 {oshaRows.slice(0, 25).map((row, i) => (
                   <tr key={i} className="hover:bg-surface-container/50">
-                    <td className="px-3 py-1.5 text-on-surface whitespace-nowrap">{new Date(row[0]).toLocaleDateString()}</td>
+                    <td className="px-3 py-1.5 text-on-surface whitespace-nowrap" title={new Date(row[0]).toLocaleString()}>{new Date(row[0]).toLocaleDateString()}</td>
                     <td className="px-3 py-1.5 text-on-surface">{row[1]}</td>
                     <td className="px-3 py-1.5 text-on-surface">{row[2]}</td>
-                    <td className="px-3 py-1.5 text-on-surface-variant max-w-[200px] truncate">{row[3]}</td>
+                    <td className="px-3 py-1.5 text-on-surface-variant max-w-[200px] truncate" title={row[3]}>{row[3]}</td>
                   </tr>
                 ))}
               </tbody>
@@ -521,12 +521,12 @@ export function ComplianceView() {
               <tbody className="divide-y divide-outline-variant">
                 {eldRows.slice(0, 25).map((row, i) => (
                   <tr key={i} className="hover:bg-surface-container/50">
-                    <td className="px-3 py-1.5 text-on-surface font-mono text-xs">{row.userId.slice(0, 8)}</td>
-                    <td className="px-3 py-1.5 text-on-surface whitespace-nowrap">{new Date(row.startedAt).toLocaleDateString()}</td>
-                    <td className="px-3 py-1.5 text-on-surface">{row.hours}</td>
-                    <td className="px-3 py-1.5 text-on-surface">{formatDistanceMeters(row.distanceM, system)}</td>
-                    <td className="px-3 py-1.5 text-on-surface">{row.fatigue}</td>
-                    <td className="px-3 py-1.5 whitespace-nowrap">
+                    <td className="px-3 py-1.5 text-on-surface font-mono text-xs" title={row.userId}>{row.userId.slice(0, 8)}</td>
+                    <td className="px-3 py-1.5 text-on-surface whitespace-nowrap" title={new Date(row.startedAt).toLocaleString()}>{new Date(row.startedAt).toLocaleDateString()}</td>
+                    <td className="px-3 py-1.5 text-on-surface" title={`${row.hours} driving hours logged`}>{row.hours}</td>
+                    <td className="px-3 py-1.5 text-on-surface" title={`${formatDistanceMeters(row.distanceM, system)} logged`}>{formatDistanceMeters(row.distanceM, system)}</td>
+                    <td className="px-3 py-1.5 text-on-surface" title={`${row.fatigue} fatigue warnings triggered`}>{row.fatigue}</td>
+                    <td className="px-3 py-1.5 whitespace-nowrap" title={row.compliant ? 'Within HOS limits' : Number(row.hours) > 11.0 ? 'Violation: Exceeded 11h daily limit' : 'Violation: Fatigue warnings detected'}>
                       {row.compliant ? (
                         <span className="inline-flex items-center rounded-md bg-success/15 px-1.5 py-0.5 text-[10px] font-medium text-success">
                           Compliant
@@ -620,17 +620,20 @@ export function ComplianceView() {
                 {dotRows.slice(0, 25).map((row, i) => {
                   const distVal = system === 'imperial' ? (row.distanceM / 1609.344).toFixed(1) : (row.distanceM / 1000).toFixed(1);
                   const speedVal = system === 'imperial' ? (row.maxSpeedMs * 2.236936).toFixed(0) : (row.maxSpeedMs * 3.6).toFixed(0);
+                  const statusTooltip = row.compliant
+                    ? 'Within DOT regulations (duration <= 11 hours, zero fatigue warnings)'
+                    : `Violation: ${row.durationMin > 660 ? 'Exceeded 11-hour driving limit (660 min).' : ''}${row.fatigue > 0 ? ' Fatigue warnings triggered.' : ''}`;
                   return (
                     <tr key={i} className="hover:bg-surface-container/50">
-                      <td className="px-3 py-1.5 text-on-surface font-mono text-xs">{row.userId.slice(0, 8)}</td>
-                      <td className="px-3 py-1.5 text-on-surface whitespace-nowrap">{new Date(row.startedAt).toLocaleDateString()}</td>
-                      <td className="px-3 py-1.5 text-on-surface">{distVal}</td>
-                      <td className="px-3 py-1.5 text-on-surface">{row.durationMin}</td>
-                      <td className="px-3 py-1.5 text-on-surface">{row.fatigue}</td>
-                      <td className="px-3 py-1.5 text-on-surface">{row.nighttimePct}</td>
-                      <td className="px-3 py-1.5 text-on-surface">{speedVal}</td>
-                      <td className="px-3 py-1.5 text-on-surface capitalize">{row.weather}</td>
-                      <td className="px-3 py-1.5 whitespace-nowrap">
+                      <td className="px-3 py-1.5 text-on-surface font-mono text-xs" title={row.userId}>{row.userId.slice(0, 8)}</td>
+                      <td className="px-3 py-1.5 text-on-surface whitespace-nowrap" title={new Date(row.startedAt).toLocaleString()}>{new Date(row.startedAt).toLocaleDateString()}</td>
+                      <td className="px-3 py-1.5 text-on-surface" title={`${distVal} ${system === 'imperial' ? 'mi' : 'km'} logged`}>{distVal}</td>
+                      <td className="px-3 py-1.5 text-on-surface" title={`${row.durationMin} driving minutes logged`}>{row.durationMin}</td>
+                      <td className="px-3 py-1.5 text-on-surface" title={`${row.fatigue} fatigue warnings triggered`}>{row.fatigue}</td>
+                      <td className="px-3 py-1.5 text-on-surface" title={`${row.nighttimePct} of trip driven at night`}>{row.nighttimePct}</td>
+                      <td className="px-3 py-1.5 text-on-surface" title={`Max speed achieved: ${speedVal} ${system === 'imperial' ? 'mph' : 'km/h'}`}>{speedVal}</td>
+                      <td className="px-3 py-1.5 text-on-surface capitalize" title={`Weather Risk level: ${row.weather}`}>{row.weather}</td>
+                      <td className="px-3 py-1.5 whitespace-nowrap" title={statusTooltip}>
                         {row.compliant ? (
                           <span className="inline-flex items-center rounded-md bg-success/15 px-1.5 py-0.5 text-[10px] font-medium text-success">
                             Compliant

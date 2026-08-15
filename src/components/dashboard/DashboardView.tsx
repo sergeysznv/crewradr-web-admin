@@ -52,39 +52,79 @@ export function DashboardView() {
   return (
     <>
       {dashboard.isLoading ? (
-        <div className="space-y-sz-lg">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3"><Skeleton className="h-20" /><Skeleton className="h-20" /><Skeleton className="h-20" /><Skeleton className="h-20" /></div>
+        <div className="space-y-sz-lg max-w-7xl mx-auto py-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            <Skeleton className="h-20" />
+            <Skeleton className="h-20" />
+            <Skeleton className="h-20" />
+            <Skeleton className="h-20" />
+            <Skeleton className="h-20" />
+          </div>
           <Skeleton className="h-[320px] rounded-lg" />
         </div>
       ) : dashboard.data ? (
-        <div className="space-y-sz-lg animate-fade-in">
-          <h1 className="text-2xl font-bold text-on-surface">{t('webNavFleet')}</h1>
-          <FilterChips<TimeRange> options={TIME_RANGES} selected={days} onSelect={setDays} />
+        <div className="space-y-sz-lg animate-fade-in max-w-7xl mx-auto py-6">
+          {/* Header section with page title & date filters */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-sz-md border-b border-outline-variant/30 pb-sz-md">
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight text-on-surface">{t('webNavFleet')}</h1>
+              <p className="text-xs text-on-surface-variant mt-1">Real-time status, safety scores, and driving logs for your fleet.</p>
+            </div>
+            <div className="shrink-0">
+              <FilterChips<TimeRange> options={TIME_RANGES} selected={days} onSelect={setDays} />
+            </div>
+          </div>
+
+          {/* Key Metrics KPI Grid */}
           <KpiStrip data={dashboard.data} />
-          {/* Fleet-wide aggregate safety score (captain+ tier) */}
-          <TierGateGuard minTier="captain" fallback={null}>
-            <FleetSafetyScore days={days} />
-          </TierGateGuard>
-          {/* Trends — one card per metric, synced to dashboard time selector */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-sz-lg">
-            <TrendChart metric="miles" crewId={crewId!} label={t('webOverviewTrendMiles')} days={days} />
-            <TrendChart metric="hours" crewId={crewId!} label={t('webOverviewTrendHours')} days={days} />
-            <TrendChart metric="alerts" crewId={crewId!} label={t('webOverviewTrendAlerts')} days={days} />
+
+          {/* Section 1: Fleet Safety & Alerts */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-sz-lg">
+            {/* Fleet safety distribution */}
+            <div className="lg:col-span-1">
+              <TierGateGuard minTier="captain" fallback={null}>
+                <FleetSafetyScore days={days} />
+              </TierGateGuard>
+            </div>
+            {/* Active alerts feed */}
+            <div className="lg:col-span-2">
+              <AlertFeed alerts={dashboard.data.recent_alerts} />
+            </div>
           </div>
-          {/* Weekly activity + live map */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-sz-lg">
-            <div className="md:col-span-1"><CalendarHeatmap crewId={crewId!} /></div>
-            <div className="md:col-span-2"><FleetOverview dashboard={dashboard.data} /></div>
-          </div>
-          <AlertFeed alerts={dashboard.data.recent_alerts} />
-          {/* Admiral tier: AI anomaly feed — self-gates via AICard */}
+
+          {/* Section 2: AI Anomaly detection (Admiral tier) */}
           <AnomalyCard />
-          <ActivityTimeline days={days} />
-          {/* Captain+ tier AND captain/co-captain role: custom alert rules
-              (save_alert_rule is role-gated server-side) */}
+
+          {/* Section 3: Metric Trends */}
+          <section className="space-y-sz-md">
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-bold text-on-surface tracking-tight">Performance & Safety Trends</h2>
+              <span className="text-[10px] text-on-surface-variant font-medium bg-surface-container px-2 py-0.5 rounded-full">Synced to selector</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-sz-lg">
+              <TrendChart metric="miles" crewId={crewId!} label={t('webOverviewTrendMiles')} days={days} />
+              <TrendChart metric="hours" crewId={crewId!} label={t('webOverviewTrendHours')} days={days} />
+              <TrendChart metric="alerts" crewId={crewId!} label={t('webOverviewTrendAlerts')} days={days} />
+            </div>
+          </section>
+
+          {/* Section 4: Live tracking, heatmap and activity list */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-sz-lg">
+            {/* Map link and weekly heatmap */}
+            <div className="lg:col-span-1 space-y-sz-lg">
+              <FleetOverview dashboard={dashboard.data} />
+              <CalendarHeatmap crewId={crewId!} />
+            </div>
+            {/* Live activity feed */}
+            <div className="lg:col-span-2">
+              <ActivityTimeline days={days} />
+            </div>
+          </div>
+
+          {/* Section 5: Custom alert rule builder */}
           <RoleGate>
             <TierGateGuard minTier="captain" fallback={null}>
-              <section className="space-y-sz-md">
+              <section className="space-y-sz-md border-t border-outline-variant/30 pt-sz-lg">
                 <h2 className="font-heading text-base font-bold text-on-surface">{t('webAlertsRulesTitle')}</h2>
                 <AlertRuleBuilder />
               </section>
