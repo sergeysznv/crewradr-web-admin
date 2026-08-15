@@ -324,16 +324,9 @@ function ComplianceContent() {
           </div>
         </div>
 
-        {/* Print-only title (visible only during print) */}
-        <div className="hidden print:block mb-6">
-          <h1 className="text-2xl font-bold text-zinc-900">{t('webComplianceSharedTitle')}</h1>
-          <p className="text-sm text-zinc-500">{reportLabel} — Generated {new Date().toLocaleString()}</p>
-          <hr className="my-4 border-zinc-300" />
-        </div>
-
-        {/* OSHA table */}
+        {/* OSHA table (Screen only) */}
         {oshaData && (
-          <div className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900 overflow-hidden">
+          <div className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900 overflow-hidden print:hidden">
             <div className="px-4 py-3 border-b border-zinc-200 dark:border-zinc-700">
               <h2 className="font-semibold text-sm text-zinc-900 dark:text-zinc-100">OSHA 300 Log</h2>
               <p className="text-xs text-zinc-500">{oshaData.length} records</p>
@@ -363,9 +356,9 @@ function ComplianceContent() {
           </div>
         )}
 
-        {/* ELD table */}
+        {/* ELD table (Screen only) */}
         {eldData && (
-          <div className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900 overflow-hidden">
+          <div className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900 overflow-hidden print:hidden">
             <div className="px-4 py-3 border-b border-zinc-200 dark:border-zinc-700">
               <h2 className="font-semibold text-sm text-zinc-900 dark:text-zinc-100">ELD Report</h2>
               <p className="text-xs text-zinc-500">{eldData.length} records</p>
@@ -408,9 +401,10 @@ function ComplianceContent() {
             </div>
           </div>
         )}
-        {/* DOT table */}
+
+        {/* DOT table (Screen only) */}
         {dotData && (
-          <div className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900 overflow-hidden">
+          <div className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900 overflow-hidden print:hidden">
             <div className="px-4 py-3 border-b border-zinc-200 dark:border-zinc-700">
               <h2 className="font-semibold text-sm text-zinc-900 dark:text-zinc-100">DOT Compliance Report</h2>
               <p className="text-xs text-zinc-500">{dotData.length} records</p>
@@ -464,8 +458,190 @@ function ComplianceContent() {
           </div>
         )}
 
+        {/* Professional Print Layout (Only visible during print) */}
+        <div className="hidden print:block font-sans text-black bg-white p-6 leading-relaxed">
+          {/* Document Header */}
+          <div className="border-b-2 border-black pb-4 mb-6">
+            <div className="flex justify-between items-start">
+              <div>
+                <h1 className="text-xl font-bold uppercase tracking-wide">
+                  {params.get('type') === 'osha' 
+                    ? 'OSHA Form 300 - Log of Work-Related Injuries' 
+                    : params.get('type') === 'eld' 
+                      ? 'FMCSA Electronic Logging Device (ELD) Audit' 
+                      : 'DOT Hours of Service & Safety Compliance Record'}
+                </h1>
+                <p className="text-xs text-zinc-600 mt-1">
+                  {params.get('type') === 'osha' 
+                    ? 'U.S. Department of Labor — Occupational Safety and Health Administration' 
+                    : 'U.S. Department of Transportation — Federal Motor Carrier Safety Administration'}
+                </p>
+              </div>
+              <div className="text-right text-xs">
+                <p className="font-semibold">CREWRADR FLEET COMPLIANCE</p>
+                <p>Crew ID: {params.get('crew')}</p>
+                <p>Generated: {new Date().toLocaleString()}</p>
+              </div>
+            </div>
+            <div className="mt-4 grid grid-cols-3 gap-4 text-xs bg-zinc-100 p-3 rounded border border-zinc-300">
+              <div>
+                <span className="font-semibold text-zinc-600 uppercase block text-[10px]">Establishment / Operator</span>
+                <span className="font-medium text-sm text-black">CrewRadr Fleet Unit</span>
+              </div>
+              <div>
+                <span className="font-semibold text-zinc-600 uppercase block text-[10px]">Audit Period</span>
+                <span className="font-medium text-sm text-black">{params.get('type') === 'osha' ? 'Past 12 Months' : 'Past 30 Days'}</span>
+              </div>
+              <div>
+                <span className="font-semibold text-zinc-600 uppercase block text-[10px]">Record Status</span>
+                <span className="font-semibold text-sm uppercase text-green-700">Official Certified Log</span>
+              </div>
+            </div>
+          </div>
 
-        <p className="mt-8 text-center text-xs text-zinc-400">
+          {/* Document Tables */}
+          {params.get('type') === 'osha' && oshaData && (
+            <div>
+              <table className="w-full text-[11px] border-collapse border border-black">
+                <thead>
+                  <tr className="bg-zinc-100 border-b border-black">
+                    <th className="border-r border-black p-2 text-left font-bold">Case #</th>
+                    <th className="border-r border-black p-2 text-left font-bold">Incident Date</th>
+                    <th className="border-r border-black p-2 text-left font-bold">Incident Type</th>
+                    <th className="border-r border-black p-2 text-left font-bold">Severity Classification</th>
+                    <th className="p-2 text-left font-bold">Description / Incident Details</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {oshaRows.map((row, i) => (
+                    <tr key={i} className="border-b border-zinc-400">
+                      <td className="border-r border-black p-2 font-semibold">{i + 1}</td>
+                      <td className="border-r border-black p-2 whitespace-nowrap">{new Date(row[0]).toLocaleDateString()}</td>
+                      <td className="border-r border-black p-2">{row[1]}</td>
+                      <td className="border-r border-black p-2">{row[2]}</td>
+                      <td className="p-2">{row[3]}</td>
+                    </tr>
+                  ))}
+                  {oshaRows.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="p-4 text-center text-zinc-500 italic">No recordable incidents logged during this period.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {params.get('type') === 'eld' && eldData && (
+            <div>
+              <table className="w-full text-[11px] border-collapse border border-black">
+                <thead>
+                  <tr className="bg-zinc-100 border-b border-black">
+                    <th className="border-r border-black p-2 text-left font-bold">Driver ID</th>
+                    <th className="border-r border-black p-2 text-left font-bold">Date</th>
+                    <th className="border-r border-black p-2 text-right font-bold">Driving Hours</th>
+                    <th className="border-r border-black p-2 text-right font-bold">Distance</th>
+                    <th className="border-r border-black p-2 text-center font-bold">Fatigue Warnings</th>
+                    <th className="p-2 text-center font-bold">Audit Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {eldRows.map((row, i) => (
+                    <tr key={i} className="border-b border-zinc-400">
+                      <td className="border-r border-black p-2 font-mono">{row.userId.slice(0, 8)}</td>
+                      <td className="border-r border-black p-2 whitespace-nowrap">{new Date(row.startedAt).toLocaleDateString()}</td>
+                      <td className="border-r border-black p-2 text-right">{row.hours} h</td>
+                      <td className="border-r border-black p-2 text-right">{formatDistanceMeters(row.distanceM, system)}</td>
+                      <td className="border-r border-black p-2 text-center">{row.fatigue}</td>
+                      <td className="p-2 text-center font-semibold uppercase">
+                        {row.compliant ? (
+                          <span className="text-green-700">COMPLIANT</span>
+                        ) : (
+                          <span className="text-red-700">VIOLATION</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                  {eldRows.length === 0 && (
+                    <tr>
+                      <td colSpan={6} className="p-4 text-center text-zinc-500 italic">No active driving sessions logged during this period.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {params.get('type') === 'dot' && dotData && (
+            <div>
+              <table className="w-full text-[11px] border-collapse border border-black">
+                <thead>
+                  <tr className="bg-zinc-100 border-b border-black">
+                    <th className="border-r border-black p-2 text-left font-bold">Driver ID</th>
+                    <th className="border-r border-black p-2 text-left font-bold">Date</th>
+                    <th className="border-r border-black p-2 text-right font-bold">Distance</th>
+                    <th className="border-r border-black p-2 text-right font-bold">Duration</th>
+                    <th className="border-r border-black p-2 text-center font-bold">Fatigue Alerts</th>
+                    <th className="border-r border-black p-2 text-right font-bold">Night %</th>
+                    <th className="border-r border-black p-2 text-right font-bold">Max Speed</th>
+                    <th className="border-r border-black p-2 text-center font-bold">Weather Risk</th>
+                    <th className="p-2 text-center font-bold">Audit Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {dotRows.map((row, i) => {
+                    const distVal = system === 'imperial' ? (row.distanceM / 1609.344).toFixed(1) : (row.distanceM / 1000).toFixed(1);
+                    const speedVal = system === 'imperial' ? (row.maxSpeedMs * 2.236936).toFixed(0) : (row.maxSpeedMs * 3.6).toFixed(0);
+                    return (
+                      <tr key={i} className="border-b border-zinc-400">
+                        <td className="border-r border-black p-2 font-mono">{row.userId.slice(0, 8)}</td>
+                        <td className="border-r border-black p-2 whitespace-nowrap">{new Date(row.startedAt).toLocaleDateString()}</td>
+                        <td className="border-r border-black p-2 text-right">{distVal} {system === 'imperial' ? 'mi' : 'km'}</td>
+                        <td className="border-r border-black p-2 text-right">{row.durationMin} min</td>
+                        <td className="border-r border-black p-2 text-center">{row.fatigue}</td>
+                        <td className="border-r border-black p-2 text-right">{row.nighttimePct}</td>
+                        <td className="border-r border-black p-2 text-right">{speedVal} {system === 'imperial' ? 'mph' : 'km/h'}</td>
+                        <td className="border-r border-black p-2 text-center capitalize">{row.weather}</td>
+                        <td className="p-2 text-center font-semibold uppercase">
+                          {row.compliant ? (
+                            <span className="text-green-700">COMPLIANT</span>
+                          ) : (
+                            <span className="text-red-700">VIOLATION</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {dotRows.length === 0 && (
+                    <tr>
+                      <td colSpan={9} className="p-4 text-center text-zinc-500 italic">No compliance data recorded during this period.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Certification Block */}
+          <div className="mt-12 pt-8 border-t border-zinc-400">
+            <h3 className="text-xs font-bold uppercase tracking-wider mb-2">Record Certification & Sign-off</h3>
+            <p className="text-[10px] text-zinc-600 mb-6 leading-relaxed">
+              I certify that I have personally reviewed this compliance log and to the best of my knowledge and belief, all entries are complete, true, and correct. This audit document is produced in compliance with FMCSA safety reporting criteria.
+            </p>
+            <div className="flex justify-between gap-12 text-xs">
+              <div className="flex-1">
+                <div className="border-b border-black h-8"></div>
+                <p className="mt-1 text-[10px] text-zinc-600 uppercase">Signature of Captain / Authorized Safety Officer</p>
+              </div>
+              <div className="w-1/3">
+                <div className="border-b border-black h-8"></div>
+                <p className="mt-1 text-[10px] text-zinc-600 uppercase">Date Certified</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p className="mt-8 text-center text-xs text-zinc-400 print:hidden">
           {t('webComplianceSharedDesc')} — CrewRadr
         </p>
       </div>
