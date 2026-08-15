@@ -136,6 +136,7 @@ function ComplianceContent() {
     if (!eldData) return [];
     return eldData.map((s) => ({
       userId: s.user_id,
+      driverName: (s as any).driver_name as string | undefined,
       startedAt: s.started_at,
       hours: ((s.driving_seconds ?? 0) / 3600).toFixed(1),
       distanceM: s.distance_m ?? 0,
@@ -152,6 +153,7 @@ function ComplianceContent() {
       const dotCompliant = durationMin <= 660 && fatigueWarnings === 0;
       return {
         userId: s.user_id,
+        driverName: (s as any).driver_name as string | undefined,
         startedAt: s.started_at,
         distanceM: s.distance_m ?? 0,
         durationMin,
@@ -229,7 +231,7 @@ function ComplianceContent() {
       const csv = [`Driver,Date,DrivingHours,${distanceHeader},FatigueWarnings,HOSViolation`,
         ...eldRows.map((r) => {
           const violation = Number(r.hours) > 11.0 ? 'Yes - Exceeds 11h limit' : 'No';
-          return [r.userId, r.startedAt, r.hours, distanceValue(r.distanceM), r.fatigue, violation]
+          return [r.driverName || r.userId, r.startedAt, r.hours, distanceValue(r.distanceM), r.fatigue, violation]
             .map(csvEscape)
             .join(',')
         })
@@ -245,7 +247,7 @@ function ComplianceContent() {
         system === 'imperial' ? (ms * 2.236936).toFixed(0) : (ms * 3.6).toFixed(0);
 
       const csv = [
-        `Driver ID,Date,${distanceHeader},Duration (min),Fatigue Warnings,Nighttime %,${speedHeader},Weather Risk,DOT Compliant`,
+        `Driver,Date,${distanceHeader},Duration (min),Fatigue Warnings,Nighttime %,${speedHeader},Weather Risk,DOT Compliant`,
         ...dotData.map((s) => {
           const durationMin = Math.floor((s.driving_seconds ?? 0) / 60);
           const fatigueWarnings = s.fatigue_warnings ?? 0;
@@ -253,7 +255,7 @@ function ComplianceContent() {
           const nighttimePct = `${Math.floor(((s.nighttime_seconds ?? 0) / 60))}%`;
 
           return [
-            s.user_id,
+            s.driver_name || s.user_id,
             s.started_at,
             distanceValue(s.distance_m ?? 0),
             durationMin,
@@ -289,12 +291,16 @@ function ComplianceContent() {
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 p-4 md:p-8">
       <style>{`
         @media print {
-          .no-print {
-            display: none !important;
+          @page {
+            margin: 0;
           }
           body {
+            padding: 1.5cm 2cm;
             background-color: white !important;
             color: black !important;
+          }
+          .no-print {
+            display: none !important;
           }
         }
       `}</style>
@@ -378,7 +384,7 @@ function ComplianceContent() {
                 <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
                   {eldRows.map((row, i) => (
                     <tr key={i} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
-                      <td className="px-3 py-1.5 text-zinc-700 dark:text-zinc-300 font-mono text-xs">{row.userId.slice(0, 8)}</td>
+                      <td className="px-3 py-1.5 text-zinc-700 dark:text-zinc-300 font-medium text-xs">{row.driverName || row.userId.slice(0, 8)}</td>
                       <td className="px-3 py-1.5 text-zinc-700 dark:text-zinc-300 whitespace-nowrap">{new Date(row.startedAt).toLocaleDateString()}</td>
                       <td className="px-3 py-1.5 text-zinc-700 dark:text-zinc-300">{row.hours}</td>
                       <td className="px-3 py-1.5 text-zinc-700 dark:text-zinc-300">{formatDistanceMeters(row.distanceM, system)}</td>
@@ -430,7 +436,7 @@ function ComplianceContent() {
                     const speedVal = system === 'imperial' ? (row.maxSpeedMs * 2.236936).toFixed(0) : (row.maxSpeedMs * 3.6).toFixed(0);
                     return (
                       <tr key={i} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
-                        <td className="px-3 py-1.5 text-zinc-700 dark:text-zinc-300 font-mono text-xs">{row.userId.slice(0, 8)}</td>
+                        <td className="px-3 py-1.5 text-zinc-700 dark:text-zinc-300 font-medium text-xs">{row.driverName || row.userId.slice(0, 8)}</td>
                         <td className="px-3 py-1.5 text-zinc-700 dark:text-zinc-300 whitespace-nowrap">{new Date(row.startedAt).toLocaleDateString()}</td>
                         <td className="px-3 py-1.5 text-zinc-700 dark:text-zinc-300">{distVal}</td>
                         <td className="px-3 py-1.5 text-zinc-700 dark:text-zinc-300">{row.durationMin}</td>
@@ -548,7 +554,7 @@ function ComplianceContent() {
                 <tbody>
                   {eldRows.map((row, i) => (
                     <tr key={i} className="border-b border-zinc-400">
-                      <td className="border-r border-black p-2 font-mono">{row.userId.slice(0, 8)}</td>
+                      <td className="border-r border-black p-2">{row.driverName || row.userId.slice(0, 8)}</td>
                       <td className="border-r border-black p-2 whitespace-nowrap">{new Date(row.startedAt).toLocaleDateString()}</td>
                       <td className="border-r border-black p-2 text-right">{row.hours} h</td>
                       <td className="border-r border-black p-2 text-right">{formatDistanceMeters(row.distanceM, system)}</td>
@@ -594,7 +600,7 @@ function ComplianceContent() {
                     const speedVal = system === 'imperial' ? (row.maxSpeedMs * 2.236936).toFixed(0) : (row.maxSpeedMs * 3.6).toFixed(0);
                     return (
                       <tr key={i} className="border-b border-zinc-400">
-                        <td className="border-r border-black p-2 font-mono">{row.userId.slice(0, 8)}</td>
+                        <td className="border-r border-black p-2">{row.driverName || row.userId.slice(0, 8)}</td>
                         <td className="border-r border-black p-2 whitespace-nowrap">{new Date(row.startedAt).toLocaleDateString()}</td>
                         <td className="border-r border-black p-2 text-right">{distVal} {system === 'imperial' ? 'mi' : 'km'}</td>
                         <td className="border-r border-black p-2 text-right">{row.durationMin} min</td>
