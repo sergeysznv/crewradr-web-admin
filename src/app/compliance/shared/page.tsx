@@ -10,8 +10,8 @@ import { Loader2, ShieldCheck } from 'lucide-react';
 
 // This page uses its own anon client so it works for unauthenticated viewers.
 const supabase = createClient(
-  'https://amtxzeryaoqdfoadsjsh.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFtdHh6ZXJ5YW9xZGZvYWRzanNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTYyNTQwMDAsImV4cCI6MjAzMTgyNjgwMH0.placeholder',
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   { auth: { persistSession: false } },
 );
 
@@ -37,6 +37,12 @@ function LoadingFallback() {
       <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
     </div>
   );
+}
+
+function csvEscape(v: unknown): string {
+  let s = String(v).replace(/"/g, '""');
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+  return `"${s}"`;
 }
 
 function ComplianceContent() {
@@ -115,6 +121,15 @@ function ComplianceContent() {
     load();
   }, [params]);
 
+  useEffect(() => {
+    if (!loading && !error && params.get('print') === 'true') {
+      const timer = setTimeout(() => {
+        window.print();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, error, params]);
+
   const oshaRows = useMemo(() => {
     if (!oshaData) return [];
     return oshaData.map((i) => {
@@ -171,6 +186,113 @@ function ComplianceContent() {
     });
   }, [dotData]);
 
+  function download(filename: string, content: string) {
+    const blob = new Blob([content], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function downloadCsv() {
+    const type = params.get('type');
+    const crew = params.get('crew');
+    if (type === 'osha' && oshaData) {
+      const headers = [
+        'Case No.',
+        'Employee Name',
+        'Job Title',
+        'Date of Injury',
+        'Where Event Occurred',
+        'Describe Injury/Illness',
+        'Classify',
+        'Resulted in Death?',
+        'Days Away',
+        'Restricted Days',
+        'Case Classification'
+      ];
+      const rows = oshaData.map((r: any, index: number) => {
+        const fatality = r.was_fatality ? 'Yes' : 'No';
+        let classification = 'Other Recordable';
+        if (r.was_fatality) classification = 'Fatality';
+        else if ((r.days_away ?? 0) > 0) classification = 'Days Away';
+        else if ((r.restricted_days ?? 0) > 0) classification = 'Restricted';
+        else if (r.was_hospitalization) classification = 'Hospitalization';
+
+        return [
+          index + 1,
+          (r.involved_personnel ?? []).join('; ') || 'Unknown',
+          '',
+          r.incident_date,
+          r.location ?? 'Unknown',
+          r.description,
+          classification,
+          fatality,
+          r.days_away ?? 0,
+          r.restricted_days ?? 0,
+          r.incident_type
+        ];
+      });
+      const csv = [
+        'OSHA Form 300 - Log of Work-Related Injuries and Illnesses',
+        `Crew ID,${crew}`,
+        `Year,${new Date().getFullYear()}`,
+        '',
+        headers.join(','),
+        ...rows.map((row) => row.map(csvEscape).join(','))
+      ].join('\n');
+      download(`osha-300-crew-${new Date().toISOString().split('T')[0]}.csv`, csv);
+    } else if (type === 'eld' && eldData) {
+      const distanceHeader = system === 'imperial' ? 'DistanceMi' : 'DistanceKm';
+      const distanceValue = (m: number) =>
+        system === 'imperial' ? (m / 1609.344).toFixed(1) : (m / 1000).toFixed(1);
+      const csv = [`Driver,Date,DrivingHours,${distanceHeader},FatigueWarnings,HOSViolation`,
+        ...eldRows.map((r) => {
+          const violation = Number(r.hours) > 11.0 ? 'Yes - Exceeds 11h limit' : 'No';
+          return [r.userId, r.startedAt, r.hours, distanceValue(r.distanceM), r.fatigue, violation]
+            .map(csvEscape)
+            .join(',')
+        })
+      ].join('\n');
+      download(`eld-report-crew-${new Date().toISOString().split('T')[0]}.csv`, csv);
+    } else if (type === 'dot' && dotData) {
+      const distanceHeader = system === 'imperial' ? 'Distance (mi)' : 'Distance (km)';
+      const speedHeader = system === 'imperial' ? 'Max Speed (mph)' : 'Max Speed (km/h)';
+
+      const distanceValue = (m: number) =>
+        system === 'imperial' ? (m / 1609.344).toFixed(1) : (m / 1000).toFixed(1);
+      const speedValue = (ms: number) =>
+        system === 'imperial' ? (ms * 2.236936).toFixed(0) : (ms * 3.6).toFixed(0);
+
+      const csv = [
+        `Driver ID,Date,${distanceHeader},Duration (min),Fatigue Warnings,Nighttime %,${speedHeader},Weather Risk,DOT Compliant`,
+        ...dotData.map((s) => {
+          const durationMin = Math.floor((s.driving_seconds ?? 0) / 60);
+          const fatigueWarnings = s.fatigue_warnings ?? 0;
+          const dotCompliant = durationMin <= 660 && fatigueWarnings === 0 ? 'Yes' : 'No';
+          const nighttimePct = `${Math.floor(((s.nighttime_seconds ?? 0) / 60))}%`;
+
+          return [
+            s.user_id,
+            s.started_at,
+            distanceValue(s.distance_m ?? 0),
+            durationMin,
+            fatigueWarnings,
+            nighttimePct,
+            speedValue(s.max_speed_ms ?? 0),
+            s.weather_risk_level ?? 'none',
+            dotCompliant,
+          ]
+            .map(csvEscape)
+            .join(',');
+        })
+      ].join('\n');
+      download(`dot-compliance-report-${new Date().toISOString().split('T')[0]}.csv`, csv);
+    }
+  }
+
   if (loading) return <LoadingFallback />;
 
   if (error) {
@@ -187,13 +309,48 @@ function ComplianceContent() {
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 p-4 md:p-8">
+      <style>{`
+        @media print {
+          .no-print {
+            display: none !important;
+          }
+          body {
+            background-color: white !important;
+            color: black !important;
+          }
+        }
+      `}</style>
       <div className="mx-auto max-w-4xl">
-        <div className="mb-6 flex items-center gap-3">
-          <img src="/logo-32.png" alt="CrewRadr" className="h-8 w-8 rounded-lg" />
-          <div>
-            <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">{t('webComplianceSharedTitle')}</h1>
-            <p className="text-sm text-zinc-500">{t('webComplianceSharedDesc')} — {reportLabel}</p>
+        {/* Header Toolbar */}
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-700 pb-4 no-print">
+          <div className="flex items-center gap-3">
+            <img src="/logo-32.png" alt="CrewRadr" className="h-8 w-8 rounded-lg" />
+            <div>
+              <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">{t('webComplianceSharedTitle')}</h1>
+              <p className="text-sm text-zinc-500">{t('webComplianceSharedDesc')} — {reportLabel}</p>
+            </div>
           </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => window.print()}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800 px-3.5 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-colors"
+            >
+              Print Report
+            </button>
+            <button
+              onClick={downloadCsv}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 px-3.5 py-2 text-xs font-semibold hover:opacity-90 transition-opacity"
+            >
+              Download CSV
+            </button>
+          </div>
+        </div>
+
+        {/* Print-only title (visible only during print) */}
+        <div className="hidden print:block mb-6">
+          <h1 className="text-2xl font-bold text-zinc-900">{t('webComplianceSharedTitle')}</h1>
+          <p className="text-sm text-zinc-500">{reportLabel} — Generated {new Date().toLocaleString()}</p>
+          <hr className="my-4 border-zinc-300" />
         </div>
 
         {/* OSHA table */}

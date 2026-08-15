@@ -87,7 +87,7 @@ export function ComplianceView() {
       crew: crewId ?? '',
       since: since.toISOString(),
     });
-    return `${base}#${params.toString()}`;
+    return `${base}?${params.toString()}`;
   }
 
   function copyShareLink(reportType: 'osha' | 'eld' | 'dot') {
@@ -99,8 +99,9 @@ export function ComplianceView() {
     }).catch(() => showError('Clipboard access denied'));
   }
 
-  function handlePrint() {
-    window.print();
+  function handlePrint(reportType: 'osha' | 'eld' | 'dot') {
+    const url = buildShareUrl(reportType) + '&print=true';
+    window.open(url, '_blank');
   }
 
   function handleEmail(reportType: 'osha' | 'eld' | 'dot') {
@@ -408,7 +409,7 @@ export function ComplianceView() {
                     className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-colors">
                     <Share2 className="h-3.5 w-3.5" /> {t('webComplianceShareCopyLink')}
                   </button>
-                  <button onClick={handlePrint}
+                  <button onClick={() => handlePrint('osha')}
                     className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-colors">
                     <Printer className="h-3.5 w-3.5" /> {t('webComplianceSharePrint')}
                   </button>
@@ -489,7 +490,7 @@ export function ComplianceView() {
                     className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-colors">
                     <Share2 className="h-3.5 w-3.5" /> {t('webComplianceShareCopyLink')}
                   </button>
-                  <button onClick={handlePrint}
+                  <button onClick={() => handlePrint('eld')}
                     className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-colors">
                     <Printer className="h-3.5 w-3.5" /> {t('webComplianceSharePrint')}
                   </button>
@@ -584,7 +585,7 @@ export function ComplianceView() {
                     className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-colors">
                     <Share2 className="h-3.5 w-3.5" /> {t('webComplianceShareCopyLink')}
                   </button>
-                  <button onClick={handlePrint}
+                  <button onClick={() => handlePrint('dot')}
                     className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-on-surface-variant hover:bg-surface-container transition-colors">
                     <Printer className="h-3.5 w-3.5" /> {t('webComplianceSharePrint')}
                   </button>
