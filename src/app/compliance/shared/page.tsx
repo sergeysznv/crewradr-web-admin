@@ -67,48 +67,26 @@ function ComplianceContent() {
       setLoading(false);
       return;
     }
-
     async function load() {
       try {
+        const { data, error: rpcErr } = await supabase.rpc('get_shared_compliance_report', {
+          p_type: type,
+          p_crew_id: crew,
+          p_since: since
+        });
+        if (rpcErr) throw rpcErr;
+
+        const dataArray = (data ?? []) as any[];
+
         if (type === 'osha') {
           setReportLabel('OSHA 300 Log');
-          const datePart = since ? since.split('T')[0] : '';
-          const { data, error: qErr } = await supabase
-            .from('osha_incident_reports')
-            .select()
-            .eq('crew_id', crew)
-            .gte('incident_date', datePart)
-            .order('incident_date', { ascending: false });
-          if (qErr) throw qErr;
-          setOshaData((data ?? []) as any[]);
+          setOshaData(dataArray);
         } else if (type === 'eld') {
           setReportLabel('ELD Report');
-          const { data, error: qErr } = await supabase
-            .from('crew_trip_sessions')
-            .select()
-            .eq('crew_id', crew)
-            .gte('started_at', since);
-          if (qErr) throw qErr;
-          setEldData((data ?? []) as TripSession[]);
+          setEldData(dataArray as TripSession[]);
         } else if (type === 'dot') {
           setReportLabel('DOT Compliance Report');
-          const { data, error: qErr } = await supabase
-            .from('crew_trip_sessions')
-            .select(`
-              user_id,
-              started_at,
-              distance_m,
-              driving_seconds,
-              fatigue_warnings,
-              max_speed_ms,
-              nighttime_seconds,
-              weather_risk_level
-            `)
-            .eq('crew_id', crew)
-            .gte('started_at', since)
-            .order('started_at', { ascending: false });
-          if (qErr) throw qErr;
-          setDotData(data ?? []);
+          setDotData(dataArray);
         } else {
           setError('Unknown report type.');
         }
