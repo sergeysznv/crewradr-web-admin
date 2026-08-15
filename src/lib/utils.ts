@@ -14,12 +14,15 @@ export function tierRank(tier: string): number {
   }
 }
 
-export function tierLabel(tier: string): string {
+export function tierLabel(
+  tier: string,
+  t: (key: string, params?: Record<string, string | number>) => string,
+): string {
   switch (tier) {
-    case 'admiral': return 'Admiral';
-    case 'captain': return 'Captain';
-    case 'first_mate': return 'First Mate';
-    default: return 'Deckhand';
+    case 'admiral': return t('webTierAdmiral');
+    case 'captain': return t('webTierCaptain');
+    case 'first_mate': return t('webTierFirstMate');
+    default: return t('webTierDeckhand');
   }
 }
 
@@ -41,19 +44,29 @@ export function hexToColor(hex: string): number {
   return parseInt('FF' + cleaned, 16);
 }
 
-export function formatDate(ts: string | null | undefined): string {
+export function formatDate(
+  ts: string | null | undefined,
+  locale?: string,
+): string {
   if (!ts) return '';
-  const d = new Date(ts);
-  return `${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`;
+  return new Intl.DateTimeFormat(locale, {
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  }).format(new Date(ts));
 }
 
-export function formatRelativeTime(ts: string): string {
+export function formatRelativeTime(
+  ts: string,
+  t: (key: string, params?: Record<string, string | number>) => string,
+): string {
   const diff = Date.now() - new Date(ts).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return 'Just now';
-  if (mins < 60) return `${mins}m ago`;
+  if (mins < 1) return t('webTimeJustNow');
+  if (mins < 60) return t('webTimeMinAgo', { n: mins });
   const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return t('webTimeHourAgo', { n: hours });
   const d = new Date(ts);
   return `${d.getMonth() + 1}/${d.getDate()}`;
 }

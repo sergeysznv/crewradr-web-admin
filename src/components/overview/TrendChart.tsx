@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
 import { useTier } from '@/hooks/useTier';
 import { useSupabase } from '@/hooks/useSupabase';
-import { useT, isImperial } from '@/hooks/use-translations';
+import { useT, isImperial, getLocale } from '@/hooks/use-translations';
 import { tierHistoryDays } from '@/lib/tier';
 import { getWebTrendData, type TrendMetric } from '@/lib/rpc';
 
@@ -38,7 +38,7 @@ export function TrendChart({ metric, crewId, label, days: daysOverride }: TrendC
     ? (imperial ? 'mi' : 'km')
     : metric === 'hours'
       ? 'h'
-      : t('webFleetAlertsLabel') || 'alerts';
+      : t('webFleetAlertsLabel');
 
   // Apply distance conversion if metric system is active
   const pointsTransformed = points.map((p) => {
@@ -89,7 +89,7 @@ export function TrendChart({ metric, crewId, label, days: daysOverride }: TrendC
   const formatDate = (dateStr: string) => {
     try {
       const d = new Date(dateStr + 'T00:00:00');
-      return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+      return d.toLocaleDateString(getLocale(), { month: 'short', day: 'numeric' });
     } catch {
       return dateStr;
     }
@@ -129,7 +129,7 @@ export function TrendChart({ metric, crewId, label, days: daysOverride }: TrendC
             {isError ? (
               <span className="text-xs text-error">{t('webErrorLoading')}</span>
             ) : isLoading ? (
-              <span className="text-xs text-on-surface-variant animate-pulse">Loading...</span>
+              <span className="text-xs text-on-surface-variant animate-pulse">{t('loading')}</span>
             ) : lastValue !== null ? (
               formatValue(lastValue)
             ) : (
@@ -268,7 +268,7 @@ export function TrendChart({ metric, crewId, label, days: daysOverride }: TrendC
       ) : (
         !isLoading && (
           <div className="text-center py-6">
-            <span className="text-xs text-on-surface-variant">No trend data available</span>
+            <span className="text-xs text-on-surface-variant">{t('webTrendNoData')}</span>
           </div>
         )
       )}

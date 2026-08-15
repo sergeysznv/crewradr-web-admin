@@ -17,6 +17,7 @@ import { useSnackbar } from '@/components/shared/Snackbar';
 import { tierRank } from '@/lib/utils';
 import { FileText, Download, Loader2, Check, Mail, Lock, Eye, X, ChevronDown, Share2, Printer } from 'lucide-react';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- kept for the i18n extraction type map
 interface SafetyAlert {
   created_at: string;
   alert_type: string;
@@ -96,7 +97,7 @@ export function ComplianceView() {
       setCopied(true);
       showSuccess(t('webComplianceShareCopied'));
       setTimeout(() => setCopied(false), 2500);
-    }).catch(() => showError('Clipboard access denied'));
+    }).catch(() => showError(t('webApiKeyClipboardDenied')));
   }
 
   function handlePrint(reportType: 'osha' | 'eld' | 'dot') {
@@ -114,16 +115,16 @@ export function ComplianceView() {
   const oshaRows = useMemo(() => {
     if (!oshaData) return [];
     return oshaData.map((i) => {
-      let classification = 'Other Recordable';
-      if (i.was_fatality) classification = 'Fatality';
-      else if ((i.days_away ?? 0) > 0) classification = 'Days Away';
-      else if ((i.restricted_days ?? 0) > 0) classification = 'Restricted';
-      else if (i.was_hospitalization) classification = 'Hospitalization';
+      let classification = t('webComplianceClassOther');
+      if (i.was_fatality) classification = t('webComplianceClassFatality');
+      else if ((i.days_away ?? 0) > 0) classification = t('webComplianceClassDaysAway');
+      else if ((i.restricted_days ?? 0) > 0) classification = t('webComplianceClassRestricted');
+      else if (i.was_hospitalization) classification = t('webComplianceClassHospitalization');
 
       let details = i.description;
-      if (i.location) details += ` at ${i.location}`;
+      if (i.location) details += ' ' + t('webComplianceAtLocation', { location: i.location });
       if (i.involved_personnel && i.involved_personnel.length > 0) {
-        details += ` (Involved: ${i.involved_personnel.join(', ')})`;
+        details += ' ' + t('webComplianceInvolved', { personnel: i.involved_personnel.join(', ') });
       }
 
       return [
@@ -133,7 +134,7 @@ export function ComplianceView() {
         details,
       ];
     });
-  }, [oshaData]);
+  }, [oshaData, t]);
 
   const eldRows = useMemo(() => {
     if (!eldData) return [];
@@ -369,7 +370,7 @@ export function ComplianceView() {
 
       {lastGen && (
         <div className="rounded-xl border border-success/40 bg-success/10 p-4 text-sm text-on-surface">
-          <Check className="inline h-4 w-4 mr-1 text-success" />
+          <Check className="inline h-4 w-4 me-1 text-success" />
           {t('webComplianceLastGenerated')}: {lastGen}
         </div>
       )}
@@ -429,10 +430,10 @@ export function ComplianceView() {
             <table className="w-full text-xs">
               <thead>
                 <tr className="border-b border-outline-variant bg-surface-container">
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">{t('webComplianceColDate')}</th>
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">{t('webComplianceColType')}</th>
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">{t('webComplianceColSeverity')}</th>
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">{t('webComplianceColDescription')}</th>
+                  <th className="px-3 py-2 text-start font-semibold text-on-surface-variant">{t('webComplianceColDate')}</th>
+                  <th className="px-3 py-2 text-start font-semibold text-on-surface-variant">{t('webComplianceColType')}</th>
+                  <th className="px-3 py-2 text-start font-semibold text-on-surface-variant">{t('webComplianceColSeverity')}</th>
+                  <th className="px-3 py-2 text-start font-semibold text-on-surface-variant">{t('webComplianceColDescription')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant">
@@ -510,12 +511,12 @@ export function ComplianceView() {
             <table className="w-full text-xs">
               <thead>
                 <tr className="border-b border-outline-variant bg-surface-container">
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">{t('webComplianceColDriver')}</th>
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">{t('webComplianceColDate')}</th>
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">{t('webComplianceColHours')}</th>
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">{t('webComplianceColDistance')}</th>
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">{t('webComplianceColFatigue')}</th>
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">{t('webMembersColStatus')}</th>
+                  <th className="px-3 py-2 text-start font-semibold text-on-surface-variant">{t('webComplianceColDriver')}</th>
+                  <th className="px-3 py-2 text-start font-semibold text-on-surface-variant">{t('webComplianceColDate')}</th>
+                  <th className="px-3 py-2 text-start font-semibold text-on-surface-variant">{t('webComplianceColHours')}</th>
+                  <th className="px-3 py-2 text-start font-semibold text-on-surface-variant">{t('webComplianceColDistance')}</th>
+                  <th className="px-3 py-2 text-start font-semibold text-on-surface-variant">{t('webComplianceColFatigue')}</th>
+                  <th className="px-3 py-2 text-start font-semibold text-on-surface-variant">{t('webMembersColStatus')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant">
@@ -523,17 +524,17 @@ export function ComplianceView() {
                   <tr key={i} className="hover:bg-surface-container/50">
                     <td className="px-3 py-1.5 text-on-surface font-mono text-xs" title={row.userId}>{row.userId.slice(0, 8)}</td>
                     <td className="px-3 py-1.5 text-on-surface whitespace-nowrap" title={new Date(row.startedAt).toLocaleString()}>{new Date(row.startedAt).toLocaleDateString()}</td>
-                    <td className="px-3 py-1.5 text-on-surface" title={`${row.hours} driving hours logged`}>{row.hours}</td>
-                    <td className="px-3 py-1.5 text-on-surface" title={`${formatDistanceMeters(row.distanceM, system)} logged`}>{formatDistanceMeters(row.distanceM, system)}</td>
-                    <td className="px-3 py-1.5 text-on-surface" title={`${row.fatigue} fatigue warnings triggered`}>{row.fatigue}</td>
-                    <td className="px-3 py-1.5 whitespace-nowrap" title={row.compliant ? 'Within HOS limits' : Number(row.hours) > 11.0 ? 'Violation: Exceeded 11h daily limit' : 'Violation: Fatigue warnings detected'}>
+                    <td className="px-3 py-1.5 text-on-surface" title={t('webComplianceHoursLogged', { hours: row.hours })}>{row.hours}</td>
+                    <td className="px-3 py-1.5 text-on-surface" title={t('webComplianceDistanceLogged', { distance: formatDistanceMeters(row.distanceM, system) })}>{formatDistanceMeters(row.distanceM, system)}</td>
+                    <td className="px-3 py-1.5 text-on-surface" title={t('webComplianceFatigueWarningsLogged', { count: row.fatigue })}>{row.fatigue}</td>
+                    <td className="px-3 py-1.5 whitespace-nowrap" title={row.compliant ? t('webComplianceWithinHos') : Number(row.hours) > 11.0 ? t('webComplianceViolationHours') : t('webComplianceViolationFatigue')}>
                       {row.compliant ? (
                         <span className="inline-flex items-center rounded-md bg-success/15 px-1.5 py-0.5 text-[10px] font-medium text-success">
-                          Compliant
+                          {t('webComplianceStatusCompliant')}
                         </span>
                       ) : (
                         <span className="inline-flex items-center rounded-md bg-error/15 px-1.5 py-0.5 text-[10px] font-medium text-error">
-                          Violation
+                          {t('webComplianceStatusViolation')}
                         </span>
                       )}
                     </td>
@@ -605,15 +606,15 @@ export function ComplianceView() {
             <table className="w-full text-xs">
               <thead>
                 <tr className="border-b border-outline-variant bg-surface-container">
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">{t('webComplianceColDriver') || 'Driver'}</th>
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">{t('webComplianceColDate') || 'Date'}</th>
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">{system === 'imperial' ? 'Distance (mi)' : 'Distance (km)'}</th>
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">Duration (min)</th>
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">Fatigue</th>
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">Nighttime %</th>
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">{system === 'imperial' ? 'Max Speed (mph)' : 'Max Speed (km/h)'}</th>
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">Weather Risk</th>
-                  <th className="px-3 py-2 text-left font-semibold text-on-surface-variant">{t('webMembersColStatus') || 'Status'}</th>
+                  <th className="px-3 py-2 text-start font-semibold text-on-surface-variant">{t('webComplianceColDriver')}</th>
+                  <th className="px-3 py-2 text-start font-semibold text-on-surface-variant">{t('webComplianceColDate')}</th>
+                  <th className="px-3 py-2 text-start font-semibold text-on-surface-variant">{t('webComplianceColDistanceUnit', { unit: system === 'imperial' ? t('webDistanceMi') : t('webDistanceKm') })}</th>
+                  <th className="px-3 py-2 text-start font-semibold text-on-surface-variant">{t('webComplianceColDuration')}</th>
+                  <th className="px-3 py-2 text-start font-semibold text-on-surface-variant">{t('webComplianceColFatigue')}</th>
+                  <th className="px-3 py-2 text-start font-semibold text-on-surface-variant">{t('webComplianceColNighttime')}</th>
+                  <th className="px-3 py-2 text-start font-semibold text-on-surface-variant">{t('webComplianceColMaxSpeedUnit', { unit: system === 'imperial' ? t('webSpeedMph') : t('webSpeedKmh') })}</th>
+                  <th className="px-3 py-2 text-start font-semibold text-on-surface-variant">{t('webComplianceColWeather')}</th>
+                  <th className="px-3 py-2 text-start font-semibold text-on-surface-variant">{t('webMembersColStatus')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant">
@@ -621,26 +622,26 @@ export function ComplianceView() {
                   const distVal = system === 'imperial' ? (row.distanceM / 1609.344).toFixed(1) : (row.distanceM / 1000).toFixed(1);
                   const speedVal = system === 'imperial' ? (row.maxSpeedMs * 2.236936).toFixed(0) : (row.maxSpeedMs * 3.6).toFixed(0);
                   const statusTooltip = row.compliant
-                    ? 'Within DOT regulations (duration <= 11 hours, zero fatigue warnings)'
-                    : `Violation: ${row.durationMin > 660 ? 'Exceeded 11-hour driving limit (660 min).' : ''}${row.fatigue > 0 ? ' Fatigue warnings triggered.' : ''}`;
+                    ? t('webComplianceDotWithin')
+                    : `${t('webComplianceDotViolation')} ${row.durationMin > 660 ? t('webComplianceDotViolationHours') : ''}${row.fatigue > 0 ? ' ' + t('webComplianceDotViolationFatigue') : ''}`;
                   return (
                     <tr key={i} className="hover:bg-surface-container/50">
                       <td className="px-3 py-1.5 text-on-surface font-mono text-xs" title={row.userId}>{row.userId.slice(0, 8)}</td>
                       <td className="px-3 py-1.5 text-on-surface whitespace-nowrap" title={new Date(row.startedAt).toLocaleString()}>{new Date(row.startedAt).toLocaleDateString()}</td>
-                      <td className="px-3 py-1.5 text-on-surface" title={`${distVal} ${system === 'imperial' ? 'mi' : 'km'} logged`}>{distVal}</td>
-                      <td className="px-3 py-1.5 text-on-surface" title={`${row.durationMin} driving minutes logged`}>{row.durationMin}</td>
-                      <td className="px-3 py-1.5 text-on-surface" title={`${row.fatigue} fatigue warnings triggered`}>{row.fatigue}</td>
-                      <td className="px-3 py-1.5 text-on-surface" title={`${row.nighttimePct} of trip driven at night`}>{row.nighttimePct}</td>
-                      <td className="px-3 py-1.5 text-on-surface" title={`Max speed achieved: ${speedVal} ${system === 'imperial' ? 'mph' : 'km/h'}`}>{speedVal}</td>
-                      <td className="px-3 py-1.5 text-on-surface capitalize" title={`Weather Risk level: ${row.weather}`}>{row.weather}</td>
+                      <td className="px-3 py-1.5 text-on-surface" title={t('webComplianceDistanceLogged', { distance: `${distVal} ${system === 'imperial' ? t('webDistanceMi') : t('webDistanceKm')}` })}>{distVal}</td>
+                      <td className="px-3 py-1.5 text-on-surface" title={t('webComplianceMinutesLogged', { minutes: row.durationMin })}>{row.durationMin}</td>
+                      <td className="px-3 py-1.5 text-on-surface" title={t('webComplianceFatigueWarningsLogged', { count: row.fatigue })}>{row.fatigue}</td>
+                      <td className="px-3 py-1.5 text-on-surface" title={t('webComplianceNighttimeShare', { pct: row.nighttimePct })}>{row.nighttimePct}</td>
+                      <td className="px-3 py-1.5 text-on-surface" title={t('webComplianceMaxSpeedAchieved', { speed: `${speedVal} ${system === 'imperial' ? t('webSpeedMph') : t('webSpeedKmh')}` })}>{speedVal}</td>
+                      <td className="px-3 py-1.5 text-on-surface capitalize" title={t('webComplianceWeatherLevel', { level: row.weather })}>{row.weather}</td>
                       <td className="px-3 py-1.5 whitespace-nowrap" title={statusTooltip}>
                         {row.compliant ? (
                           <span className="inline-flex items-center rounded-md bg-success/15 px-1.5 py-0.5 text-[10px] font-medium text-success">
-                            Compliant
+                            {t('webComplianceStatusCompliant')}
                           </span>
                         ) : (
                           <span className="inline-flex items-center rounded-md bg-error/15 px-1.5 py-0.5 text-[10px] font-medium text-error">
-                            Violation
+                            {t('webComplianceStatusViolation')}
                           </span>
                         )}
                       </td>

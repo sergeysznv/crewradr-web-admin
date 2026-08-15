@@ -94,10 +94,10 @@ export function useResolveSafetyAlert(crewId: string) {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['fleetDashboard', crewId] });
-      showSuccess(t('webAlertResolved') || 'Alert successfully resolved');
+      showSuccess(t('webAlertResolved'));
     },
     onError: (e: any) => {
-      showError(t('webAlertResolveFailed') || `Failed to resolve alert: ${e.message}`);
+      showError(t('webAlertResolveFailed', { message: e.message }));
     },
   });
 }

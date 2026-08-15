@@ -100,7 +100,7 @@ export function WebhookManager() {
       setShowAddForm(false);
       queryClient.invalidateQueries({ queryKey: ['enterpriseWebhooks', crewId] });
     } catch (err) {
-      showError(err instanceof Error ? err.message : 'Failed to register webhook.');
+      showError(err instanceof Error ? err.message : t('webWebhooksRegisterFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -123,7 +123,7 @@ export function WebhookManager() {
       );
       queryClient.invalidateQueries({ queryKey: ['enterpriseWebhooks', crewId] });
     } catch (err) {
-      showError(err instanceof Error ? err.message : 'Failed to toggle status.');
+      showError(err instanceof Error ? err.message : t('webWebhooksToggleFailed'));
     }
   }
 
@@ -136,7 +136,7 @@ export function WebhookManager() {
       showSuccess(t('webWebhooksDeleted') || 'Webhook endpoint deleted.');
       queryClient.invalidateQueries({ queryKey: ['enterpriseWebhooks', crewId] });
     } catch (err) {
-      showError(err instanceof Error ? err.message : 'Failed to delete webhook.');
+      showError(err instanceof Error ? err.message : t('webWebhooksDeleteFailed'));
     } finally {
       setDeleteTarget(null);
     }
@@ -168,7 +168,7 @@ export function WebhookManager() {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
         <AlertTriangle className="h-10 w-10 text-error" />
-        <h3 className="mt-2 font-semibold text-on-surface">Failed to load webhooks</h3>
+        <h3 className="mt-2 font-semibold text-on-surface">{t('webWebhooksLoadFailed')}</h3>
         <p className="text-xs text-on-surface-variant mt-1">{error.message}</p>
       </div>
     );
@@ -198,7 +198,7 @@ export function WebhookManager() {
       {showAddForm && (
         <form onSubmit={handleAddWebhook} className="rounded-xl border border-outline bg-surface p-sz-lg space-y-4 animate-fade-in">
           <div className="flex items-center justify-between border-b border-outline-variant pb-2">
-            <h3 className="text-sm font-bold text-on-surface">{t('webWebhooksAddEndpoint') || 'New Webhook Endpoint'}</h3>
+            <h3 className="text-sm font-bold text-on-surface">{t('webWebhooksNewEndpointTitle')}</h3>
             <button
               type="button"
               onClick={() => setShowAddForm(false)}
@@ -301,12 +301,12 @@ export function WebhookManager() {
                     </span>
                   </div>
                   <div className="flex items-center gap-2 font-mono text-xs text-on-surface-variant">
-                    <span>Signing Secret:</span>
+                    <span>{t('webWebhooksSigningSecret')}</span>
                     <span>{revealedSecrets[wh.id] ? wh.secret : '••••••••••••••••••••••••••••••••'}</span>
                     <button
                       onClick={() => toggleRevealSecret(wh.id)}
                       className="p-1 rounded text-on-surface-variant hover:bg-surface-container-high"
-                      title={revealedSecrets[wh.id] ? 'Hide secret' : 'Reveal secret'}
+                      title={revealedSecrets[wh.id] ? t('webWebhooksHideSecret') : t('webWebhooksRevealSecret')}
                     >
                       {revealedSecrets[wh.id] ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
                     </button>
@@ -317,14 +317,14 @@ export function WebhookManager() {
                   <button
                     onClick={() => toggleStatus(wh)}
                     className="p-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary"
-                    title={wh.status === 'active' ? 'Deactivate webhook' : 'Activate webhook'}
+                    title={wh.status === 'active' ? t('webWebhooksDeactivate') : t('webWebhooksActivate')}
                   >
                     {wh.status === 'active' ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                   </button>
                   <button
                     onClick={() => setDeleteTarget(wh)}
                     className="p-2 rounded-lg text-on-surface-variant hover:bg-error-container hover:text-error"
-                    title="Delete endpoint"
+                    title={t('webWebhooksDeleteEndpoint')}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>

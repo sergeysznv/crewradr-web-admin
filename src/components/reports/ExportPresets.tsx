@@ -107,7 +107,7 @@ function ExportCard({ option, busy, soon, disabled, onExport }: {
       type="button"
       onClick={() => onExport(option)}
       disabled={disabled || busy || soon}
-      className="flex flex-col gap-1.5 rounded-lg border border-outline bg-surface p-4 text-left transition-colors hover:border-primary/40 disabled:cursor-not-allowed disabled:opacity-60"
+      className="flex flex-col gap-1.5 rounded-lg border border-outline bg-surface p-4 text-start transition-colors hover:border-primary/40 disabled:cursor-not-allowed disabled:opacity-60"
     >
       <span className="flex items-center gap-2 text-sm font-semibold text-on-surface">
         <FormatIcon className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
@@ -290,7 +290,7 @@ export function ExportPresets() {
           )}
           <span className="flex-1">{notice.text}</span>
           {notice.kind === 'success' && notice.downloadUrl && (
-            <div className="ml-auto flex items-center gap-2 shrink-0">
+            <div className="ms-auto flex items-center gap-2 shrink-0">
               <a
                 href={notice.downloadUrl}
                 target="_blank"
@@ -303,7 +303,7 @@ export function ExportPresets() {
                 type="email"
                 value={emailTo}
                 onChange={(e) => setEmailTo(e.target.value)}
-                placeholder="recipient@example.com"
+                placeholder={t('webReportsEmailPlaceholder')}
                 className="rounded-lg border border-success/30 bg-white px-3 py-1.5 text-xs text-on-surface w-36 dark:bg-zinc-800 dark:text-zinc-100"
               />
               <button
@@ -332,7 +332,7 @@ export function ExportPresets() {
                 disabled={emailing || !emailTo}
                 className="rounded-lg bg-success px-3 py-1.5 text-xs font-semibold text-on-success hover:opacity-90 disabled:opacity-50"
               >
-                {emailing ? 'Sending…' : 'Email'}
+                {emailing ? t('webReportsSending') : t('webReportsEmailButton')}
               </button>
             </div>
           )}

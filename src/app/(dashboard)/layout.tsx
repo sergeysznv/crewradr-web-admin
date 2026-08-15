@@ -187,7 +187,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               {t('retry')}
             </button>
           )}
-          <button onClick={signOut} className={`${loadError ? 'ml-3' : 'mt-6'} rounded-lg border border-zinc-300 px-6 py-2 text-sm font-semibold text-zinc-600 dark:border-zinc-600 dark:text-zinc-400 transition-opacity hover:opacity-90`}>
+          <button onClick={signOut} className={`${loadError ? 'ms-3' : 'mt-6'} rounded-lg border border-zinc-300 px-6 py-2 text-sm font-semibold text-zinc-600 dark:border-zinc-600 dark:text-zinc-400 transition-opacity hover:opacity-90`}>
             {t('webSignOut')}
           </button>
         </div>
@@ -218,13 +218,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <button onClick={() => setMobileMenuOpen(true)} aria-label={t('webShellOpenMenu')} className="text-zinc-600 dark:text-zinc-300">
           <Menu className="h-5 w-5" />
         </button>
-        <img src="/logo-32.png" alt="CrewRadr" className="h-7 w-7 shrink-0 rounded-lg" width={28} height={28} />
+        <img src="/logo-32.png" alt={t('webBrandName')} className="h-7 w-7 shrink-0 rounded-lg" width={28} height={28} />
         {crews.length > 1 ? (
           <MultiCrewSwitcher crews={crews} activeCrewId={activeCrewId} onSelect={switchCrew} />
         ) : (
           <span className="text-sm font-bold truncate">{activeCrew?.crew_name ?? t('webAdminTitle')}</span>
         )}
-        <div className="ml-auto flex items-center gap-1">
+        <div className="ms-auto flex items-center gap-1">
           <button onClick={toggleTheme} className="flex h-8 w-8 items-center justify-center rounded-lg text-sm" title={resolved === 'dark' ? t('webShellLightMode') : t('webShellDarkMode')}>
             {resolved === 'dark' ? '\u{2600}\u{FE0F}' : '\u{1F319}'}
           </button>
@@ -235,7 +235,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-40 md:hidden">
           <div className="absolute inset-0 bg-black/40" onClick={() => setMobileMenuOpen(false)} />
-          <div className="absolute inset-y-0 left-0 w-64 bg-white shadow-sm dark:bg-zinc-900">
+          <div className="absolute inset-y-0 start-0 w-64 bg-white shadow-sm dark:bg-zinc-900">
             <div className="flex h-14 items-center justify-between border-b border-zinc-200 px-4 dark:border-zinc-700">
               <span className="font-bold text-sm">{t('webAdminTitle')}</span>
               <button onClick={() => setMobileMenuOpen(false)} aria-label={t('webShellCloseMenu')} className="text-zinc-500">
@@ -253,7 +253,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </button>
               )}
             </div>
-            <div className="absolute bottom-0 left-0 right-0 border-t border-zinc-200 p-3 dark:border-zinc-700">
+            <div className="absolute bottom-0 inset-x-0 border-t border-zinc-200 p-3 dark:border-zinc-700">
               <div className="flex items-center gap-3">
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="" className="h-8 w-8 shrink-0 rounded-full object-cover" />
@@ -278,10 +278,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           style={{ width: collapsed ? 64 : 224 }}
         >
           <div className="flex h-14 items-center gap-2 border-b border-zinc-200 px-3 dark:border-zinc-700">
-            <img src="/logo-32.png" alt="CrewRadr" className="h-8 w-8 shrink-0 rounded-lg" width={32} height={32} />
+            <img src="/logo-32.png" alt={t('webBrandName')} className="h-8 w-8 shrink-0 rounded-lg" width={32} height={32} />
             {!collapsed && <span className="text-sm font-bold">{t('webAdminTitle')}</span>}
-            <button onClick={() => setCollapsed(!collapsed)} aria-label={collapsed ? t('webShellExpand') : t('webShellCollapse')} className="ml-auto text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300">
-              {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+            <button onClick={() => setCollapsed(!collapsed)} aria-label={collapsed ? t('webShellExpand') : t('webShellCollapse')} className="ms-auto text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300">
+              {collapsed ? <ChevronRight className="h-4 w-4 rtl:rotate-180" /> : <ChevronLeft className="h-4 w-4 rtl:rotate-180" />}
             </button>
           </div>
 
@@ -354,7 +354,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </button>
               {!collapsed && (
                 <>
-                  <button onClick={() => window.location.href = '/account'} className="flex-1 truncate text-left text-xs text-zinc-600 hover:text-[var(--brand-seed)] dark:text-zinc-400" title={t('webNavMyAccount')}>
+                  <button onClick={() => window.location.href = '/account'} className="flex-1 truncate text-start text-xs text-zinc-600 hover:text-[var(--brand-seed)] dark:text-zinc-400" title={t('webNavMyAccount')}>
                     {displayName || user.email}
                   </button>
                   <button onClick={signOut} className="shrink-0 text-zinc-400 hover:text-red-500" title={t('webSignOut')}><LogOut className="h-3.5 w-3.5" /></button>
@@ -374,13 +374,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               activeCrew && (
                 <span className="text-sm font-medium">
                   {activeCrew.crew_name}
-                  <span className="ml-2 inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold" style={{ backgroundColor: tierColor(activeCrew.tier), color: tierOnColor(activeCrew.tier) }}>
-                    {tierLabel(activeCrew.tier)}
+                  <span className="ms-2 inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold" style={{ backgroundColor: tierColor(activeCrew.tier), color: tierOnColor(activeCrew.tier) }}>
+                    {tierLabel(activeCrew.tier, t)}
                   </span>
                 </span>
               )
             )}
-            <div className="ml-auto flex items-center gap-1">
+            <div className="ms-auto flex items-center gap-1">
               <button onClick={toggleTheme}
                 className="flex h-8 w-8 items-center justify-center rounded-lg text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800"
                 title={resolved === 'dark' ? t('webShellLightMode') : t('webShellDarkMode')}>

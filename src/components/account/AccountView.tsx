@@ -107,14 +107,14 @@ export function AccountView() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           event: 'test_arrival',
-          member: displayNameValue || profile?.email || 'Unknown Member',
+          member: displayNameValue || profile?.email || t('webSmartHomeUnknownMember'),
           timestamp: new Date().toISOString(),
         }),
       });
       if (res.ok) {
         showSuccess(t('webSmartHomeTestSuccess') || 'Webhook tested successfully! Response OK.');
       } else {
-        showError((t('webSmartHomeTestFailure') || 'Webhook failed with status: ') + res.status);
+        showError(t('webSmartHomeTestFailure', { status: res.status }));
       }
     } catch (err) {
       showError(t('webSmartHomeTestError') || 'Failed to connect to webhook URL. Verify the address.');
@@ -256,7 +256,7 @@ export function AccountView() {
               className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-on-primary hover:opacity-90 disabled:opacity-50"
             >
               {savingWebhook && <Loader2 className="h-4 w-4 animate-spin" />}
-              {t('save') || 'Save URL'}
+              {t('save')}
             </button>
             <button
               onClick={testSmartHomeWebhook}
@@ -294,7 +294,7 @@ export function AccountView() {
                   className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
                   style={{ backgroundColor: `${tierColor(c.tier)}20`, color: tierColor(c.tier) }}
                 >
-                  {tierLabel(c.tier)}
+                  {tierLabel(c.tier, t)}
                 </span>
               </div>
             ))}

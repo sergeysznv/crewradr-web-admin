@@ -14,21 +14,28 @@ import type { ScheduledReport } from '@/types/tier';
 type Frequency = 'daily' | 'weekly' | 'monthly' | 'quarterly';
 
 const DAYS_OF_WEEK = [
-  { value: '1', label: 'Monday' },
-  { value: '2', label: 'Tuesday' },
-  { value: '3', label: 'Wednesday' },
-  { value: '4', label: 'Thursday' },
-  { value: '5', label: 'Friday' },
-  { value: '6', label: 'Saturday' },
-  { value: '0', label: 'Sunday' },
+  { value: '1', key: 'webReportsDayMonday' },
+  { value: '2', key: 'webReportsDayTuesday' },
+  { value: '3', key: 'webReportsDayWednesday' },
+  { value: '4', key: 'webReportsDayThursday' },
+  { value: '5', key: 'webReportsDayFriday' },
+  { value: '6', key: 'webReportsDaySaturday' },
+  { value: '0', key: 'webReportsDaySunday' },
 ];
 
 const WEEKS_OF_MONTH = [
-  { value: '1', label: '1st week' },
-  { value: '2', label: '2nd week' },
-  { value: '3', label: '3rd week' },
-  { value: '4', label: '4th week' },
+  { value: '1', key: 'webReportsWeekFirst' },
+  { value: '2', key: 'webReportsWeekSecond' },
+  { value: '3', key: 'webReportsWeekThird' },
+  { value: '4', key: 'webReportsWeekFourth' },
 ];
+
+const FREQ_LABEL_KEYS: Record<Frequency, string> = {
+  daily: 'webReportsFreqDaily',
+  weekly: 'webReportsFreqWeekly',
+  monthly: 'webReportsFreqMonthly',
+  quarterly: 'webReportsFreqQuarterly',
+};
 
 function buildCron(freq: Frequency, dayOfWeek: string, dayOfMonth: string, weekOfMonth: string, time: string): string {
   const [hour, minute] = (time || '09:00').split(':').map(Number);
@@ -43,36 +50,36 @@ function buildCron(freq: Frequency, dayOfWeek: string, dayOfMonth: string, weekO
   }
 }
 
-function describeCron(freq: Frequency, dayOfWeek: string, dayOfMonth: string, weekOfMonth: string, time: string): string {
+function describeCron(t: (key: string, params?: Record<string, string | number>) => string, freq: Frequency, dayOfWeek: string, dayOfMonth: string, weekOfMonth: string, time: string): string {
   const [hour, minute] = (time || '09:00').split(':').map(Number);
   const timeStr = `${String(hour ?? 9).padStart(2, '0')}:${String(minute ?? 0).padStart(2, '0')}`;
-  const dow = DAYS_OF_WEEK.find(d => d.value === dayOfWeek)?.label ?? 'Monday';
+  const dow = DAYS_OF_WEEK.find(d => d.value === dayOfWeek)?.key ?? 'webReportsDayMonday';
   switch (freq) {
-    case 'daily':    return `Every day at ${timeStr}`;
-    case 'weekly':   return `Every ${dow} at ${timeStr}`;
-    case 'monthly':  return `Day ${dayOfMonth || '1'} of each month at ${timeStr}`;
-    case 'quarterly': return `Every 3 months at ${timeStr}`;
-    default: return `${timeStr} daily`;
+    case 'daily':    return t('webReportsCronDaily', { time: timeStr });
+    case 'weekly':   return t('webReportsCronWeekly', { day: t(dow), time: timeStr });
+    case 'monthly':  return t('webReportsCronMonthly', { day: dayOfMonth || '1', time: timeStr });
+    case 'quarterly': return t('webReportsCronQuarterly', { time: timeStr });
+    default: return t('webReportsCronDailyFallback', { time: timeStr });
   }
 }
 
-function cronToDescription(cron: string): string {
+function cronToDescription(t: (key: string, params?: Record<string, string | number>) => string, cron: string): string {
   const parts = cron.split(' ');
   if (parts.length !== 5) return cron;
   const [m, h, dom, mon, dow] = parts;
   const timeStr = `${h.padStart(2, '0')}:${m.padStart(2, '0')}`;
-  
+
   if (dow !== '*') {
-    const dowLabel = DAYS_OF_WEEK.find(d => d.value === dow)?.label ?? 'Monday';
-    return `Every ${dowLabel} at ${timeStr}`;
+    const dowKey = DAYS_OF_WEEK.find(d => d.value === dow)?.key ?? 'webReportsDayMonday';
+    return t('webReportsCronWeekly', { day: t(dowKey), time: timeStr });
   }
   if (dom !== '*') {
-    return `Day ${dom} of each month at ${timeStr}`;
+    return t('webReportsCronMonthly', { day: dom, time: timeStr });
   }
   if (mon.includes('/3')) {
-    return `Every 3 months at ${timeStr}`;
+    return t('webReportsCronQuarterly', { time: timeStr });
   }
-  return `Every day at ${timeStr}`;
+  return t('webReportsCronDaily', { time: timeStr });
 }
 
 function parseCron(cron: string) {
@@ -133,7 +140,7 @@ export function ScheduledReports() {
       },
       {
         onSuccess: () => {
-          showSuccess(editingScheduleId ? "Delivery schedule updated successfully" : t('webReportsScheduledSaved'));
+          showSuccess(editingScheduleId ? t('webReportsScheduledUpdated') : t('webReportsScheduledSaved'));
           resetForm();
         },
         onError: () => showError(t('webReportsScheduledSaveFailed')),
@@ -167,7 +174,7 @@ export function ScheduledReports() {
     setWeekOfMonth(parsed.weekOfMonth);
     setTime(parsed.time);
     
-    showSuccess(`Editing delivery schedule for "${s.templateName}"`);
+    showSuccess(t('webReportsScheduledEditing', { name: s.templateName }));
   };
 
   const toggleSchedule = (s: ScheduledReport) => {
@@ -182,7 +189,7 @@ export function ScheduledReports() {
       },
       {
         onSuccess: () => {
-          showSuccess(s.enabled ? "Delivery schedule paused" : "Delivery schedule resumed");
+          showSuccess(s.enabled ? t('webReportsScheduledPaused') : t('webReportsScheduledResumed'));
         },
         onError: () => showError(t('webReportsScheduledToggleFailed')),
       },
@@ -190,18 +197,18 @@ export function ScheduledReports() {
   };
 
   const handleDeleteSchedule = (id: string, name: string) => {
-    if (!window.confirm(`Are you sure you want to delete the scheduled delivery for "${name}"?`)) {
+    if (!window.confirm(t('webReportsScheduledDeleteConfirm', { name }))) {
       return;
     }
-    
+
     deleteMutation.mutate(id, {
       onSuccess: () => {
-        showSuccess(`Deleted schedule for "${name}"`);
+        showSuccess(t('webReportsScheduledDeleted', { name }));
         if (editingScheduleId === id) {
           resetForm();
         }
       },
-      onError: () => showError(`Failed to delete schedule for "${name}"`),
+      onError: () => showError(t('webReportsScheduledDeleteFailed', { name })),
     });
   };
 
@@ -223,7 +230,7 @@ export function ScheduledReports() {
         <div className="grid grid-cols-1 gap-sz-lg lg:grid-cols-3">
           {/* Schedules List Pane */}
           <div className="space-y-sz-sm lg:col-span-1">
-            <h3 className="text-sm font-semibold text-on-surface">Active Schedules</h3>
+            <h3 className="text-sm font-semibold text-on-surface">{t('webReportsScheduledActiveList')}</h3>
             {schedules.length > 0 ? (
               <ul className="space-y-2 max-h-[30rem] overflow-y-auto pr-1">
                 {schedules.map((s) => (
@@ -243,19 +250,19 @@ export function ScheduledReports() {
                             ? 'bg-success-container/30 text-on-success-container'
                             : 'bg-surface-container-high text-on-surface-variant'
                         }`}>
-                          {s.enabled ? 'Active' : 'Paused'}
+                          {s.enabled ? t('webReportsStatusActive') : t('webReportsStatusPaused')}
                         </span>
                       </div>
                       <span className="mt-1.5 block text-xs font-medium text-on-surface-variant">
-                        {cronToDescription(s.schedule)}
+                        {cronToDescription(t, s.schedule)}
                       </span>
                       <span className="mt-0.5 block text-[10px] text-on-surface-variant font-mono">
-                        {s.format.toUpperCase()} · {s.recipients.length} Recipient(s)
+                        {s.format.toUpperCase()} · {t('webReportsScheduledRecipientCount', { count: s.recipients.length })}
                       </span>
                       {s.lastRanAt && (
                         <span className="mt-2 block text-[9px] text-on-surface-variant opacity-75 leading-relaxed">
-                          Last run: {new Date(s.lastRanAt).toLocaleString()}
-                          {s.nextRunAt && <><br />Next run: {new Date(s.nextRunAt).toLocaleString()}</>}
+                          {t('webReportsScheduledLastRan', { time: new Date(s.lastRanAt).toLocaleString() })}
+                          {s.nextRunAt && <><br />{t('webReportsScheduledNextRun', { time: new Date(s.nextRunAt).toLocaleString() })}</>}
                         </span>
                       )}
                     </div>
@@ -265,7 +272,7 @@ export function ScheduledReports() {
                         type="button"
                         onClick={() => toggleSchedule(s)}
                         disabled={saveMutation.isPending || isInLockout}
-                        title={s.enabled ? "Pause Schedule" : "Resume Schedule"}
+                        title={s.enabled ? t('webReportsScheduledPauseTitle') : t('webReportsScheduledResumeTitle')}
                         className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-[10px] font-bold transition-colors ${
                           s.enabled
                             ? 'bg-amber-500/10 text-amber-500 hover:bg-amber-500/20'
@@ -273,28 +280,28 @@ export function ScheduledReports() {
                         }`}
                       >
                         {s.enabled ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
-                        {s.enabled ? "Pause" : "Resume"}
+                        {s.enabled ? t('webReportsScheduledPause') : t('webReportsScheduledResume')}
                       </button>
-                      
+
                       <button
                         type="button"
                         onClick={() => handleLoadEdit(s)}
-                        title="Edit Schedule"
+                        title={t('webReportsScheduledEditTitle')}
                         className="inline-flex items-center gap-1 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface px-2.5 py-1.5 text-[10px] font-bold transition-colors"
                       >
                         <Edit2 className="h-3 w-3 text-on-surface-variant" />
-                        Edit
+                        {t('edit')}
                       </button>
 
                       <button
                         type="button"
                         disabled={deleteMutation.isPending}
                         onClick={() => handleDeleteSchedule(s.id, s.templateName)}
-                        title="Delete Schedule"
-                        className="inline-flex items-center gap-1 rounded-lg bg-error-container/20 text-error hover:bg-error-container/30 ml-auto px-2.5 py-1.5 text-[10px] font-bold transition-colors disabled:opacity-50"
+                        title={t('webReportsScheduledDeleteTitle')}
+                        className="inline-flex items-center gap-1 rounded-lg bg-error-container/20 text-error hover:bg-error-container/30 ms-auto px-2.5 py-1.5 text-[10px] font-bold transition-colors disabled:opacity-50"
                       >
                         <Trash2 className="h-3 w-3" />
-                        Delete
+                        {t('delete')}
                       </button>
                     </div>
                   </li>
@@ -302,7 +309,8 @@ export function ScheduledReports() {
               </ul>
             ) : (
               <div className="rounded-lg border border-dashed border-outline/40 p-8 text-center text-xs text-on-surface-variant">
-                No active delivery schedules found. Create one using the form.
+                <p>{t('webReportsScheduledEmpty')}</p>
+                <p className="mt-1">{t('webReportsScheduledEmptyDesc')}</p>
               </div>
             )}
           </div>
@@ -311,7 +319,7 @@ export function ScheduledReports() {
           <div className="lg:col-span-2 space-y-sz-sm">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-semibold text-on-surface">
-                {editingScheduleId ? "Edit Delivery Schedule" : t('webReportsScheduledAdd')}
+                {editingScheduleId ? t('webReportsScheduledEditTitle') : t('webReportsScheduledAdd')}
               </h3>
               {editingScheduleId && (
                 <button
@@ -320,7 +328,7 @@ export function ScheduledReports() {
                   className="inline-flex items-center gap-1 text-xs text-on-surface-variant hover:text-error transition-colors"
                 >
                   <XCircle className="h-4 w-4" />
-                  Cancel Edit
+                  {t('webReportsScheduledCancelEdit')}
                 </button>
               )}
             </div>
@@ -342,7 +350,7 @@ export function ScheduledReports() {
 
               {/* Frequency */}
               <div>
-                <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Frequency</label>
+                <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">{t('webReportsScheduledFrequency')}</label>
                 <div className="mt-1.5 flex flex-wrap gap-1">
                   {(['daily', 'weekly', 'monthly', 'quarterly'] as Frequency[]).map((f) => (
                     <button
@@ -355,7 +363,7 @@ export function ScheduledReports() {
                           : 'bg-surface border border-outline/35 text-on-surface hover:bg-surface-container'
                       }`}
                     >
-                      {f.charAt(0).toUpperCase() + f.slice(1)}
+                      {t(FREQ_LABEL_KEYS[f])}
                     </button>
                   ))}
                 </div>
@@ -365,19 +373,19 @@ export function ScheduledReports() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 {showDayOfWeek && (
                   <div>
-                    <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Day of week</label>
+                    <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">{t('webReportsScheduledDayOfWeek')}</label>
                     <select
                       value={dayOfWeek}
                       onChange={(e) => setDayOfWeek(e.target.value)}
                       className="mt-1.5 w-full rounded-lg border border-outline bg-surface px-4 py-2.5 text-sm text-on-surface focus:border-primary/50 focus:outline-none"
                     >
-                      {DAYS_OF_WEEK.map((d) => (<option key={d.value} value={d.value}>{d.label}</option>))}
+                      {DAYS_OF_WEEK.map((d) => (<option key={d.value} value={d.value}>{t(d.key)}</option>))}
                     </select>
                   </div>
                 )}
                 {showDayOfMonth && (
                   <div>
-                    <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Day of month</label>
+                    <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">{t('webReportsScheduledDayOfMonth')}</label>
                     <select
                       value={dayOfMonth}
                       onChange={(e) => setDayOfMonth(e.target.value)}
@@ -391,18 +399,18 @@ export function ScheduledReports() {
                 )}
                 {showWeekOfMonth && (
                   <div>
-                    <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Week of month</label>
+                    <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">{t('webReportsScheduledWeekOfMonth')}</label>
                     <select
                       value={weekOfMonth}
                       onChange={(e) => setWeekOfMonth(e.target.value)}
                       className="mt-1.5 w-full rounded-lg border border-outline bg-surface px-4 py-2.5 text-sm text-on-surface focus:border-primary/50 focus:outline-none"
                     >
-                      {WEEKS_OF_MONTH.map((w) => (<option key={w.value} value={w.value}>{w.label}</option>))}
+                      {WEEKS_OF_MONTH.map((w) => (<option key={w.value} value={w.value}>{t(w.key)}</option>))}
                     </select>
                   </div>
                 )}
                 <div>
-                  <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Time</label>
+                  <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">{t('webReportsScheduledTime')}</label>
                   <input
                     type="time"
                     value={time}
@@ -415,8 +423,8 @@ export function ScheduledReports() {
               {/* Schedule preview */}
               <div className="flex items-center gap-2 rounded-lg bg-surface-container px-3.5 py-2.5 text-xs text-on-surface-variant border border-outline/20">
                 <Clock className="h-4 w-4 shrink-0 text-primary animate-pulse" />
-                <span className="font-semibold text-on-surface">Schedule Summary:</span>
-                <span className="font-mono">{describeCron(frequency, dayOfWeek, dayOfMonth, weekOfMonth, time)}</span>
+                <span className="font-semibold text-on-surface">{t('webReportsScheduledSummaryLabel')}</span>
+                <span className="font-mono">{describeCron(t, frequency, dayOfWeek, dayOfMonth, weekOfMonth, time)}</span>
               </div>
 
               {/* Format */}
@@ -427,8 +435,8 @@ export function ScheduledReports() {
                   onChange={(e) => setFormat(e.target.value as 'pdf' | 'csv')}
                   className="mt-1.5 w-full rounded-lg border border-outline bg-surface px-4 py-2.5 text-sm text-on-surface focus:border-primary/50 focus:outline-none"
                 >
-                  <option value="pdf">PDF Report</option>
-                  <option value="csv">CSV Export</option>
+                  <option value="pdf">{t('webReportsScheduledFormatPdf')}</option>
+                  <option value="csv">{t('webReportsScheduledFormatCsv')}</option>
                 </select>
               </div>
 
@@ -451,10 +459,10 @@ export function ScheduledReports() {
                 className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-2.5 text-xs font-bold text-on-primary transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {saveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
-                {saveMutation.isPending 
-                  ? t('webReportsScheduledSaving') 
-                  : editingScheduleId 
-                    ? "Update Schedule" 
+                {saveMutation.isPending
+                  ? t('webReportsScheduledSaving')
+                  : editingScheduleId
+                    ? t('webReportsScheduledUpdate')
                     : t('webReportsScheduledAdd')
                 }
               </button>

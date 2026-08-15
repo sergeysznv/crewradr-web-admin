@@ -18,14 +18,17 @@ export function hasMinTier(currentTier: CrewTier, minTier: CrewTier): boolean {
   return (TIER_RANKS[currentTier] ?? 1) >= (TIER_RANKS[minTier] ?? 1);
 }
 
-export function tierLabel(tier: CrewTier): string {
-  const labels: Record<CrewTier, string> = {
-    deckhand: 'Deckhand',
-    firstMate: 'First Mate',
-    captain: 'Captain',
-    admiral: 'Admiral',
+export function tierLabel(
+  tier: CrewTier,
+  t: (key: string, params?: Record<string, string | number>) => string,
+): string {
+  const keys: Record<CrewTier, string> = {
+    deckhand: 'webTierDeckhand',
+    firstMate: 'webTierFirstMate',
+    captain: 'webTierCaptain',
+    admiral: 'webTierAdmiral',
   };
-  return labels[tier];
+  return t(keys[tier]);
 }
 
 export function tierHistoryDays(tier: CrewTier): number {

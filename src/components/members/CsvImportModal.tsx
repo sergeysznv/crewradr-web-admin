@@ -51,16 +51,16 @@ function parseCsv(text: string): ParsedRow[] {
   return rows;
 }
 
-function validateRows(rows: ParsedRow[]): { valid: ParsedRow[]; errors: RowError[] } {
+function validateRows(rows: ParsedRow[], t: (key: string, params?: Record<string, string | number>) => string): { valid: ParsedRow[]; errors: RowError[] } {
   const valid: ParsedRow[] = [];
   const errors: RowError[] = [];
   for (const row of rows) {
     if (!EMAIL_RE.test(row.email)) {
-      errors.push({ email: row.email || '(empty)', line: row.line, error: 'Invalid email format' });
+      errors.push({ email: row.email || t('webMembersImportEmpty'), line: row.line, error: t('webMembersImportInvalidEmail') });
       continue;
     }
     if (!VALID_ROLES.includes(row.role)) {
-      errors.push({ email: row.email, line: row.line, error: `Invalid role "${row.role}". Use: ${VALID_ROLES.join(', ')}` });
+      errors.push({ email: row.email, line: row.line, error: t('webMembersImportInvalidRole', { role: row.role, roles: VALID_ROLES.join(', ') }) });
       continue;
     }
     valid.push(row);
@@ -82,10 +82,10 @@ export function CsvImportModal({ open, onClose }: { open: boolean; onClose: () =
   const processText = useCallback((content: string) => {
     setText(content);
     const rows = parseCsv(content);
-    const { valid, errors } = validateRows(rows);
+    const { valid, errors } = validateRows(rows, t);
     setPreview(valid.length > 0 ? valid : null);
     setClientErrors(errors);
-  }, []);
+  }, [t]);
 
   const handleFile = useCallback((file: File) => {
     const reader = new FileReader();
@@ -184,7 +184,7 @@ export function CsvImportModal({ open, onClose }: { open: boolean; onClose: () =
                 {clientErrors.map((e, i) => (
                   <li key={i} className="text-xs text-on-surface-variant">
                     <span className="font-mono text-on-surface">{e.email}</span>
-                    {e.line > 0 && <span className="text-on-surface-variant"> (line {e.line})</span>}
+                    {e.line > 0 && <span className="text-on-surface-variant"> {t('webMembersImportLine', { line: e.line })}</span>}
                     {' — '}{e.error}
                   </li>
                 ))}
@@ -243,7 +243,7 @@ export function CsvImportModal({ open, onClose }: { open: boolean; onClose: () =
 
           {(importMutation.data || importDone) && importMutation.data && serverErrors.length === 0 && (
             <div className="mt-sz-lg p-3 rounded-lg text-sm bg-primary-container text-primary">
-              <CheckCircle size={14} className="inline mr-1.5" />
+              <CheckCircle size={14} className="inline me-1.5" />
               {t('webMembersImportResult', { added: importMutation.data.added })}
             </div>
           )}

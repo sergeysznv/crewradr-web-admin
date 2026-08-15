@@ -68,7 +68,7 @@ export function DashboardView() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-sz-md border-b border-outline-variant/30 pb-sz-md">
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-on-surface">{t('webNavFleet')}</h1>
-              <p className="text-xs text-on-surface-variant mt-1">Real-time status, safety scores, and driving logs for your fleet.</p>
+              <p className="text-xs text-on-surface-variant mt-1">{t('webDashboardSubtitle')}</p>
             </div>
             <div className="shrink-0">
               <FilterChips<TimeRange> options={TIME_RANGES} selected={days} onSelect={setDays} />
@@ -98,8 +98,8 @@ export function DashboardView() {
           {/* Section 3: Metric Trends */}
           <section className="space-y-sz-md">
             <div className="flex items-center justify-between">
-              <h2 className="text-base font-bold text-on-surface tracking-tight">Performance & Safety Trends</h2>
-              <span className="text-[10px] text-on-surface-variant font-medium bg-surface-container px-2 py-0.5 rounded-full">Synced to selector</span>
+              <h2 className="text-base font-bold text-on-surface tracking-tight">{t('webDashboardTrendsTitle')}</h2>
+              <span className="text-[10px] text-on-surface-variant font-medium bg-surface-container px-2 py-0.5 rounded-full">{t('webDashboardSyncedBadge')}</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-sz-lg">
               <TrendChart metric="miles" crewId={crewId!} label={t('webOverviewTrendMiles')} days={days} />
@@ -137,7 +137,7 @@ export function DashboardView() {
             <AlertTriangle className="mx-auto h-10 w-10 text-warning" aria-hidden="true" />
             <p className="mt-2 text-sm text-on-surface-variant">{t('webErrorLoading')}</p>
             <button onClick={() => dashboard.refetch()} className="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-on-primary">
-              <RefreshCw className="h-4 w-4" /> Retry
+              <RefreshCw className="h-4 w-4" /> {t('webRetry')}
             </button>
           </div>
         </div>

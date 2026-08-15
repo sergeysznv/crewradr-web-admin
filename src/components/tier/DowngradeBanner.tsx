@@ -20,7 +20,7 @@ export function DowngradeBanner() {
         </svg>
         <span className="text-sm font-semibold">
           {t('webDowngradeCountdown', {
-            tier: tierLabel(pendingDowngradeTier),
+            tier: tierLabel(pendingDowngradeTier, t),
             days: graceDaysRemaining,
             plural: graceDaysRemaining !== 1 ? 's' : '',
           })}

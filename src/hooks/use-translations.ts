@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import enMessages from '@/messages/en.json';
 
 type Messages = Record<string, string>;
 
@@ -13,8 +14,11 @@ const messagesMap: Record<string, () => Promise<{ default: Messages }>> = {
   ar: () => import('@/messages/ar.json'),
 };
 
+const SUPPORTED = new Set(Object.keys(messagesMap));
+
 let cachedLocale = 'en';
-let cachedMessages: Messages | null = null;
+// Seed with English so t() never renders raw keys before a locale loads.
+let cachedMessages: Messages | null = enMessages;
 const listeners = new Set<() => void>();
 
 export function getLocale(): string {
@@ -22,8 +26,11 @@ export function getLocale(): string {
 }
 
 export function setLocale(locale: string) {
+  // Unknown/unexpected preference values (e.g. a stale 'de' in the profile)
+  // would previously produce an empty message table and raw keys everywhere.
+  if (!SUPPORTED.has(locale)) locale = 'en';
   cachedLocale = locale;
-  cachedMessages = null;
+  cachedMessages = locale === 'en' ? enMessages : null;
   if (typeof window !== 'undefined') {
     localStorage.setItem('crewradr-locale', locale);
     document.documentElement.lang = locale;
@@ -85,15 +92,15 @@ export function useT() {
     async function load() {
       const loader = messagesMap[cachedLocale];
       if (!loader) {
-        cachedMessages = {};
-        if (!cancelled) setMessages({});
+        cachedMessages = enMessages;
+        if (!cancelled) setMessages(enMessages);
         return;
       }
       try {
         const mod = await loader();
         cachedMessages = mod.default;
       } catch {
-        cachedMessages = {};
+        cachedMessages = enMessages;
       }
       if (!cancelled) setMessages(cachedMessages);
     }
@@ -101,7 +108,7 @@ export function useT() {
       load();
     }
     const unsub = subscribeToLocale(() => {
-      cachedMessages = null;
+      cachedMessages = cachedLocale === 'en' ? enMessages : null;
       load();
     });
     return () => { cancelled = true; unsub(); };

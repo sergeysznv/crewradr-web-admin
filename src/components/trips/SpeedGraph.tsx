@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { useT, isImperial } from '@/hooks/use-translations';
+import { useT, isImperial, getLocale } from '@/hooks/use-translations';
 
 export interface SpeedSample {
   timestamp: string;
@@ -75,7 +75,7 @@ export function SpeedGraph({ samples, height = 240 }: { samples: SpeedSample[]; 
 
   const formatDate = (isoString: string) => {
     try {
-      return new Date(isoString).toLocaleDateString([], {
+      return new Date(isoString).toLocaleDateString(getLocale(), {
         month: 'short',
         day: 'numeric',
       });

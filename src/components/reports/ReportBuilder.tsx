@@ -66,7 +66,7 @@ export function ReportBuilder() {
     setTemplateName(template.name);
     setWidgets(template.widgets);
     setEditingTemplateId(template.id);
-    showSuccess(`Loaded template "${template.name}" for editing`);
+    showSuccess(t('webReportsBuilderLoaded', { name: template.name }));
   };
 
   const handleCancelEdit = () => {
@@ -77,18 +77,18 @@ export function ReportBuilder() {
 
   const handleDeleteTemplate = (e: React.MouseEvent, id: string, name: string) => {
     e.stopPropagation(); // Prevent loading template on click
-    if (!window.confirm(`Are you sure you want to delete the report template "${name}"? Any active schedules delivering this template will be cancelled.`)) {
+    if (!window.confirm(t('webReportsBuilderDeleteConfirm', { name }))) {
       return;
     }
-    
+
     deleteMutation.mutate(id, {
       onSuccess: () => {
-        showSuccess(`Deleted template "${name}"`);
+        showSuccess(t('webReportsBuilderDeleted', { name }));
         if (editingTemplateId === id) {
           handleCancelEdit();
         }
       },
-      onError: () => showError(`Failed to delete template "${name}"`),
+      onError: () => showError(t('webReportsBuilderDeleteFailed', { name })),
     });
   };
 
@@ -101,7 +101,7 @@ export function ReportBuilder() {
       },
       {
         onSuccess: () => {
-          showSuccess(editingTemplateId ? "Report template updated successfully" : t('webReportsBuilderSaved'));
+          showSuccess(editingTemplateId ? t('webReportsBuilderUpdated') : t('webReportsBuilderSaved'));
           setTemplateName('');
           setWidgets([]);
           setEditingTemplateId(null);
@@ -117,7 +117,7 @@ export function ReportBuilder() {
       <div className="space-y-sz-md rounded-xl border border-outline/40 bg-surface-container/20 p-sz-lg lg:col-span-2">
         <div className="flex items-center justify-between border-b border-outline/20 pb-sz-sm">
           <h3 className="text-base font-bold text-on-surface">
-            {editingTemplateId ? "Edit Report Template" : "Create Report Template"}
+            {editingTemplateId ? t('webReportsBuilderEditTitle') : t('webReportsBuilderCreateTitle')}
           </h3>
           {editingTemplateId && (
             <button
@@ -126,7 +126,7 @@ export function ReportBuilder() {
               className="inline-flex items-center gap-1 text-xs text-on-surface-variant hover:text-error transition-colors"
             >
               <XCircle className="h-4 w-4" />
-              Cancel Edit
+              {t('webReportsBuilderCancelEdit')}
             </button>
           )}
         </div>
@@ -171,7 +171,7 @@ export function ReportBuilder() {
         {/* Widgets (drag to reorder) */}
         {widgets.length > 0 ? (
           <div className="space-y-2 border-t border-outline/10 pt-sz-md">
-            <h4 className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Report Contents</h4>
+            <h4 className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">{t('webReportsBuilderContents')}</h4>
             <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
               {widgets.map((widget, i) => {
                 const WidgetIcon = WIDGET_TYPES.find((wt) => wt.type === widget.type)?.icon ?? Gauge;
@@ -210,7 +210,7 @@ export function ReportBuilder() {
                           updated[i] = { ...updated[i], metric: e.target.value };
                           setWidgets(updated);
                         }}
-                        className="ml-2 rounded-lg border border-outline/50 bg-surface px-2.5 py-1 text-xs text-on-surface focus:border-primary/50 focus:outline-none"
+                        className="ms-2 rounded-lg border border-outline/50 bg-surface px-2.5 py-1 text-xs text-on-surface focus:border-primary/50 focus:outline-none"
                       >
                         {AVAILABLE_METRICS.map((m) => (
                           <option key={m.id} value={m.id}>
@@ -223,7 +223,7 @@ export function ReportBuilder() {
                       type="button"
                       onClick={() => removeWidget(i)}
                       aria-label={t('webReportsBuilderRemoveWidget')}
-                      className="ml-auto rounded-lg p-1 text-on-surface-variant hover:bg-error-container hover:text-error transition-colors"
+                      className="ms-auto rounded-lg p-1 text-on-surface-variant hover:bg-error-container hover:text-error transition-colors"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
@@ -234,7 +234,7 @@ export function ReportBuilder() {
           </div>
         ) : (
           <div className="rounded-lg border border-dashed border-outline/40 p-8 text-center text-xs text-on-surface-variant">
-            No widgets added. Use the palette buttons above to add metrics, charts, or data tables to this report.
+            {t('webReportsBuilderNoWidgets')}
           </div>
         )}
 
@@ -247,10 +247,10 @@ export function ReportBuilder() {
             className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-2.5 text-xs font-bold text-on-primary transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
           >
             {saveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
-            {saveMutation.isPending 
-              ? t('webReportsBuilderSaving') 
-              : editingTemplateId 
-                ? "Update Template" 
+            {saveMutation.isPending
+              ? t('webReportsBuilderSaving')
+              : editingTemplateId
+                ? t('webReportsBuilderUpdate')
                 : t('webReportsBuilderSaveTemplate')
             }
           </button>
@@ -272,7 +272,7 @@ export function ReportBuilder() {
                       : 'border-outline/40 hover:border-outline'
                   }`}
                 >
-                  <div className="min-w-0 pr-2">
+                  <div className="min-w-0 pe-2">
                     <span className="block truncate text-sm font-semibold text-on-surface">{template.name}</span>
                     <span className="text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold">
                       {t('webReportsBuilderWidgetsCount', { count: template.widgets.length })}
@@ -283,7 +283,7 @@ export function ReportBuilder() {
                     <button
                       type="button"
                       onClick={() => loadTemplateForEdit(template)}
-                      aria-label="Edit Template"
+                      aria-label={t('webReportsBuilderEditAria')}
                       className="rounded-lg p-1.5 text-on-surface-variant hover:bg-surface-container-high hover:text-primary transition-colors"
                     >
                       <Edit2 className="h-3.5 w-3.5" />
@@ -292,7 +292,7 @@ export function ReportBuilder() {
                       type="button"
                       disabled={deleteMutation.isPending}
                       onClick={(e) => handleDeleteTemplate(e, template.id, template.name)}
-                      aria-label="Delete Template"
+                      aria-label={t('webReportsBuilderDeleteAria')}
                       className="rounded-lg p-1.5 text-on-surface-variant hover:bg-error-container hover:text-error transition-colors disabled:opacity-50"
                     >
                       {deleteMutation.isPending && deleteMutation.variables === template.id ? (
@@ -308,7 +308,7 @@ export function ReportBuilder() {
           </ul>
         ) : (
           <div className="py-8 text-center text-xs text-on-surface-variant">
-            No saved templates yet. Create your first template using the builder.
+            {t('webReportsBuilderNoTemplates')}
           </div>
         )}
       </div>

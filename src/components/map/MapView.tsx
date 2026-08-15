@@ -126,7 +126,7 @@ export function MapView() {
 
   if (positionsQuery.isLoading) {
     return (
-      <div className="space-y-sz-lg animate-fade-in" role="status" aria-label="Loading live map">
+      <div className="space-y-sz-lg animate-fade-in" role="status" aria-label={t('webMapLoadingAria')}>
         <div className="h-8 w-48 bg-surface-container rounded-lg animate-pulse" />
         <div className="h-[calc(100vh-12rem)] min-h-[480px] rounded-xl bg-surface-container animate-pulse" />
       </div>
@@ -167,7 +167,7 @@ export function MapView() {
         </span>
         {lastUpdated > 0 && (
           <span className="ml-auto text-xs text-on-surface-variant">
-            {t('webMapUpdated', { time: formatRelativeTime(new Date(lastUpdated).toISOString()) })}
+            {t('webMapUpdated', { time: formatRelativeTime(new Date(lastUpdated).toISOString(), t) })}
           </span>
         )}
       </header>
@@ -209,7 +209,7 @@ export function MapView() {
           <aside className="absolute bottom-3 left-3 z-[1100] w-72 rounded-xl border border-outline bg-surface p-4 shadow-sm">
             <button
               onClick={() => setSelected(null)}
-              aria-label="Close"
+              aria-label={t('webMapCloseAria')}
               className="absolute right-2 top-2 rounded p-1 text-on-surface-variant hover:bg-surface-container"
             >
               <X className="h-4 w-4" />
@@ -236,7 +236,7 @@ export function MapView() {
               <dt className="sr-only">{t('webMapLastSeen')}</dt>
               <dd className="text-on-surface-variant">
                 {selected.created_at
-                  ? t('webMapLastSeen', { time: formatRelativeTime(selected.created_at) })
+                  ? t('webMapLastSeen', { time: formatRelativeTime(selected.created_at, t) })
                   : t('webMapNeverSeen')}
               </dd>
               {selected.latitude != null && selected.longitude != null && (

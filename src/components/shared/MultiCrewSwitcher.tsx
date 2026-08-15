@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { TierGateGuard } from '@/components/tier/TierGateGuard';
 import { useTier } from '@/hooks/useTier';
+import { useT } from '@/hooks/use-translations';
 import { tierOnColor } from '@/lib/tier';
 import { cn, tierColor, tierLabel } from '@/lib/utils';
 import type { CrewSummary } from '@/types';
@@ -24,6 +25,7 @@ interface MultiCrewSwitcherProps {
  * redirect to /fleet all stay in sync.
  */
 export function MultiCrewSwitcher({ crews, activeCrewId, onSelect }: MultiCrewSwitcherProps) {
+  const { t } = useT();
   const { settings, isLoading } = useTier();
   const [open, setOpen] = useState(false);
 
@@ -58,7 +60,7 @@ export function MultiCrewSwitcher({ crews, activeCrewId, onSelect }: MultiCrewSw
             <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
             <div
               role="listbox"
-              aria-label="Crews"
+              aria-label={t('webShellCrewsAria')}
               className="absolute right-0 z-50 mt-2 w-64 rounded-2xl border border-outline bg-surface p-2 shadow-sm dark:border-zinc-700"
             >
               {crews.map((crew) => {
@@ -86,7 +88,7 @@ export function MultiCrewSwitcher({ crews, activeCrewId, onSelect }: MultiCrewSw
                       className="inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[10px] font-bold"
                       style={{ backgroundColor: tierColor(crew.tier), color: tierOnColor(crew.tier) }}
                     >
-                      {tierLabel(crew.tier)}
+                      {tierLabel(crew.tier, t)}
                     </span>
                   </button>
                 );

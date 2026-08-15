@@ -92,8 +92,8 @@ export function ComplianceTab() {
     return (
       <div className="text-center py-12">
         <ShieldAlert className="mx-auto h-12 w-12 text-zinc-400" />
-        <h3 className="mt-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100">Access Denied</h3>
-        <p className="mt-1 text-xs text-zinc-500">Only captains and co-captains can manage compliance settings.</p>
+        <h3 className="mt-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100">{t('webSettingsComplianceDeniedTitle')}</h3>
+        <p className="mt-1 text-xs text-zinc-500">{t('webSettingsComplianceDeniedDesc')}</p>
       </div>
     );
   }
@@ -101,8 +101,8 @@ export function ComplianceTab() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-sm font-bold text-on-surface">{t('webComplianceTitle') || 'Compliance Settings'}</h2>
-        <p className="mt-1 text-xs text-on-surface-variant">Configure regulatory tracking policies, privacy masking, and HOS rules.</p>
+        <h2 className="text-sm font-bold text-on-surface">{t('webComplianceTitle')}</h2>
+        <p className="mt-1 text-xs text-on-surface-variant">{t('webSettingsComplianceDesc')}</p>
       </div>
 
       {/* Duty-Cycle Masking Group */}
@@ -128,7 +128,7 @@ export function ComplianceTab() {
               <span className="text-xs font-semibold text-on-surface">
                 {t('enableDutyCycleMasking') || 'Enable Duty-Cycle Masking'}
               </span>
-              <p className="text-[10px] text-on-surface-variant">Limit location tracking and reporting to work shift hours only.</p>
+              <p className="text-[10px] text-on-surface-variant">{t('dutyCycleMaskDesc')}</p>
             </div>
           </label>
 
@@ -220,7 +220,7 @@ export function ComplianceTab() {
                   <span className="text-xs font-semibold text-on-surface">
                     {t('complianceDotEld') || 'ELD / Hours of Service'}
                   </span>
-                  <p className="text-[10px] text-on-surface-variant">Record and audit Hours of Service (HOS) logs for drivers.</p>
+                  <p className="text-[10px] text-on-surface-variant">{t('dotEldDesc')}</p>
                 </div>
               </label>
 
@@ -235,7 +235,7 @@ export function ComplianceTab() {
                   <span className="text-xs font-semibold text-on-surface">
                     {t('complianceDotDvir') || 'Vehicle Inspections (DVIR)'}
                   </span>
-                  <p className="text-[10px] text-on-surface-variant">Require pre-trip and post-trip vehicle inspection checklists.</p>
+                  <p className="text-[10px] text-on-surface-variant">{t('dotDvirDesc')}</p>
                 </div>
               </label>
 
@@ -250,7 +250,7 @@ export function ComplianceTab() {
                   <span className="text-xs font-semibold text-on-surface">
                     {t('complianceDotDrugTesting') || 'Drug & Alcohol Testing'}
                   </span>
-                  <p className="text-[10px] text-on-surface-variant">Integrate substance testing tracking and alerts.</p>
+                  <p className="text-[10px] text-on-surface-variant">{t('dotDrugTestingDesc')}</p>
                 </div>
               </label>
             </div>
@@ -300,7 +300,7 @@ export function ComplianceTab() {
                   <span className="text-xs font-semibold text-on-surface">
                     {t('complianceGdprConsent') || 'Mandatory Consent Flow'}
                   </span>
-                  <p className="text-[10px] text-on-surface-variant">Prompt crew members for tracking consent during onboarding.</p>
+                  <p className="text-[10px] text-on-surface-variant">{t('gdprConsentDesc')}</p>
                 </div>
               </label>
 
@@ -315,7 +315,7 @@ export function ComplianceTab() {
                   <span className="text-xs font-semibold text-on-surface">
                     {t('complianceGdprAnonymize') || 'Anonymize Data Exports'}
                   </span>
-                  <p className="text-[10px] text-on-surface-variant">Mask identifying parameters in shared data downloads.</p>
+                  <p className="text-[10px] text-on-surface-variant">{t('gdprAnonymizeDesc')}</p>
                 </div>
               </label>
 
@@ -330,7 +330,7 @@ export function ComplianceTab() {
                   <span className="text-xs font-semibold text-on-surface">
                     {t('complianceGdprBreach') || 'Breach Notification'}
                   </span>
-                  <p className="text-[10px] text-on-surface-variant">Send notification alerts if security vulnerability incidents are logged.</p>
+                  <p className="text-[10px] text-on-surface-variant">{t('gdprBreachDesc')}</p>
                 </div>
               </label>
 
@@ -344,10 +344,10 @@ export function ComplianceTab() {
                     onChange={(e) => setGdprRetentionDays(Number(e.target.value))}
                     className="rounded-lg border border-outline bg-surface px-4 py-2 text-xs text-on-surface focus:border-primary/50 focus:outline-none"
                   >
-                    <option value={7}>7 days</option>
-                    <option value={30}>30 days</option>
-                    <option value={90}>90 days</option>
-                    <option value={365}>365 days</option>
+                    <option value={7}>{t('webPrivacyRetentionDays', { days: 7 })}</option>
+                    <option value={30}>{t('webPrivacyRetentionDays', { days: 30 })}</option>
+                    <option value={90}>{t('webPrivacyRetentionDays', { days: 90 })}</option>
+                    <option value={365}>{t('webPrivacyRetentionDays', { days: 365 })}</option>
                   </select>
                 </div>
               </div>

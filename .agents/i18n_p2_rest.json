@@ -1,0 +1,1842 @@
+{
+	"dotDrugTestingDesc": {
+		"ar": "دمج تتبع اختبارات المواد المخدرة والتنبيهات المرتبطة بها.",
+		"en": "Integrate substance testing tracking and alerts.",
+		"es": "Integra el seguimiento y las alertas de las pruebas de sustancias.",
+		"fr": "Intégrez le suivi et les alertes des tests de dépistage.",
+		"ru": "Интеграция отслеживания тестов на наркотики и соответствующих оповещений.",
+		"zh": "集成药物检测跟踪和警报。"
+	},
+	"dotDvirDesc": {
+		"ar": "اشتراط قوائم فحص المركبات قبل الرحلة وبعدها.",
+		"en": "Require pre-trip and post-trip vehicle inspection checklists.",
+		"es": "Exige listas de verificación de inspección del vehículo antes y después del viaje.",
+		"fr": "Exigez des listes de contrôle d'inspection du véhicule avant et après le trajet.",
+		"ru": "Обязательные чек-листы осмотра транспортного средства до и после поездки.",
+		"zh": "要求行程前后的车辆检查清单。"
+	},
+	"dotEldDesc": {
+		"ar": "تسجيل ومراجعة سجلات ساعات الخدمة (HOS) للسائقين.",
+		"en": "Record and audit Hours of Service (HOS) logs for drivers.",
+		"es": "Registra y audita los registros de horas de servicio (HOS) de los conductores.",
+		"fr": "Enregistrez et auditez les journaux d'heures de service (HOS) des conducteurs.",
+		"ru": "Запись и аудит журналов рабочего времени (HOS) водителей.",
+		"zh": "记录并审计驾驶员的服务时间 (HOS) 日志。"
+	},
+	"dutyCycleMaskDesc": {
+		"ar": "قصر تتبع الموقع والإبلاغ عنه على ساعات المناوبة فقط.",
+		"en": "Limit location tracking and reporting to work shift hours only.",
+		"es": "Limita el rastreo y el reporte de ubicación solo a las horas del turno de trabajo.",
+		"fr": "Limitez le suivi et la communication de la localisation aux heures de quart uniquement.",
+		"ru": "Ограничьте отслеживание и отчетность по местоположению только часами рабочей смены.",
+		"zh": "仅在工作班次时间内限制位置跟踪和上报。"
+	},
+	"gdprAnonymizeDesc": {
+		"ar": "إخفاء معلمات التعريف في تنزيلات البيانات المشتركة.",
+		"en": "Mask identifying parameters in shared data downloads.",
+		"es": "Enmascara los parámetros de identificación en las descargas de datos compartidos.",
+		"fr": "Masquez les paramètres d'identification dans les téléchargements de données partagées.",
+		"ru": "Маскирование идентифицирующих параметров в загружаемых общих данных.",
+		"zh": "在共享数据下载中遮蔽身份识别参数。"
+	},
+	"gdprBreachDesc": {
+		"ar": "إرسال تنبيهات إشعار عند تسجيل حوادث ثغرات أمنية.",
+		"en": "Send notification alerts if security vulnerability incidents are logged.",
+		"es": "Envía alertas de notificación si se registran incidentes de vulnerabilidad de seguridad.",
+		"fr": "Envoyez des alertes de notification si des incidents de vulnérabilité de sécurité sont enregistrés.",
+		"ru": "Отправка уведомлений при регистрации инцидентов, связанных с уязвимостями безопасности.",
+		"zh": "记录安全漏洞事件时发送通知警报。"
+	},
+	"gdprConsentDesc": {
+		"ar": "مطالبة أعضاء الطاقم بالموافقة على التتبع أثناء الإعداد الأولي.",
+		"en": "Prompt crew members for tracking consent during onboarding.",
+		"es": "Solicita el consentimiento de rastreo a los miembros del grupo durante la incorporación.",
+		"fr": "Demandez le consentement au suivi aux membres de l'équipe lors de l'intégration.",
+		"ru": "Запрос согласия участников группы на отслеживание при первичной настройке.",
+		"zh": "在入职流程中提示成员同意位置跟踪。"
+	},
+	"webAlertClickForCompliance": {
+		"ar": "انقر لفتح سجلات وتقارير الامتثال",
+		"en": "Click to open Compliance logs & reports",
+		"es": "Haz clic para abrir los registros e informes de cumplimiento",
+		"fr": "Cliquez pour ouvrir les journaux et rapports de conformité",
+		"ru": "Нажмите, чтобы открыть журналы и отчеты о соответствии",
+		"zh": "点击打开合规日志与报表"
+	},
+	"webAlertDetailsTitle": {
+		"ar": "تفاصيل {type}",
+		"en": "{type} Details",
+		"es": "Detalles de {type}",
+		"fr": "Détails de {type}",
+		"ru": "Сведения: {type}",
+		"zh": "{type} 详情"
+	},
+	"webAlertDriver": {
+		"ar": "السائق:",
+		"en": "Driver:",
+		"es": "Conductor:",
+		"fr": "Conducteur :",
+		"ru": "Водитель:",
+		"zh": "驾驶员："
+	},
+	"webAlertExplainFatigue": {
+		"ar": "تشير تنبيهات الإرهاق إلى القيادة لساعات طويلة أو في الليل دون راحة. تشكل القيادة أثناء الإرهاق خطر تصادم كبير.",
+		"en": "Fatigue alerts indicate driving for extended hours or overnight without rest. Operating while fatigued poses significant collision risk.",
+		"es": "Las alertas de fatiga indican conducción prolongada o nocturna sin descanso. Conducir con fatiga conlleva un riesgo importante de colisión.",
+		"fr": "Les alertes de fatigue signalent une conduite prolongée ou de nuit sans repos. Conduire en état de fatigue présente un risque important de collision.",
+		"ru": "Предупреждения об утомлении указывают на длительное или ночное вождение без отдыха. Вождение в состоянии усталости создает значительный риск столкновения.",
+		"zh": "疲劳警报表示长时间或夜间连续驾驶且未休息。疲劳驾驶存在重大碰撞风险。"
+	},
+	"webAlertExplainHarsh": {
+		"ar": "تشير أحداث القياس عن بُعد المفاجئة (الكبح/التسارع) إلى قيادة عدوانية أو عوائق غير متوقعة، مما يقلل من كفاءة الوقود ودرجات السلامة.",
+		"en": "Harsh telemetry events (braking/acceleration) indicate aggressive driving or unexpected obstacles, which decrease fuel efficiency and safety scores.",
+		"es": "Los eventos de telemetría brusca (frenadas/aceleraciones) indican conducción agresiva u obstáculos inesperados, lo que reduce la eficiencia de combustible y las puntuaciones de seguridad.",
+		"fr": "Les événements de télémétrie brusque (freinage/accélération) indiquent une conduite agressive ou des obstacles imprévus, ce qui réduit l'efficacité énergétique et les scores de sécurité.",
+		"ru": "Резкие телеметрические события (торможение/ускорение) указывают на агрессивное вождение или неожиданные препятствия, снижающие топливную эффективность и баллы безопасности.",
+		"zh": "剧烈遥测事件（急刹车/急加速）表明激进驾驶或意外障碍，会降低燃油效率和安全评分。"
+	},
+	"webAlertExplainSpeed": {
+		"ar": "تُفعَّل تنبيهات السرعة الزائدة عند تجاوز المركبة لحد السرعة المحدد. تقلل السرعة العالية من وقت استجابة السائق وتزيد مسافة التوقف.",
+		"en": "Speeding alerts trigger when a vehicle exceeds the set speed threshold. High speed reduces driver reaction time and increases stopping distance.",
+		"es": "Las alertas de exceso de velocidad se activan cuando un vehículo supera el umbral establecido. La alta velocidad reduce el tiempo de reacción del conductor y aumenta la distancia de frenado.",
+		"fr": "Les alertes d'excès de vitesse se déclenchent lorsqu'un véhicule dépasse le seuil défini. La vitesse élevée réduit le temps de réaction du conducteur et augmente la distance de freinage.",
+		"ru": "Предупреждения о превышении скорости срабатывают при превышении заданного порога. Высокая скорость сокращает время реакции водителя и увеличивает тормозной путь.",
+		"zh": "当车辆超过设定的速度阈值时触发超速警报。高速行驶会缩短驾驶员反应时间并增加制动距离。"
+	},
+	"webAlertExplainTelemetry": {
+		"ar": "تنبيه قاعدة القياس عن بُعد تم تشغيله من تطبيق الهاتف المحمول. راجع سجل السائق للحفاظ على الامتثال لسياسة سلامة الأسطول.",
+		"en": "Telemetry rule alert triggered by the mobile client. Review driver history to maintain compliance with the fleet safety policy.",
+		"es": "Alerta de regla de telemetría activada por el cliente móvil. Revisa el historial del conductor para mantener el cumplimiento de la política de seguridad de la flota.",
+		"fr": "Alerte de règle de télémétrie déclenchée par le client mobile. Consultez l'historique du conducteur pour maintenir la conformité avec la politique de sécurité de la flotte.",
+		"ru": "Предупреждение по правилу телеметрии, инициированное мобильным клиентом. Проверьте историю водителя для соблюдения политики безопасности флота.",
+		"zh": "由移动客户端触发的遥测规则警报。请查看驾驶员历史记录以保持车队安全政策合规。"
+	},
+	"webAlertExplainWeather": {
+		"ar": "تشير تنبيهات الطقس إلى ظروف جوية محلية سيئة. يجب على السائقين تقليل السرعة وزيادة مسافة التتبع دون العتبات القياسية.",
+		"en": "Weather alerts signal adverse local weather conditions. Drivers should reduce speed and increase follow distance below standard thresholds.",
+		"es": "Las alertas meteorológicas señalan condiciones climáticas adversas locales. Los conductores deben reducir la velocidad y aumentar la distancia de seguimiento por debajo de los umbrales estándar.",
+		"fr": "Les alertes météo signalent des conditions climatiques locales défavorables. Les conducteurs doivent réduire leur vitesse et augmenter la distance de suivi en dessous des seuils standard.",
+		"ru": "Погодные предупреждения сигнализируют о неблагоприятных местных погодных условиях. Водителям следует снизить скорость и увеличить дистанцию до впереди идущего транспорта.",
+		"zh": "天气警报提示当地不利天气状况。驾驶员应降低车速并加大跟车距离至标准阈值以下。"
+	},
+	"webAlertNotes": {
+		"ar": "ملاحظات:",
+		"en": "Notes:",
+		"es": "Notas:",
+		"fr": "Notes :",
+		"ru": "Заметки:",
+		"zh": "备注："
+	},
+	"webAlertOccurred": {
+		"ar": "وقوع:",
+		"en": "Occurred:",
+		"es": "Ocurrió:",
+		"fr": "Survenu :",
+		"ru": "Произошло:",
+		"zh": "发生时间："
+	},
+	"webAlertResolutionPlaceholder": {
+		"ar": "أدخل ملاحظات الحل (مثل: تم التواصل مع السائق)...",
+		"en": "Enter resolution notes (e.g. contacted driver)...",
+		"es": "Escribe notas de resolución (p. ej., se contactó al conductor)...",
+		"fr": "Saisissez des notes de résolution (ex. : conducteur contacté)...",
+		"ru": "Введите заметки о решении (например: связались с водителем)...",
+		"zh": "输入解决备注（例如：已联系驾驶员）..."
+	},
+	"webAlertResolve": {
+		"ar": "حل",
+		"en": "Resolve",
+		"es": "Resolver",
+		"fr": "Résoudre",
+		"ru": "Решить",
+		"zh": "解决"
+	},
+	"webAlertResolveAction": {
+		"ar": "حل التنبيه",
+		"en": "Resolve Alert",
+		"es": "Resolver alerta",
+		"fr": "Résoudre l'alerte",
+		"ru": "Решить оповещение",
+		"zh": "解决警报"
+	},
+	"webAlertResolveFailed": {
+		"ar": "تعذر حل التنبيه: {message}",
+		"en": "Failed to resolve alert: {message}",
+		"es": "No se pudo resolver la alerta: {message}",
+		"fr": "Échec de la résolution de l'alerte : {message}",
+		"ru": "Не удалось решить оповещение: {message}",
+		"zh": "解决警报失败：{message}"
+	},
+	"webAlertResolved": {
+		"ar": "تم حل التنبيه بنجاح",
+		"en": "Alert successfully resolved",
+		"es": "Alerta resuelta correctamente",
+		"fr": "Alerte résolue avec succès",
+		"ru": "Оповещение успешно решено",
+		"zh": "警报已成功解决"
+	},
+	"webAlertResolvedAt": {
+		"ar": "وقت الحل:",
+		"en": "Resolved At:",
+		"es": "Resuelto el:",
+		"fr": "Résolue le :",
+		"ru": "Решено:",
+		"zh": "解决时间："
+	},
+	"webAlertResolvedBy": {
+		"ar": "تم الحل بواسطة {name}",
+		"en": "Resolved by {name}",
+		"es": "Resuelto por {name}",
+		"fr": "Résolue par {name}",
+		"ru": "Решено: {name}",
+		"zh": "由 {name} 解决"
+	},
+	"webAlertResolvedShort": {
+		"ar": "تم الحل",
+		"en": "Resolved",
+		"es": "Resuelto",
+		"fr": "Résolue",
+		"ru": "Решено",
+		"zh": "已解决"
+	},
+	"webAlertSeverityLabel": {
+		"ar": "الخطورة:",
+		"en": "Severity:",
+		"es": "Gravedad:",
+		"fr": "Gravité :",
+		"ru": "Серьезность:",
+		"zh": "严重程度："
+	},
+	"webAlertStatusLabel": {
+		"ar": "الحالة:",
+		"en": "Status:",
+		"es": "Estado:",
+		"fr": "Statut :",
+		"ru": "Статус:",
+		"zh": "状态："
+	},
+	"webAlertUnknownMember": {
+		"ar": "عضو طاقم غير معروف",
+		"en": "Unknown Crew Member",
+		"es": "Miembro del grupo desconocido",
+		"fr": "Membre d'équipe inconnu",
+		"ru": "Неизвестный участник группы",
+		"zh": "未知成员"
+	},
+	"webAlertUnresolved": {
+		"ar": "غير محلولة",
+		"en": "Unresolved",
+		"es": "Sin resolver",
+		"fr": "Non résolue",
+		"ru": "Не решено",
+		"zh": "未解决"
+	},
+	"webBrandName": {
+		"ar": "CrewRadr",
+		"en": "CrewRadr",
+		"es": "CrewRadr",
+		"fr": "CrewRadr",
+		"ru": "CrewRadr",
+		"zh": "CrewRadr"
+	},
+	"webComplianceAtLocation": {
+		"ar": "في {location}",
+		"en": "at {location}",
+		"es": "en {location}",
+		"fr": "à {location}",
+		"ru": "по адресу {location}",
+		"zh": "位于 {location}"
+	},
+	"webComplianceClassDaysAway": {
+		"ar": "أيام الغياب",
+		"en": "Days Away",
+		"es": "Días de ausencia",
+		"fr": "Jours d'absence",
+		"ru": "Дни отсутствия",
+		"zh": "缺勤天数"
+	},
+	"webComplianceClassFatality": {
+		"ar": "حالة وفاة",
+		"en": "Fatality",
+		"es": "Fatalidad",
+		"fr": "Décès",
+		"ru": "Смертельный случай",
+		"zh": "死亡事故"
+	},
+	"webComplianceClassHospitalization": {
+		"ar": "إدخال المستشفى",
+		"en": "Hospitalization",
+		"es": "Hospitalización",
+		"fr": "Hospitalisation",
+		"ru": "Госпитализация",
+		"zh": "住院治疗"
+	},
+	"webComplianceClassOther": {
+		"ar": "حالة أخرى قابلة للتسجيل",
+		"en": "Other Recordable",
+		"es": "Otro caso registrable",
+		"fr": "Autre cas enregistrable",
+		"ru": "Прочий регистрируемый случай",
+		"zh": "其他可记录事件"
+	},
+	"webComplianceClassRestricted": {
+		"ar": "مقيد",
+		"en": "Restricted",
+		"es": "Restringido",
+		"fr": "Restreint",
+		"ru": "Ограниченная работа",
+		"zh": "受限工作"
+	},
+	"webComplianceColDistanceUnit": {
+		"ar": "المسافة ({unit})",
+		"en": "Distance ({unit})",
+		"es": "Distancia ({unit})",
+		"fr": "Distance ({unit})",
+		"ru": "Расстояние ({unit})",
+		"zh": "距离 ({unit})"
+	},
+	"webComplianceColDuration": {
+		"ar": "المدة (دقيقة)",
+		"en": "Duration (min)",
+		"es": "Duración (min)",
+		"fr": "Durée (min)",
+		"ru": "Длительность (мин)",
+		"zh": "时长（分钟）"
+	},
+	"webComplianceColMaxSpeedUnit": {
+		"ar": "السرعة القصوى ({unit})",
+		"en": "Max Speed ({unit})",
+		"es": "Velocidad máx. ({unit})",
+		"fr": "Vitesse max ({unit})",
+		"ru": "Макс. скорость ({unit})",
+		"zh": "最高速度 ({unit})"
+	},
+	"webComplianceColNighttime": {
+		"ar": "النسبة الليلية %",
+		"en": "Nighttime %",
+		"es": "% nocturno",
+		"fr": "% de nuit",
+		"ru": "Ночное время %",
+		"zh": "夜间占比 %"
+	},
+	"webComplianceColWeather": {
+		"ar": "مخاطر الطقس",
+		"en": "Weather Risk",
+		"es": "Riesgo meteorológico",
+		"fr": "Risque météo",
+		"ru": "Погодный риск",
+		"zh": "天气风险"
+	},
+	"webComplianceDistanceLogged": {
+		"ar": "تم تسجيل {distance}",
+		"en": "{distance} logged",
+		"es": "{distance} registrados",
+		"fr": "{distance} enregistrés",
+		"ru": "записано: {distance}",
+		"zh": "已记录 {distance}"
+	},
+	"webComplianceDotViolation": {
+		"ar": "مخالفة:",
+		"en": "Violation:",
+		"es": "Infracción:",
+		"fr": "Violation :",
+		"ru": "Нарушение:",
+		"zh": "违规："
+	},
+	"webComplianceDotViolationFatigue": {
+		"ar": "تم تفعيل تحذيرات الإرهاق.",
+		"en": "Fatigue warnings triggered.",
+		"es": "Se activaron advertencias de fatiga.",
+		"fr": "Des alertes de fatigue ont été déclenchées.",
+		"ru": "Сработали предупреждения об утомлении.",
+		"zh": "已触发疲劳警告。"
+	},
+	"webComplianceDotViolationHours": {
+		"ar": "تجاوز حد القيادة البالغ 11 ساعة (660 دقيقة).",
+		"en": "Exceeded 11-hour driving limit (660 min).",
+		"es": "Se superó el límite de conducción de 11 horas (660 min).",
+		"fr": "Limite de conduite de 11 heures dépassée (660 min).",
+		"ru": "Превышен лимит вождения 11 часов (660 мин).",
+		"zh": "超过 11 小时驾驶上限（660 分钟）。"
+	},
+	"webComplianceDotWithin": {
+		"ar": "ضمن لوائح DOT (المدة <= 11 ساعة، صفر تحذيرات إرهاق)",
+		"en": "Within DOT regulations (duration <= 11 hours, zero fatigue warnings)",
+		"es": "Dentro de las regulaciones DOT (duración <= 11 horas, cero advertencias de fatiga)",
+		"fr": "Conforme aux réglementations DOT (durée <= 11 heures, aucune alerte de fatigue)",
+		"ru": "Соответствует нормам DOT (длительность <= 11 часов, нет предупреждений об утомлении)",
+		"zh": "符合 DOT 规定（时长 <= 11 小时，零疲劳警告）"
+	},
+	"webComplianceFatigueWarningsLogged": {
+		"ar": "تم تفعيل {count} تحذيرات إرهاق",
+		"en": "{count} fatigue warnings triggered",
+		"es": "{count} advertencias de fatiga activadas",
+		"fr": "{count} alertes de fatigue déclenchées",
+		"ru": "сработало предупреждений об утомлении: {count}",
+		"zh": "触发了 {count} 条疲劳警告"
+	},
+	"webComplianceHoursLogged": {
+		"ar": "تم تسجيل {hours} ساعة قيادة",
+		"en": "{hours} driving hours logged",
+		"es": "{hours} horas de conducción registradas",
+		"fr": "{hours} heures de conduite enregistrées",
+		"ru": "зарегистрировано часов вождения: {hours}",
+		"zh": "已记录 {hours} 小时驾驶时长"
+	},
+	"webComplianceInvolved": {
+		"ar": "(المتورطون: {personnel})",
+		"en": "(Involved: {personnel})",
+		"es": "(Implicados: {personnel})",
+		"fr": "(Personnes impliquées : {personnel})",
+		"ru": "(Участники: {personnel})",
+		"zh": "（涉及人员：{personnel}）"
+	},
+	"webComplianceMaxSpeedAchieved": {
+		"ar": "السرعة القصوى المحققة: {speed}",
+		"en": "Max speed achieved: {speed}",
+		"es": "Velocidad máxima alcanzada: {speed}",
+		"fr": "Vitesse maximale atteinte : {speed}",
+		"ru": "Достигнутая максимальная скорость: {speed}",
+		"zh": "达到的最高速度：{speed}"
+	},
+	"webComplianceMinutesLogged": {
+		"ar": "تم تسجيل {minutes} دقيقة قيادة",
+		"en": "{minutes} driving minutes logged",
+		"es": "{minutes} minutos de conducción registrados",
+		"fr": "{minutes} minutes de conduite enregistrées",
+		"ru": "зарегистрировано минут вождения: {minutes}",
+		"zh": "已记录 {minutes} 分钟驾驶时长"
+	},
+	"webComplianceNighttimeShare": {
+		"ar": "{pct} من الرحلة قيادة ليلية",
+		"en": "{pct} of trip driven at night",
+		"es": "{pct} del viaje conducido de noche",
+		"fr": "{pct} du trajet conduit de nuit",
+		"ru": "{pct} поездки пришлось на ночное время",
+		"zh": "{pct} 的行程为夜间驾驶"
+	},
+	"webComplianceStatusCompliant": {
+		"ar": "متوافق",
+		"en": "Compliant",
+		"es": "Cumple",
+		"fr": "Conforme",
+		"ru": "Соответствует",
+		"zh": "合规"
+	},
+	"webComplianceStatusViolation": {
+		"ar": "مخالفة",
+		"en": "Violation",
+		"es": "Infracción",
+		"fr": "Violation",
+		"ru": "Нарушение",
+		"zh": "违规"
+	},
+	"webComplianceViolationFatigue": {
+		"ar": "مخالفة: تم رصد تحذيرات إرهاق",
+		"en": "Violation: Fatigue warnings detected",
+		"es": "Infracción: se detectaron advertencias de fatiga",
+		"fr": "Violation : alertes de fatigue détectées",
+		"ru": "Нарушение: обнаружены предупреждения об утомлении",
+		"zh": "违规：检测到疲劳警告"
+	},
+	"webComplianceViolationHours": {
+		"ar": "مخالفة: تجاوز الحد اليومي البالغ 11 ساعة",
+		"en": "Violation: Exceeded 11h daily limit",
+		"es": "Infracción: se superó el límite diario de 11 h",
+		"fr": "Violation : limite quotidienne de 11 h dépassée",
+		"ru": "Нарушение: превышен суточный лимит 11 ч",
+		"zh": "违规：超过 11 小时每日上限"
+	},
+	"webComplianceWeatherLevel": {
+		"ar": "مستوى مخاطر الطقس: {level}",
+		"en": "Weather Risk level: {level}",
+		"es": "Nivel de riesgo meteorológico: {level}",
+		"fr": "Niveau de risque météo : {level}",
+		"ru": "Уровень погодного риска: {level}",
+		"zh": "天气风险等级：{level}"
+	},
+	"webComplianceWithinHos": {
+		"ar": "ضمن حدود HOS",
+		"en": "Within HOS limits",
+		"es": "Dentro de los límites de HOS",
+		"fr": "Dans les limites HOS",
+		"ru": "В пределах норм HOS",
+		"zh": "在 HOS 限制内"
+	},
+	"webDashboardSubtitle": {
+		"ar": "الحالة اللحظية ودرجات السلامة وسجلات القيادة لأسطولك.",
+		"en": "Real-time status, safety scores, and driving logs for your fleet.",
+		"es": "Estado en tiempo real, puntuaciones de seguridad y registros de conducción de tu flota.",
+		"fr": "Statut en temps réel, scores de sécurité et journaux de conduite de votre flotte.",
+		"ru": "Статус в реальном времени, баллы безопасности и журналы вождения вашего флота.",
+		"zh": "车队的实时状态、安全评分和驾驶日志。"
+	},
+	"webDashboardSyncedBadge": {
+		"ar": "متزامن مع المحدد",
+		"en": "Synced to selector",
+		"es": "Sincronizado con el selector",
+		"fr": "Synchronisé avec le sélecteur",
+		"ru": "Синхронизировано с селектором",
+		"zh": "与选择器同步"
+	},
+	"webDashboardTrendsTitle": {
+		"ar": "اتجاهات الأداء والسلامة",
+		"en": "Performance & Safety Trends",
+		"es": "Tendencias de rendimiento y seguridad",
+		"fr": "Tendances de performance et de sécurité",
+		"ru": "Тенденции производительности и безопасности",
+		"zh": "绩效与安全趋势"
+	},
+	"webDevColAlerts": {
+		"ar": "التنبيهات",
+		"en": "Alerts",
+		"es": "Alertas",
+		"fr": "Alertes",
+		"ru": "Оповещения",
+		"zh": "警报"
+	},
+	"webDevColAvgMaxSpeed": {
+		"ar": "متوسط / أقصى سرعة",
+		"en": "Avg / Max Speed",
+		"es": "Vel. media / máx.",
+		"fr": "Vitesse moy. / max",
+		"ru": "Ср. / макс. скорость",
+		"zh": "平均 / 最高速度"
+	},
+	"webDevColContactEmail": {
+		"ar": "البريد الإلكتروني للتواصل",
+		"en": "Contact Email",
+		"es": "Correo de contacto",
+		"fr": "E-mail de contact",
+		"ru": "Контактный email",
+		"zh": "联系邮箱"
+	},
+	"webDevColCoordinates": {
+		"ar": "الإحداثيات",
+		"en": "Coordinates",
+		"es": "Coordenadas",
+		"fr": "Coordonnées",
+		"ru": "Координаты",
+		"zh": "坐标"
+	},
+	"webDevColDistance": {
+		"ar": "المسافة",
+		"en": "Distance",
+		"es": "Distancia",
+		"fr": "Distance",
+		"ru": "Расстояние",
+		"zh": "距离"
+	},
+	"webDevColEndedAt": {
+		"ar": "وقت الانتهاء",
+		"en": "Ended At",
+		"es": "Finalizó el",
+		"fr": "Terminée le",
+		"ru": "Завершено",
+		"zh": "结束时间"
+	},
+	"webDevColEventType": {
+		"ar": "نوع الحدث",
+		"en": "Event Type",
+		"es": "Tipo de evento",
+		"fr": "Type d'événement",
+		"ru": "Тип события",
+		"zh": "事件类型"
+	},
+	"webDevColFeedbackMessage": {
+		"ar": "رسالة الملاحظات",
+		"en": "Feedback message",
+		"es": "Mensaje de comentario",
+		"fr": "Message de commentaire",
+		"ru": "Сообщение обратной связи",
+		"zh": "反馈消息"
+	},
+	"webDevColGForce": {
+		"ar": "قوة التسارع G",
+		"en": "G-Force",
+		"es": "Fuerza G",
+		"fr": "Force G",
+		"ru": "G-сила",
+		"zh": "G 力"
+	},
+	"webDevColInstallId": {
+		"ar": "معرّف التثبيت",
+		"en": "Install ID",
+		"es": "ID de instalación",
+		"fr": "ID d'installation",
+		"ru": "ID установки",
+		"zh": "安装 ID"
+	},
+	"webDevColLatitude": {
+		"ar": "خط العرض",
+		"en": "Latitude",
+		"es": "Latitud",
+		"fr": "Latitude",
+		"ru": "Широта",
+		"zh": "纬度"
+	},
+	"webDevColLevel": {
+		"ar": "المستوى",
+		"en": "Level",
+		"es": "Nivel",
+		"fr": "Niveau",
+		"ru": "Уровень",
+		"zh": "级别"
+	},
+	"webDevColLongitude": {
+		"ar": "خط الطول",
+		"en": "Longitude",
+		"es": "Longitud",
+		"fr": "Longitude",
+		"ru": "Долгота",
+		"zh": "经度"
+	},
+	"webDevColMessage": {
+		"ar": "الرسالة",
+		"en": "Message",
+		"es": "Mensaje",
+		"fr": "Message",
+		"ru": "Сообщение",
+		"zh": "消息"
+	},
+	"webDevColScoreDelta": {
+		"ar": "فرق الدرجة",
+		"en": "Score Delta",
+		"es": "Variación de puntuación",
+		"fr": "Variation de score",
+		"ru": "Изменение баллов",
+		"zh": "评分变化"
+	},
+	"webDevColSeverity": {
+		"ar": "الخطورة",
+		"en": "Severity",
+		"es": "Gravedad",
+		"fr": "Gravité",
+		"ru": "Серьезность",
+		"zh": "严重程度"
+	},
+	"webDevColSpeed": {
+		"ar": "السرعة",
+		"en": "Speed",
+		"es": "Velocidad",
+		"fr": "Vitesse",
+		"ru": "Скорость",
+		"zh": "速度"
+	},
+	"webDevColSpeedLimit": {
+		"ar": "السرعة / الحد",
+		"en": "Speed / Limit",
+		"es": "Velocidad / Límite",
+		"fr": "Vitesse / Limite",
+		"ru": "Скорость / Лимит",
+		"zh": "速度 / 限速"
+	},
+	"webDevColStartedAt": {
+		"ar": "وقت البدء",
+		"en": "Started At",
+		"es": "Inició el",
+		"fr": "Démarrée le",
+		"ru": "Начато",
+		"zh": "开始时间"
+	},
+	"webDevColTimestamp": {
+		"ar": "الطابع الزمني",
+		"en": "Timestamp",
+		"es": "Marca de tiempo",
+		"fr": "Horodatage",
+		"ru": "Время",
+		"zh": "时间戳"
+	},
+	"webDevColType": {
+		"ar": "النوع",
+		"en": "Type",
+		"es": "Tipo",
+		"fr": "Type",
+		"ru": "Тип",
+		"zh": "类型"
+	},
+	"webDevColUserId": {
+		"ar": "معرّف المستخدم",
+		"en": "User ID",
+		"es": "ID de usuario",
+		"fr": "ID utilisateur",
+		"ru": "ID пользователя",
+		"zh": "用户 ID"
+	},
+	"webDeveloperAllLevels": {
+		"ar": "جميع المستويات",
+		"en": "All Levels",
+		"es": "Todos los niveles",
+		"fr": "Tous les niveaux",
+		"ru": "Все уровни",
+		"zh": "所有级别"
+	},
+	"webDeveloperAnonymous": {
+		"ar": "مجهول",
+		"en": "Anonymous",
+		"es": "Anónimo",
+		"fr": "Anonyme",
+		"ru": "Аноним",
+		"zh": "匿名"
+	},
+	"webDeveloperClearAllFeedback": {
+		"ar": "مسح جميع ملاحظات المستخدمين",
+		"en": "Clear All User Feedback",
+		"es": "Borrar todos los comentarios de usuarios",
+		"fr": "Effacer tous les commentaires utilisateurs",
+		"ru": "Очистить все отзывы пользователей",
+		"zh": "清空所有用户反馈"
+	},
+	"webDeveloperClearAllLogs": {
+		"ar": "مسح جميع سجلات التطبيق",
+		"en": "Clear All App Logs",
+		"es": "Borrar todos los registros de la aplicación",
+		"fr": "Effacer tous les journaux de l'application",
+		"ru": "Очистить все журналы приложения",
+		"zh": "清空所有应用日志"
+	},
+	"webDeveloperClearFeedback": {
+		"ar": "مسح ملاحظات المستخدمين",
+		"en": "Clear User Feedback",
+		"es": "Borrar comentarios de usuarios",
+		"fr": "Effacer les commentaires utilisateurs",
+		"ru": "Очистить отзывы пользователей",
+		"zh": "清空用户反馈"
+	},
+	"webDeveloperClearFeedbackConfirm": {
+		"ar": "هل أنت متأكد من حذف جميع إرسالات ملاحظات المستخدمين؟ هذا الإجراء دائم ولا يمكن التراجع عنه.",
+		"en": "Are you sure you want to delete all user feedback submissions? This action is permanent and cannot be undone.",
+		"es": "¿Seguro que quieres eliminar todas las aportaciones de comentarios de usuarios? Esta acción es permanente y no se puede deshacer.",
+		"fr": "Voulez-vous vraiment supprimer toutes les soumissions de commentaires utilisateurs ? Cette action est définitive et irréversible.",
+		"ru": "Удалить все отзывы пользователей? Это действие необратимо.",
+		"zh": "确定要删除所有用户反馈提交吗？此操作是永久性的，无法撤销。"
+	},
+	"webDeveloperClearLogs": {
+		"ar": "مسح سجلات التطبيق",
+		"en": "Clear App Logs",
+		"es": "Borrar registros de la aplicación",
+		"fr": "Effacer les journaux de l'application",
+		"ru": "Очистить журналы приложения",
+		"zh": "清空应用日志"
+	},
+	"webDeveloperClearLogsConfirm": {
+		"ar": "هل أنت متأكد من حذف جميع سجلات التشخيص الخاصة بالتطبيق؟ هذا الإجراء دائم ولا يمكن التراجع عنه.",
+		"en": "Are you sure you want to delete all diagnostic app logs? This action is permanent and cannot be undone.",
+		"es": "¿Seguro que quieres eliminar todos los registros de diagnóstico de la aplicación? Esta acción es permanente y no se puede deshacer.",
+		"fr": "Voulez-vous vraiment supprimer tous les journaux de diagnostic de l'application ? Cette action est définitive et irréversible.",
+		"ru": "Удалить все диагностические журналы приложения? Это действие необратимо.",
+		"zh": "确定要删除所有应用诊断日志吗？此操作是永久性的，无法撤销。"
+	},
+	"webDeveloperClearing": {
+		"ar": "جارٍ المسح...",
+		"en": "Clearing...",
+		"es": "Borrando...",
+		"fr": "Effacement...",
+		"ru": "Очистка...",
+		"zh": "正在清空..."
+	},
+	"webDeveloperClose": {
+		"ar": "إغلاق",
+		"en": "Close",
+		"es": "Cerrar",
+		"fr": "Fermer",
+		"ru": "Закрыть",
+		"zh": "关闭"
+	},
+	"webDeveloperG": {
+		"ar": "G",
+		"en": "G",
+		"es": "G",
+		"fr": "G",
+		"ru": "G",
+		"zh": "G"
+	},
+	"webDeveloperIncidents": {
+		"ar": "{count} حادثًا",
+		"en": "{count} incidents",
+		"es": "{count} incidentes",
+		"fr": "{count} incidents",
+		"ru": "{count} инцидентов",
+		"zh": "{count} 起事件"
+	},
+	"webDeveloperMiles": {
+		"ar": "أميال",
+		"en": "miles",
+		"es": "millas",
+		"fr": "milles",
+		"ru": "миль",
+		"zh": "英里"
+	},
+	"webDeveloperNa": {
+		"ar": "غير متاح",
+		"en": "N/A",
+		"es": "N/D",
+		"fr": "N/D",
+		"ru": "Н/Д",
+		"zh": "无"
+	},
+	"webDeveloperNoData": {
+		"ar": "لا توجد بيانات تطابق عوامل التصفية الحالية أو نطاق الاستعلام.",
+		"en": "No data matches the current filters or query range.",
+		"es": "Ningún dato coincide con los filtros actuales o el rango de consulta.",
+		"fr": "Aucune donnée ne correspond aux filtres actuels ou à la plage de requête.",
+		"ru": "Нет данных, соответствующих текущим фильтрам или диапазону запроса.",
+		"zh": "没有数据符合当前筛选条件或查询范围。"
+	},
+	"webDeveloperRecordDetails": {
+		"ar": "تفاصيل السجل",
+		"en": "Record Details",
+		"es": "Detalles del registro",
+		"fr": "Détails de l'enregistrement",
+		"ru": "Сведения о записи",
+		"zh": "记录详情"
+	},
+	"webDeveloperTabFeedback": {
+		"ar": "ملاحظات المستخدمين",
+		"en": "User Feedback",
+		"es": "Comentarios de usuarios",
+		"fr": "Commentaires utilisateurs",
+		"ru": "Отзывы пользователей",
+		"zh": "用户反馈"
+	},
+	"webDeveloperTabLocations": {
+		"ar": "آثار GPS",
+		"en": "GPS Breadcrumbs",
+		"es": "Migas de pan GPS",
+		"fr": "Fil d'Ariane GPS",
+		"ru": "GPS-отпечатки",
+		"zh": "GPS 轨迹点"
+	},
+	"webDeveloperTabLogs": {
+		"ar": "سجلات التطبيق",
+		"en": "App Logs",
+		"es": "Registros de la aplicación",
+		"fr": "Journaux de l'application",
+		"ru": "Журналы приложения",
+		"zh": "应用日志"
+	},
+	"webDeveloperTabTelemetry": {
+		"ar": "قياس عن بُعد للقيادة",
+		"en": "Driving Telemetry",
+		"es": "Telemetría de conducción",
+		"fr": "Télémétrie de conduite",
+		"ru": "Телеметрия вождения",
+		"zh": "驾驶遥测"
+	},
+	"webDeveloperTabTrips": {
+		"ar": "جلسات الرحلة",
+		"en": "Trip Sessions",
+		"es": "Sesiones de viaje",
+		"fr": "Sessions de trajet",
+		"ru": "Сессии поездок",
+		"zh": "行程会话"
+	},
+	"webDeveloperTabsAria": {
+		"ar": "تبويبات المطور",
+		"en": "Developer tabs",
+		"es": "Pestañas de desarrollador",
+		"fr": "Onglets développeur",
+		"ru": "Вкладки разработчика",
+		"zh": "开发者标签页"
+	},
+	"webDeveloperWipeData": {
+		"ar": "مسح البيانات",
+		"en": "Wipe Data",
+		"es": "Borrar datos",
+		"fr": "Effacer les données",
+		"ru": "Стереть данные",
+		"zh": "清空数据"
+	},
+	"webEtaArrivalPrediction": {
+		"ar": "التنبؤ بالوصول",
+		"en": "Arrival Prediction",
+		"es": "Predicción de llegada",
+		"fr": "Prédiction d'arrivée",
+		"ru": "Прогноз прибытия",
+		"zh": "到达预测"
+	},
+	"webEtaMargin": {
+		"ar": "هامش ±{pct}%",
+		"en": "±{pct}% margin",
+		"es": "±{pct}% de margen",
+		"fr": "±{pct}% de marge",
+		"ru": "погрешность ±{pct}%",
+		"zh": "±{pct}% 误差范围"
+	},
+	"webEtaMember": {
+		"ar": "العضو",
+		"en": "Member",
+		"es": "Miembro",
+		"fr": "Membre",
+		"ru": "Участник",
+		"zh": "成员"
+	},
+	"webEtaNoActiveTrip": {
+		"ar": "لا توجد رحلة نشطة لهذا العضو",
+		"en": "No active trip for this member",
+		"es": "No hay un viaje activo para este miembro",
+		"fr": "Aucun trajet actif pour ce membre",
+		"ru": "У этого участника нет активной поездки",
+		"zh": "该成员没有进行中的行程"
+	},
+	"webEtaNoData": {
+		"ar": "لا توجد بيانات ETA متاحة لهذا العضو",
+		"en": "No ETA data available for this member",
+		"es": "No hay datos de ETA disponibles para este miembro",
+		"fr": "Aucune donnée d'ETA disponible pour ce membre",
+		"ru": "Нет данных о времени прибытия (ETA) для этого участника",
+		"zh": "该成员暂无 ETA 数据"
+	},
+	"webLoginEmailPlaceholder": {
+		"ar": "captain@crewradr.app",
+		"en": "captain@crewradr.app",
+		"es": "captain@crewradr.app",
+		"fr": "captain@crewradr.app",
+		"ru": "captain@crewradr.app",
+		"zh": "captain@crewradr.app"
+	},
+	"webLoginMfaCodePlaceholder": {
+		"ar": "123456",
+		"en": "123456",
+		"es": "123456",
+		"fr": "123456",
+		"ru": "123456",
+		"zh": "123456"
+	},
+	"webMapCloseAria": {
+		"ar": "إغلاق",
+		"en": "Close",
+		"es": "Cerrar",
+		"fr": "Fermer",
+		"ru": "Закрыть",
+		"zh": "关闭"
+	},
+	"webMapLoadingAria": {
+		"ar": "جارٍ تحميل الخريطة الحية",
+		"en": "Loading live map",
+		"es": "Cargando mapa en vivo",
+		"fr": "Chargement de la carte en direct",
+		"ru": "Загрузка карты в реальном времени",
+		"zh": "正在加载实时地图"
+	},
+	"webMembersImportEmpty": {
+		"ar": "(فارغ)",
+		"en": "(empty)",
+		"es": "(vacío)",
+		"fr": "(vide)",
+		"ru": "(пусто)",
+		"zh": "（空）"
+	},
+	"webMembersImportInvalidEmail": {
+		"ar": "تنسيق بريد إلكتروني غير صالح",
+		"en": "Invalid email format",
+		"es": "Formato de correo no válido",
+		"fr": "Format d'e-mail invalide",
+		"ru": "Неверный формат email",
+		"zh": "邮箱格式无效"
+	},
+	"webMembersImportInvalidRole": {
+		"ar": "دور \"{role}\" غير صالح. استخدم: {roles}",
+		"en": "Invalid role \"{role}\". Use: {roles}",
+		"es": "Rol \"{role}\" no válido. Usa: {roles}",
+		"fr": "Rôle \"{role}\" invalide. Utilisez : {roles}",
+		"ru": "Неверная роль \"{role}\". Используйте: {roles}",
+		"zh": "角色 \"{role}\" 无效。请使用：{roles}"
+	},
+	"webMembersImportLine": {
+		"ar": "(السطر {line})",
+		"en": "(line {line})",
+		"es": "(línea {line})",
+		"fr": "(ligne {line})",
+		"ru": "(строка {line})",
+		"zh": "（第 {line} 行）"
+	},
+	"webProvisioningStatusAwaitingActivation": {
+		"ar": "في انتظار التفعيل",
+		"en": "Awaiting Activation",
+		"es": "En espera de activación",
+		"fr": "En attente d'activation",
+		"ru": "Ожидает активации",
+		"zh": "等待激活"
+	},
+	"webReportsBuilderCancelEdit": {
+		"ar": "إلغاء التحرير",
+		"en": "Cancel Edit",
+		"es": "Cancelar edición",
+		"fr": "Annuler la modification",
+		"ru": "Отменить редактирование",
+		"zh": "取消编辑"
+	},
+	"webReportsBuilderContents": {
+		"ar": "محتويات التقرير",
+		"en": "Report Contents",
+		"es": "Contenido del informe",
+		"fr": "Contenu du rapport",
+		"ru": "Содержимое отчета",
+		"zh": "报表内容"
+	},
+	"webReportsBuilderCreateTitle": {
+		"ar": "إنشاء قالب تقرير",
+		"en": "Create Report Template",
+		"es": "Crear plantilla de informe",
+		"fr": "Créer un modèle de rapport",
+		"ru": "Создать шаблон отчета",
+		"zh": "创建报表模板"
+	},
+	"webReportsBuilderDeleteAria": {
+		"ar": "حذف القالب",
+		"en": "Delete Template",
+		"es": "Eliminar plantilla",
+		"fr": "Supprimer le modèle",
+		"ru": "Удалить шаблон",
+		"zh": "删除模板"
+	},
+	"webReportsBuilderDeleteConfirm": {
+		"ar": "هل أنت متأكد من حذف قالب التقرير \"{name}\"؟ سيتم إلغاء أي جداول نشطة تُسلّم هذا القالب.",
+		"en": "Are you sure you want to delete the report template \"{name}\"? Any active schedules delivering this template will be cancelled.",
+		"es": "¿Seguro que quieres eliminar la plantilla de informe \"{name}\"? Se cancelarán las programaciones activas que entreguen esta plantilla.",
+		"fr": "Voulez-vous vraiment supprimer le modèle de rapport \"{name}\" ? Tous les plannings actifs utilisant ce modèle seront annulés.",
+		"ru": "Удалить шаблон отчета \"{name}\"? Активные расписания, доставляющие этот шаблон, будут отменены.",
+		"zh": "确定要删除报表模板 \"{name}\" 吗？任何使用此模板的活跃计划都将被取消。"
+	},
+	"webReportsBuilderDeleteFailed": {
+		"ar": "تعذر حذف القالب \"{name}\"",
+		"en": "Failed to delete template \"{name}\"",
+		"es": "No se pudo eliminar la plantilla \"{name}\"",
+		"fr": "Échec de la suppression du modèle \"{name}\"",
+		"ru": "Не удалось удалить шаблон \"{name}\"",
+		"zh": "删除模板 \"{name}\" 失败"
+	},
+	"webReportsBuilderDeleted": {
+		"ar": "تم حذف القالب \"{name}\"",
+		"en": "Deleted template \"{name}\"",
+		"es": "Plantilla \"{name}\" eliminada",
+		"fr": "Modèle \"{name}\" supprimé",
+		"ru": "Шаблон \"{name}\" удален",
+		"zh": "已删除模板 \"{name}\""
+	},
+	"webReportsBuilderEditAria": {
+		"ar": "تعديل القالب",
+		"en": "Edit Template",
+		"es": "Editar plantilla",
+		"fr": "Modifier le modèle",
+		"ru": "Изменить шаблон",
+		"zh": "编辑模板"
+	},
+	"webReportsBuilderEditTitle": {
+		"ar": "تعديل قالب التقرير",
+		"en": "Edit Report Template",
+		"es": "Editar plantilla de informe",
+		"fr": "Modifier le modèle de rapport",
+		"ru": "Изменить шаблон отчета",
+		"zh": "编辑报表模板"
+	},
+	"webReportsBuilderLoaded": {
+		"ar": "تم تحميل القالب \"{name}\" للتحرير",
+		"en": "Loaded template \"{name}\" for editing",
+		"es": "Plantilla \"{name}\" cargada para edición",
+		"fr": "Modèle \"{name}\" chargé pour modification",
+		"ru": "Шаблон \"{name}\" загружен для редактирования",
+		"zh": "已加载模板 \"{name}\" 进行编辑"
+	},
+	"webReportsBuilderNoTemplates": {
+		"ar": "لا توجد قوالب محفوظة بعد. أنشئ قالبك الأول باستخدام المنشئ.",
+		"en": "No saved templates yet. Create your first template using the builder.",
+		"es": "Aún no hay plantillas guardadas. Crea tu primera plantilla con el constructor.",
+		"fr": "Aucun modèle enregistré pour le moment. Créez votre premier modèle avec le générateur.",
+		"ru": "Сохраненных шаблонов пока нет. Создайте первый шаблон с помощью конструктора.",
+		"zh": "还没有已保存的模板。使用构建器创建你的第一个模板。"
+	},
+	"webReportsBuilderNoWidgets": {
+		"ar": "لم تتم إضافة أي عناصر واجهة. استخدم أزرار اللوحة أعلاه لإضافة مقاييس أو رسوم بيانية أو جداول بيانات إلى هذا التقرير.",
+		"en": "No widgets added. Use the palette buttons above to add metrics, charts, or data tables to this report.",
+		"es": "No se añadió ningún widget. Usa los botones de la paleta de arriba para añadir métricas, gráficos o tablas de datos a este informe.",
+		"fr": "Aucun widget ajouté. Utilisez les boutons de la palette ci-dessus pour ajouter des métriques, des graphiques ou des tableaux de données à ce rapport.",
+		"ru": "Виджеты не добавлены. Используйте кнопки палитры выше, чтобы добавить метрики, графики или таблицы в этот отчет.",
+		"zh": "尚未添加任何组件。使用上方面板按钮向此报表添加指标、图表或数据表。"
+	},
+	"webReportsBuilderUpdate": {
+		"ar": "تحديث القالب",
+		"en": "Update Template",
+		"es": "Actualizar plantilla",
+		"fr": "Mettre à jour le modèle",
+		"ru": "Обновить шаблон",
+		"zh": "更新模板"
+	},
+	"webReportsBuilderUpdated": {
+		"ar": "تم تحديث قالب التقرير بنجاح",
+		"en": "Report template updated successfully",
+		"es": "Plantilla de informe actualizada correctamente",
+		"fr": "Modèle de rapport mis à jour avec succès",
+		"ru": "Шаблон отчета успешно обновлен",
+		"zh": "报表模板已成功更新"
+	},
+	"webReportsCronDaily": {
+		"ar": "كل يوم في الساعة {time}",
+		"en": "Every day at {time}",
+		"es": "Todos los días a las {time}",
+		"fr": "Tous les jours à {time}",
+		"ru": "Каждый день в {time}",
+		"zh": "每天 {time}"
+	},
+	"webReportsCronDailyFallback": {
+		"ar": "{time} يوميًا",
+		"en": "{time} daily",
+		"es": "{time} diario",
+		"fr": "{time} quotidien",
+		"ru": "{time} ежедневно",
+		"zh": "每天 {time}"
+	},
+	"webReportsCronMonthly": {
+		"ar": "يوم {day} من كل شهر في الساعة {time}",
+		"en": "Day {day} of each month at {time}",
+		"es": "Día {day} de cada mes a las {time}",
+		"fr": "Le jour {day} de chaque mois à {time}",
+		"ru": "{day}-го числа каждого месяца в {time}",
+		"zh": "每月 {day} 日 {time}"
+	},
+	"webReportsCronQuarterly": {
+		"ar": "كل 3 أشهر في الساعة {time}",
+		"en": "Every 3 months at {time}",
+		"es": "Cada 3 meses a las {time}",
+		"fr": "Tous les 3 mois à {time}",
+		"ru": "Каждые 3 месяца в {time}",
+		"zh": "每 3 个月 {time}"
+	},
+	"webReportsCronWeekly": {
+		"ar": "كل {day} في الساعة {time}",
+		"en": "Every {day} at {time}",
+		"es": "Todos los {day} a las {time}",
+		"fr": "Tous les {day} à {time}",
+		"ru": "Каждый {day} в {time}",
+		"zh": "每周{day} {time}"
+	},
+	"webReportsDayFriday": {
+		"ar": "الجمعة",
+		"en": "Friday",
+		"es": "Viernes",
+		"fr": "Vendredi",
+		"ru": "Пятница",
+		"zh": "星期五"
+	},
+	"webReportsDayMonday": {
+		"ar": "الاثنين",
+		"en": "Monday",
+		"es": "Lunes",
+		"fr": "Lundi",
+		"ru": "Понедельник",
+		"zh": "星期一"
+	},
+	"webReportsDaySaturday": {
+		"ar": "السبت",
+		"en": "Saturday",
+		"es": "Sábado",
+		"fr": "Samedi",
+		"ru": "Суббота",
+		"zh": "星期六"
+	},
+	"webReportsDaySunday": {
+		"ar": "الأحد",
+		"en": "Sunday",
+		"es": "Domingo",
+		"fr": "Dimanche",
+		"ru": "Воскресенье",
+		"zh": "星期日"
+	},
+	"webReportsDayThursday": {
+		"ar": "الخميس",
+		"en": "Thursday",
+		"es": "Jueves",
+		"fr": "Jeudi",
+		"ru": "Четверг",
+		"zh": "星期四"
+	},
+	"webReportsDayTuesday": {
+		"ar": "الثلاثاء",
+		"en": "Tuesday",
+		"es": "Martes",
+		"fr": "Mardi",
+		"ru": "Вторник",
+		"zh": "星期二"
+	},
+	"webReportsDayWednesday": {
+		"ar": "الأربعاء",
+		"en": "Wednesday",
+		"es": "Miércoles",
+		"fr": "Mercredi",
+		"ru": "Среда",
+		"zh": "星期三"
+	},
+	"webReportsEmailButton": {
+		"ar": "بريد إلكتروني",
+		"en": "Email",
+		"es": "Correo",
+		"fr": "E-mail",
+		"ru": "Отправить",
+		"zh": "发送邮件"
+	},
+	"webReportsEmailPlaceholder": {
+		"ar": "recipient@example.com",
+		"en": "recipient@example.com",
+		"es": "recipient@example.com",
+		"fr": "recipient@example.com",
+		"ru": "recipient@example.com",
+		"zh": "recipient@example.com"
+	},
+	"webReportsFreqDaily": {
+		"ar": "يوميًا",
+		"en": "Daily",
+		"es": "Diario",
+		"fr": "Quotidien",
+		"ru": "Ежедневно",
+		"zh": "每日"
+	},
+	"webReportsFreqMonthly": {
+		"ar": "شهريًا",
+		"en": "Monthly",
+		"es": "Mensual",
+		"fr": "Mensuel",
+		"ru": "Ежемесячно",
+		"zh": "每月"
+	},
+	"webReportsFreqQuarterly": {
+		"ar": "ربع سنوي",
+		"en": "Quarterly",
+		"es": "Trimestral",
+		"fr": "Trimestriel",
+		"ru": "Ежеквартально",
+		"zh": "每季度"
+	},
+	"webReportsFreqWeekly": {
+		"ar": "أسبوعيًا",
+		"en": "Weekly",
+		"es": "Semanal",
+		"fr": "Hebdomadaire",
+		"ru": "Еженедельно",
+		"zh": "每周"
+	},
+	"webReportsScheduledActiveList": {
+		"ar": "الجداول النشطة",
+		"en": "Active Schedules",
+		"es": "Programaciones activas",
+		"fr": "Plannings actifs",
+		"ru": "Активные расписания",
+		"zh": "活跃计划"
+	},
+	"webReportsScheduledCancelEdit": {
+		"ar": "إلغاء التحرير",
+		"en": "Cancel Edit",
+		"es": "Cancelar edición",
+		"fr": "Annuler la modification",
+		"ru": "Отменить редактирование",
+		"zh": "取消编辑"
+	},
+	"webReportsScheduledDayOfMonth": {
+		"ar": "يوم من الشهر",
+		"en": "Day of month",
+		"es": "Día del mes",
+		"fr": "Jour du mois",
+		"ru": "День месяца",
+		"zh": "每月日期"
+	},
+	"webReportsScheduledDayOfWeek": {
+		"ar": "يوم الأسبوع",
+		"en": "Day of week",
+		"es": "Día de la semana",
+		"fr": "Jour de la semaine",
+		"ru": "День недели",
+		"zh": "星期几"
+	},
+	"webReportsScheduledDeleteConfirm": {
+		"ar": "هل أنت متأكد من حذف التسليم المجدول لـ \"{name}\"؟",
+		"en": "Are you sure you want to delete the scheduled delivery for \"{name}\"?",
+		"es": "¿Seguro que quieres eliminar la entrega programada de \"{name}\"?",
+		"fr": "Voulez-vous vraiment supprimer la livraison planifiée de \"{name}\" ?",
+		"ru": "Удалить запланированную доставку \"{name}\"?",
+		"zh": "确定要删除 \"{name}\" 的计划交付吗？"
+	},
+	"webReportsScheduledDeleteFailed": {
+		"ar": "تعذر حذف الجدول الخاص بـ \"{name}\"",
+		"en": "Failed to delete schedule for \"{name}\"",
+		"es": "No se pudo eliminar la programación de \"{name}\"",
+		"fr": "Échec de la suppression du planning de \"{name}\"",
+		"ru": "Не удалось удалить расписание \"{name}\"",
+		"zh": "删除 \"{name}\" 的计划失败"
+	},
+	"webReportsScheduledDeleteTitle": {
+		"ar": "حذف الجدول",
+		"en": "Delete Schedule",
+		"es": "Eliminar programación",
+		"fr": "Supprimer le planning",
+		"ru": "Удалить расписание",
+		"zh": "删除计划"
+	},
+	"webReportsScheduledDeleted": {
+		"ar": "تم حذف الجدول الخاص بـ \"{name}\"",
+		"en": "Deleted schedule for \"{name}\"",
+		"es": "Programación de \"{name}\" eliminada",
+		"fr": "Planning de \"{name}\" supprimé",
+		"ru": "Расписание \"{name}\" удалено",
+		"zh": "已删除 \"{name}\" 的计划"
+	},
+	"webReportsScheduledEditTitle": {
+		"ar": "تعديل جدول التسليم",
+		"en": "Edit Delivery Schedule",
+		"es": "Editar programación de entrega",
+		"fr": "Modifier le planning de livraison",
+		"ru": "Изменить расписание доставки",
+		"zh": "编辑交付计划"
+	},
+	"webReportsScheduledEditing": {
+		"ar": "جارٍ تعديل جدول التسليم لـ \"{name}\"",
+		"en": "Editing delivery schedule for \"{name}\"",
+		"es": "Editando la programación de entrega de \"{name}\"",
+		"fr": "Modification du planning de livraison de \"{name}\"",
+		"ru": "Редактирование расписания доставки \"{name}\"",
+		"zh": "正在编辑 \"{name}\" 的交付计划"
+	},
+	"webReportsScheduledFormatCsv": {
+		"ar": "تصدير CSV",
+		"en": "CSV Export",
+		"es": "Exportación CSV",
+		"fr": "Export CSV",
+		"ru": "Экспорт CSV",
+		"zh": "CSV 导出"
+	},
+	"webReportsScheduledFormatPdf": {
+		"ar": "تقرير PDF",
+		"en": "PDF Report",
+		"es": "Informe PDF",
+		"fr": "Rapport PDF",
+		"ru": "Отчет PDF",
+		"zh": "PDF 报表"
+	},
+	"webReportsScheduledFrequency": {
+		"ar": "التكرار",
+		"en": "Frequency",
+		"es": "Frecuencia",
+		"fr": "Fréquence",
+		"ru": "Периодичность",
+		"zh": "频率"
+	},
+	"webReportsScheduledPause": {
+		"ar": "إيقاف مؤقت",
+		"en": "Pause",
+		"es": "Pausar",
+		"fr": "Mettre en pause",
+		"ru": "Пауза",
+		"zh": "暂停"
+	},
+	"webReportsScheduledPauseTitle": {
+		"ar": "إيقاف الجدول مؤقتًا",
+		"en": "Pause Schedule",
+		"es": "Pausar programación",
+		"fr": "Mettre le planning en pause",
+		"ru": "Приостановить расписание",
+		"zh": "暂停计划"
+	},
+	"webReportsScheduledPaused": {
+		"ar": "تم إيقاف جدول التسليم مؤقتًا",
+		"en": "Delivery schedule paused",
+		"es": "Programación de entrega en pausa",
+		"fr": "Planning de livraison mis en pause",
+		"ru": "Расписание доставки приостановлено",
+		"zh": "交付计划已暂停"
+	},
+	"webReportsScheduledRecipientCount": {
+		"ar": "{count} مستلم(ين)",
+		"en": "{count} Recipient(s)",
+		"es": "{count} destinatario(s)",
+		"fr": "{count} destinataire(s)",
+		"ru": "получателей: {count}",
+		"zh": "{count} 位收件人"
+	},
+	"webReportsScheduledResume": {
+		"ar": "استئناف",
+		"en": "Resume",
+		"es": "Reanudar",
+		"fr": "Reprendre",
+		"ru": "Возобновить",
+		"zh": "恢复"
+	},
+	"webReportsScheduledResumeTitle": {
+		"ar": "استئناف الجدول",
+		"en": "Resume Schedule",
+		"es": "Reanudar programación",
+		"fr": "Reprendre le planning",
+		"ru": "Возобновить расписание",
+		"zh": "恢复计划"
+	},
+	"webReportsScheduledResumed": {
+		"ar": "تم استئناف جدول التسليم",
+		"en": "Delivery schedule resumed",
+		"es": "Programación de entrega reanudada",
+		"fr": "Planning de livraison repris",
+		"ru": "Расписание доставки возобновлено",
+		"zh": "交付计划已恢复"
+	},
+	"webReportsScheduledSummaryLabel": {
+		"ar": "ملخص الجدول:",
+		"en": "Schedule Summary:",
+		"es": "Resumen de la programación:",
+		"fr": "Résumé du planning :",
+		"ru": "Сводка расписания:",
+		"zh": "计划摘要："
+	},
+	"webReportsScheduledTime": {
+		"ar": "الوقت",
+		"en": "Time",
+		"es": "Hora",
+		"fr": "Heure",
+		"ru": "Время",
+		"zh": "时间"
+	},
+	"webReportsScheduledUpdate": {
+		"ar": "تحديث الجدول",
+		"en": "Update Schedule",
+		"es": "Actualizar programación",
+		"fr": "Mettre à jour le planning",
+		"ru": "Обновить расписание",
+		"zh": "更新计划"
+	},
+	"webReportsScheduledUpdated": {
+		"ar": "تم تحديث جدول التسليم بنجاح",
+		"en": "Delivery schedule updated successfully",
+		"es": "Programación de entrega actualizada correctamente",
+		"fr": "Planning de livraison mis à jour avec succès",
+		"ru": "Расписание доставки успешно обновлено",
+		"zh": "交付计划已成功更新"
+	},
+	"webReportsScheduledWeekOfMonth": {
+		"ar": "أسبوع من الشهر",
+		"en": "Week of month",
+		"es": "Semana del mes",
+		"fr": "Semaine du mois",
+		"ru": "Неделя месяца",
+		"zh": "每月周次"
+	},
+	"webReportsSending": {
+		"ar": "جارٍ الإرسال…",
+		"en": "Sending…",
+		"es": "Enviando…",
+		"fr": "Envoi…",
+		"ru": "Отправка…",
+		"zh": "正在发送…"
+	},
+	"webReportsStatusActive": {
+		"ar": "نشط",
+		"en": "Active",
+		"es": "Activo",
+		"fr": "Actif",
+		"ru": "Активен",
+		"zh": "已启用"
+	},
+	"webReportsStatusPaused": {
+		"ar": "متوقف مؤقتًا",
+		"en": "Paused",
+		"es": "En pausa",
+		"fr": "En pause",
+		"ru": "На паузе",
+		"zh": "已暂停"
+	},
+	"webReportsWeekFirst": {
+		"ar": "الأسبوع الأول",
+		"en": "1st week",
+		"es": "1.ª semana",
+		"fr": "1re semaine",
+		"ru": "1-я неделя",
+		"zh": "第 1 周"
+	},
+	"webReportsWeekFourth": {
+		"ar": "الأسبوع الرابع",
+		"en": "4th week",
+		"es": "4.ª semana",
+		"fr": "4e semaine",
+		"ru": "4-я неделя",
+		"zh": "第 4 周"
+	},
+	"webReportsWeekSecond": {
+		"ar": "الأسبوع الثاني",
+		"en": "2nd week",
+		"es": "2.ª semana",
+		"fr": "2e semaine",
+		"ru": "2-я неделя",
+		"zh": "第 2 周"
+	},
+	"webReportsWeekThird": {
+		"ar": "الأسبوع الثالث",
+		"en": "3rd week",
+		"es": "3.ª semana",
+		"fr": "3e semaine",
+		"ru": "3-я неделя",
+		"zh": "第 3 周"
+	},
+	"webSettingsComplianceDeniedDesc": {
+		"ar": "يمكن للقادة ونواب القادة فقط إدارة إعدادات الامتثال.",
+		"en": "Only captains and co-captains can manage compliance settings.",
+		"es": "Solo los capitanes y co-capitanes pueden gestionar la configuración de cumplimiento.",
+		"fr": "Seuls les capitaines et co-capitaines peuvent gérer les paramètres de conformité.",
+		"ru": "Управлять настройками соответствия могут только капитаны и со-капитаны.",
+		"zh": "只有队长和副队长可以管理合规设置。"
+	},
+	"webSettingsComplianceDeniedTitle": {
+		"ar": "تم رفض الوصول",
+		"en": "Access Denied",
+		"es": "Acceso denegado",
+		"fr": "Accès refusé",
+		"ru": "Доступ запрещен",
+		"zh": "访问被拒绝"
+	},
+	"webSettingsComplianceDesc": {
+		"ar": "قم بتكوين سياسات التتبع التنظيمية وتعتيم الخصوصية وقواعد HOS.",
+		"en": "Configure regulatory tracking policies, privacy masking, and HOS rules.",
+		"es": "Configura políticas de rastreo regulatorio, enmascaramiento de privacidad y reglas de HOS.",
+		"fr": "Configurez les politiques de suivi réglementaire, le masquage de confidentialité et les règles HOS.",
+		"ru": "Настройте политики нормативного отслеживания, маскирование конфиденциальности и правила HOS.",
+		"zh": "配置监管跟踪政策、隐私遮蔽和 HOS 规则。"
+	},
+	"webSettingsComplianceFailed": {
+		"ar": "تعذر حفظ إعدادات الامتثال.",
+		"en": "Failed to save compliance settings.",
+		"es": "No se pudieron guardar los ajustes de cumplimiento.",
+		"fr": "Échec de l'enregistrement des paramètres de conformité.",
+		"ru": "Не удалось сохранить настройки соответствия.",
+		"zh": "保存合规设置失败。"
+	},
+	"webSettingsComplianceSaved": {
+		"ar": "تم حفظ إعدادات الامتثال بنجاح.",
+		"en": "Compliance settings saved successfully.",
+		"es": "Ajustes de cumplimiento guardados correctamente.",
+		"fr": "Paramètres de conformité enregistrés avec succès.",
+		"ru": "Настройки соответствия успешно сохранены.",
+		"zh": "合规设置已成功保存。"
+	},
+	"webShellCrewsAria": {
+		"ar": "الأطقم",
+		"en": "Crews",
+		"es": "Grupos",
+		"fr": "Équipes",
+		"ru": "Группы",
+		"zh": "队伍"
+	},
+	"webSmartHomeDesc": {
+		"ar": "تشغيل أنظمة المنزل الذكي (مثل Home Assistant أو IFTTT أو Zapier) عند وصولك إلى منطقة Safe Landing.",
+		"en": "Trigger smart home systems (like Home Assistant, IFTTT, or Zapier) when you arrive at a Safe Landing zone.",
+		"es": "Activa sistemas de hogar inteligente (como Home Assistant, IFTTT o Zapier) cuando llegues a una zona Safe Landing.",
+		"fr": "Déclenchez des systèmes domotiques (comme Home Assistant, IFTTT ou Zapier) à votre arrivée dans une zone Safe Landing.",
+		"ru": "Запускайте системы умного дома (Home Assistant, IFTTT или Zapier) при прибытии в зону Safe Landing.",
+		"zh": "当到达 Safe Landing 区域时触发智能家居系统（如 Home Assistant、IFTTT 或 Zapier）。"
+	},
+	"webSmartHomeLockedDesc": {
+		"ar": "أتمتة المنزل الذكي متاحة في مستوى First Mate وما فوق. قم بترقية اشتراك طاقمك لربط أتمتة المنزل.",
+		"en": "Smart Home automation is available on First Mate tier and above. Upgrade your crew subscription to connect home automations.",
+		"es": "La automatización del hogar inteligente está disponible en el nivel First Mate y superiores. Mejora la suscripción de tu grupo para conectar automatizaciones del hogar.",
+		"fr": "L'automatisation domotique est disponible à partir du niveau First Mate. Améliorez l'abonnement de votre équipe pour connecter les automatisations de votre domicile.",
+		"ru": "Автоматизация умного дома доступна на уровне First Mate и выше. Обновите подписку группы, чтобы подключить домашнюю автоматизацию.",
+		"zh": "智能家居自动化在 First Mate 及以上等级可用。升级你的队伍订阅以连接家庭自动化。"
+	},
+	"webSmartHomeLockedTitle": {
+		"ar": "أتمتة المنزل الذكي مقفلة",
+		"en": "Smart Home Automation Locked",
+		"es": "Automatización del hogar inteligente bloqueada",
+		"fr": "Automatisation domotique verrouillée",
+		"ru": "Автоматизация умного дома заблокирована",
+		"zh": "智能家居自动化已锁定"
+	},
+	"webSmartHomeTest": {
+		"ar": "اختبار Webhook",
+		"en": "Test Webhook",
+		"es": "Probar webhook",
+		"fr": "Tester le webhook",
+		"ru": "Проверить вебхук",
+		"zh": "测试 Webhook"
+	},
+	"webSmartHomeTestError": {
+		"ar": "تعذر الاتصال بعنوان URL الخاص بـ Webhook. تحقق من العنوان.",
+		"en": "Failed to connect to webhook URL. Verify the address.",
+		"es": "No se pudo conectar con la URL del webhook. Verifica la dirección.",
+		"fr": "Échec de la connexion à l'URL du webhook. Vérifiez l'adresse.",
+		"ru": "Не удалось подключиться к URL вебхука. Проверьте адрес.",
+		"zh": "无法连接到 Webhook URL。请检查地址。"
+	},
+	"webSmartHomeTestFailure": {
+		"ar": "فشل Webhook مع الحالة: {status}",
+		"en": "Webhook failed with status: {status}",
+		"es": "El webhook falló con el estado: {status}",
+		"fr": "Le webhook a échoué avec le statut : {status}",
+		"ru": "Вебхук не сработал, статус: {status}",
+		"zh": "Webhook 失败，状态码：{status}"
+	},
+	"webSmartHomeTestSuccess": {
+		"ar": "تم اختبار Webhook بنجاح! الاستجابة جيدة.",
+		"en": "Webhook tested successfully! Response OK.",
+		"es": "¡Webhook probado correctamente! Respuesta OK.",
+		"fr": "Webhook testé avec succès ! Réponse OK.",
+		"ru": "Вебхук успешно проверен! Ответ OK.",
+		"zh": "Webhook 测试成功！响应正常。"
+	},
+	"webSmartHomeTitle": {
+		"ar": "أتمتة المنزل الذكي (Matter)",
+		"en": "Smart Home (Matter) Automation",
+		"es": "Automatización del hogar inteligente (Matter)",
+		"fr": "Automatisation domotique (Matter)",
+		"ru": "Автоматизация умного дома (Matter)",
+		"zh": "智能家居 (Matter) 自动化"
+	},
+	"webSmartHomeUnknownMember": {
+		"ar": "عضو غير معروف",
+		"en": "Unknown Member",
+		"es": "Miembro desconocido",
+		"fr": "Membre inconnu",
+		"ru": "Неизвестный участник",
+		"zh": "未知成员"
+	},
+	"webSmartHomeUrlFailed": {
+		"ar": "تعذر حفظ عنوان URL الخاص بـ Webhook للمنزل الذكي.",
+		"en": "Failed to save Smart Home webhook URL.",
+		"es": "No se pudo guardar la URL del webhook del hogar inteligente.",
+		"fr": "Échec de l'enregistrement de l'URL du webhook domotique.",
+		"ru": "Не удалось сохранить URL вебхука умного дома.",
+		"zh": "保存智能家居 Webhook URL 失败。"
+	},
+	"webSmartHomeUrlLabel": {
+		"ar": "عنوان URL الخاص بـ Webhook",
+		"en": "Webhook URL",
+		"es": "URL del webhook",
+		"fr": "URL du webhook",
+		"ru": "URL вебхука",
+		"zh": "Webhook URL"
+	},
+	"webSmartHomeUrlSaved": {
+		"ar": "تم حفظ عنوان URL الخاص بـ Webhook للمنزل الذكي.",
+		"en": "Smart Home webhook URL saved.",
+		"es": "URL del webhook del hogar inteligente guardada.",
+		"fr": "URL du webhook domotique enregistrée.",
+		"ru": "URL вебхука умного дома сохранен.",
+		"zh": "智能家居 Webhook URL 已保存。"
+	},
+	"webTrendNoData": {
+		"ar": "لا توجد بيانات اتجاهات متاحة",
+		"en": "No trend data available",
+		"es": "No hay datos de tendencia disponibles",
+		"fr": "Aucune donnée de tendance disponible",
+		"ru": "Нет данных о тенденциях",
+		"zh": "暂无趋势数据"
+	},
+	"webWebhooksActivate": {
+		"ar": "تفعيل Webhook",
+		"en": "Activate webhook",
+		"es": "Activar webhook",
+		"fr": "Activer le webhook",
+		"ru": "Активировать вебхук",
+		"zh": "启用 Webhook"
+	},
+	"webWebhooksAdd": {
+		"ar": "تسجيل نقطة الاتصال",
+		"en": "Register Endpoint",
+		"es": "Registrar punto de conexión",
+		"fr": "Enregistrer le point de terminaison",
+		"ru": "Зарегистрировать конечную точку",
+		"zh": "注册端点"
+	},
+	"webWebhooksAddEndpoint": {
+		"ar": "إضافة نقطة اتصال",
+		"en": "Add Endpoint",
+		"es": "Añadir punto de conexión",
+		"fr": "Ajouter un point de terminaison",
+		"ru": "Добавить конечную точку",
+		"zh": "添加端点"
+	},
+	"webWebhooksCreated": {
+		"ar": "تم تسجيل نقطة اتصال Webhook بنجاح.",
+		"en": "Webhook endpoint registered successfully.",
+		"es": "Punto de conexión de webhook registrado correctamente.",
+		"fr": "Point de terminaison de webhook enregistré avec succès.",
+		"ru": "Конечная точка вебхука успешно зарегистрирована.",
+		"zh": "Webhook 端点已成功注册。"
+	},
+	"webWebhooksDeactivate": {
+		"ar": "إلغاء تفعيل Webhook",
+		"en": "Deactivate webhook",
+		"es": "Desactivar webhook",
+		"fr": "Désactiver le webhook",
+		"ru": "Деактивировать вебхук",
+		"zh": "停用 Webhook"
+	},
+	"webWebhooksDeleteConfirm": {
+		"ar": "هل أنت متأكد من حذف نقطة اتصال Webhook هذه؟ ستتوقف عن تلقي إشعارات الأحداث فورًا.",
+		"en": "Are you sure you want to delete this webhook endpoint? You will stop receiving event notifications immediately.",
+		"es": "¿Seguro que quieres eliminar este punto de conexión de webhook? Dejarás de recibir notificaciones de eventos de inmediato.",
+		"fr": "Voulez-vous vraiment supprimer ce point de terminaison de webhook ? Vous cesserez immédiatement de recevoir les notifications d'événements.",
+		"ru": "Удалить эту конечную точку вебхука? Вы немедленно перестанете получать уведомления о событиях.",
+		"zh": "确定要删除此 Webhook 端点吗？你将立即停止接收事件通知。"
+	},
+	"webWebhooksDeleteEndpoint": {
+		"ar": "حذف نقطة الاتصال",
+		"en": "Delete endpoint",
+		"es": "Eliminar punto de conexión",
+		"fr": "Supprimer le point de terminaison",
+		"ru": "Удалить конечную точку",
+		"zh": "删除端点"
+	},
+	"webWebhooksDeleteFailed": {
+		"ar": "تعذر حذف Webhook.",
+		"en": "Failed to delete webhook.",
+		"es": "No se pudo eliminar el webhook.",
+		"fr": "Échec de la suppression du webhook.",
+		"ru": "Не удалось удалить вебхук.",
+		"zh": "删除 Webhook 失败。"
+	},
+	"webWebhooksDeleteTitle": {
+		"ar": "حذف نقطة اتصال Webhook",
+		"en": "Delete Webhook Endpoint",
+		"es": "Eliminar punto de conexión de webhook",
+		"fr": "Supprimer le point de terminaison de webhook",
+		"ru": "Удалить конечную точку вебхука",
+		"zh": "删除 Webhook 端点"
+	},
+	"webWebhooksDeleted": {
+		"ar": "تم حذف نقطة اتصال Webhook.",
+		"en": "Webhook endpoint deleted.",
+		"es": "Punto de conexión de webhook eliminado.",
+		"fr": "Point de terminaison de webhook supprimé.",
+		"ru": "Конечная точка вебхука удалена.",
+		"zh": "Webhook 端点已删除。"
+	},
+	"webWebhooksEventsLabel": {
+		"ar": "اشتراكات الأحداث",
+		"en": "Event Subscriptions",
+		"es": "Suscripciones a eventos",
+		"fr": "Abonnements aux événements",
+		"ru": "Подписки на события",
+		"zh": "事件订阅"
+	},
+	"webWebhooksHideSecret": {
+		"ar": "إخفاء السر",
+		"en": "Hide secret",
+		"es": "Ocultar secreto",
+		"fr": "Masquer le secret",
+		"ru": "Скрыть секрет",
+		"zh": "隐藏密钥"
+	},
+	"webWebhooksLoadFailed": {
+		"ar": "تعذر تحميل Webhooks",
+		"en": "Failed to load webhooks",
+		"es": "No se pudieron cargar los webhooks",
+		"fr": "Échec du chargement des webhooks",
+		"ru": "Не удалось загрузить вебхуки",
+		"zh": "加载 Webhook 失败"
+	},
+	"webWebhooksNewEndpointTitle": {
+		"ar": "نقطة اتصال Webhook جديدة",
+		"en": "New Webhook Endpoint",
+		"es": "Nuevo punto de conexión de webhook",
+		"fr": "Nouveau point de terminaison de webhook",
+		"ru": "Новая конечная точка вебхука",
+		"zh": "新建 Webhook 端点"
+	},
+	"webWebhooksNoEndpoints": {
+		"ar": "لا توجد نقاط اتصال Webhook",
+		"en": "No Webhook Endpoints",
+		"es": "No hay puntos de conexión de webhook",
+		"fr": "Aucun point de terminaison de webhook",
+		"ru": "Нет конечных точек вебхука",
+		"zh": "没有 Webhook 端点"
+	},
+	"webWebhooksNoEndpointsDesc": {
+		"ar": "قم بتكوين نقطة اتصال لتلقي التحديثات اللحظية حول أحداث الموقع والسلامة.",
+		"en": "Configure an endpoint to receive real-time updates about location and safety events.",
+		"es": "Configura un punto de conexión para recibir actualizaciones en tiempo real sobre eventos de ubicación y seguridad.",
+		"fr": "Configurez un point de terminaison pour recevoir des mises à jour en temps réel sur les événements de localisation et de sécurité.",
+		"ru": "Настройте конечную точку для получения обновлений в реальном времени о событиях местоположения и безопасности.",
+		"zh": "配置一个端点以接收关于位置和安全事件的实时更新。"
+	},
+	"webWebhooksRegisterFailed": {
+		"ar": "تعذر تسجيل Webhook.",
+		"en": "Failed to register webhook.",
+		"es": "No se pudo registrar el webhook.",
+		"fr": "Échec de l'enregistrement du webhook.",
+		"ru": "Не удалось зарегистрировать вебхук.",
+		"zh": "注册 Webhook 失败。"
+	},
+	"webWebhooksRevealSecret": {
+		"ar": "إظهار السر",
+		"en": "Reveal secret",
+		"es": "Revelar secreto",
+		"fr": "Afficher le secret",
+		"ru": "Показать секрет",
+		"zh": "显示密钥"
+	},
+	"webWebhooksSelectAtLeastOneEvent": {
+		"ar": "يرجى تحديد اشتراك حدث واحد على الأقل.",
+		"en": "Please select at least one event subscription.",
+		"es": "Selecciona al menos una suscripción a eventos.",
+		"fr": "Veuillez sélectionner au moins un abonnement aux événements.",
+		"ru": "Выберите хотя бы одну подписку на события.",
+		"zh": "请至少选择一个事件订阅。"
+	},
+	"webWebhooksSigningSecret": {
+		"ar": "سر التوقيع:",
+		"en": "Signing Secret:",
+		"es": "Secreto de firma:",
+		"fr": "Secret de signature :",
+		"ru": "Секрет подписи:",
+		"zh": "签名密钥："
+	},
+	"webWebhooksStatusActivated": {
+		"ar": "تم تفعيل Webhook.",
+		"en": "Webhook activated.",
+		"es": "Webhook activado.",
+		"fr": "Webhook activé.",
+		"ru": "Вебхук активирован.",
+		"zh": "Webhook 已启用。"
+	},
+	"webWebhooksStatusActive": {
+		"ar": "نشط",
+		"en": "Active",
+		"es": "Activo",
+		"fr": "Actif",
+		"ru": "Активен",
+		"zh": "已启用"
+	},
+	"webWebhooksStatusDeactivated": {
+		"ar": "تم إلغاء تفعيل Webhook.",
+		"en": "Webhook deactivated.",
+		"es": "Webhook desactivado.",
+		"fr": "Webhook désactivé.",
+		"ru": "Вебхук деактивирован.",
+		"zh": "Webhook 已停用。"
+	},
+	"webWebhooksStatusInactive": {
+		"ar": "غير نشط",
+		"en": "Inactive",
+		"es": "Inactivo",
+		"fr": "Inactif",
+		"ru": "Неактивен",
+		"zh": "已停用"
+	},
+	"webWebhooksSubtitle": {
+		"ar": "تسليم أحداث الموقع والسلامة اللحظية مباشرة إلى خوادمك.",
+		"en": "Deliver real-time location and safety events directly to your servers.",
+		"es": "Entrega eventos de ubicación y seguridad en tiempo real directamente a tus servidores.",
+		"fr": "Livrez les événements de localisation et de sécurité en temps réel directement à vos serveurs.",
+		"ru": "Доставляйте события местоположения и безопасности в реальном времени прямо на ваши серверы.",
+		"zh": "将实时位置和安全事件直接传送到你的服务器。"
+	},
+	"webWebhooksToggleFailed": {
+		"ar": "تعذر تبديل الحالة.",
+		"en": "Failed to toggle status.",
+		"es": "No se pudo cambiar el estado.",
+		"fr": "Échec du changement de statut.",
+		"ru": "Не удалось изменить статус.",
+		"zh": "切换状态失败。"
+	},
+	"webWebhooksUrlLabel": {
+		"ar": "عنوان URL للحمولة",
+		"en": "Payload URL",
+		"es": "URL de payload",
+		"fr": "URL de charge utile",
+		"ru": "URL полезной нагрузки",
+		"zh": "载荷 URL"
+	}
+}

@@ -116,9 +116,9 @@ export default function LoginPage() {
       {/* Theme toggle */}
       <button
         onClick={toggleTheme}
-        className="fixed right-5 top-5 flex h-10 w-10 items-center justify-center rounded-xl border text-lg transition-colors hover:border-[var(--brand-seed)]"
+        className="fixed end-5 top-5 flex h-10 w-10 items-center justify-center rounded-xl border text-lg transition-colors hover:border-[var(--brand-seed)]"
         style={{ borderColor: 'color-mix(in srgb, var(--brand-seed) 20%, transparent)' }}
-        aria-label="Toggle theme"
+        aria-label={t('webShellToggleTheme')}
       >
         {resolved === 'dark' ? '\u{1F319}' : '\u{2600}\u{FE0F}'}
       </button>
@@ -127,7 +127,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="mb-9 text-center">
           <img
-            src="/logo-96.png" alt="CrewRadr" width={96} height={96}
+            src="/logo-96.png" alt={t('webBrandName')} width={96} height={96}
             className="mx-auto mb-9 rounded-[22px]"
           />
           <h1 className="text-[clamp(2rem,5vw,3.2rem)] font-bold tracking-[-0.02em] text-zinc-900 dark:text-zinc-100">
@@ -153,7 +153,7 @@ export default function LoginPage() {
               <label className="mb-1 block text-sm font-medium text-zinc-900 dark:text-zinc-100">{t('webLoginEmail')}</label>
               <input id="email" name="email" type="email" value={email} onChange={e => setEmail(e.target.value)}
                 className="mb-4 w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500"
-                placeholder="captain@crewradr.app" autoComplete="email" autoFocus />
+                placeholder={t('webLoginEmailPlaceholder')} autoComplete="email" autoFocus />
               <label className="mb-1 block text-sm font-medium text-zinc-900 dark:text-zinc-100">{t('webLoginPassword')}</label>
               <input id="password" name="password" type="password" value={password} onChange={e => setPassword(e.target.value)}
                 className="mb-6 w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500"
@@ -192,7 +192,7 @@ export default function LoginPage() {
               <input id="mfaCode" name="mfaCode" type="text" inputMode="numeric" pattern="[0-9]*" maxLength={6}
                 value={mfaCode} onChange={e => setMfaCode(e.target.value.replace(/\D/g, ''))}
                 className="mb-4 w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-center text-2xl tracking-[0.5em] font-mono text-zinc-900 placeholder:text-zinc-400 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500"
-                placeholder="123456" autoComplete="one-time-code" autoFocus />
+                placeholder={t('webLoginMfaCodePlaceholder')} autoComplete="one-time-code" autoFocus />
               <button type="submit" disabled={busy}
                 className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--brand-seed)] px-4 py-2.5 text-sm font-semibold text-on-brand transition-opacity hover:opacity-90 disabled:opacity-50">
                 {busy && <Loader2 className="h-4 w-4 animate-spin" />} {t('webLoginMfaVerify')}
@@ -207,9 +207,9 @@ export default function LoginPage() {
               <Shield className="mx-auto h-12 w-12 text-amber-600" />
               <h2 className="mt-3 text-lg font-bold text-zinc-900 dark:text-zinc-100">{t('webLogin2faRequiredTitle')}</h2>
               <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">{t('webLogin2faRequiredDesc')}</p>
-              <div className="mt-6 space-y-3 rounded-lg bg-zinc-50 p-4 text-left text-sm dark:bg-zinc-800">
+              <div className="mt-6 space-y-3 rounded-lg bg-zinc-50 p-4 text-start text-sm dark:bg-zinc-800">
                 <p className="font-medium text-zinc-900 dark:text-zinc-100">{t('webLogin2faSetupSteps')}</p>
-                <ol className="list-decimal space-y-2 pl-5 text-zinc-600 dark:text-zinc-400">
+                <ol className="list-decimal space-y-2 ps-5 text-zinc-600 dark:text-zinc-400">
                   <li>{t('webLogin2faStep1')}</li>
                   <li>{t('webLogin2faStep2')}</li>
                   <li>{t('webLogin2faStep3')}</li>

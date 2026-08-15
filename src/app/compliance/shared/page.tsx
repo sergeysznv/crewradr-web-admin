@@ -63,7 +63,7 @@ function ComplianceContent() {
     const since = params.get('since');
 
     if (!type || !crew || !since) {
-      setError('Invalid or missing report parameters.');
+      setError(t('webComplianceReportInvalidParams'));
       setLoading(false);
       return;
     }
@@ -79,19 +79,19 @@ function ComplianceContent() {
         const dataArray = (data ?? []) as any[];
 
         if (type === 'osha') {
-          setReportLabel('OSHA 300 Log');
+          setReportLabel(t('webComplianceReportOshaLogTitle'));
           setOshaData(dataArray);
         } else if (type === 'eld') {
-          setReportLabel('ELD Report');
+          setReportLabel(t('webComplianceReportEldTitle'));
           setEldData(dataArray as TripSession[]);
         } else if (type === 'dot') {
-          setReportLabel('DOT Compliance Report');
+          setReportLabel(t('webComplianceReportDotTitle'));
           setDotData(dataArray);
         } else {
-          setError('Unknown report type.');
+          setError(t('webComplianceReportUnknownType'));
         }
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Failed to load report');
+        setError(e instanceof Error ? e.message : t('webComplianceReportLoadFailed'));
       }
       setLoading(false);
     }
@@ -111,16 +111,16 @@ function ComplianceContent() {
   const oshaRows = useMemo(() => {
     if (!oshaData) return [];
     return oshaData.map((i) => {
-      let classification = 'Other Recordable';
-      if (i.was_fatality) classification = 'Fatality';
-      else if ((i.days_away ?? 0) > 0) classification = 'Days Away';
-      else if ((i.restricted_days ?? 0) > 0) classification = 'Restricted';
-      else if (i.was_hospitalization) classification = 'Hospitalization';
+      let classification = t('webComplianceReportOshaClassOther');
+      if (i.was_fatality) classification = t('webComplianceReportOshaClassFatality');
+      else if ((i.days_away ?? 0) > 0) classification = t('webComplianceReportOshaClassDaysAway');
+      else if ((i.restricted_days ?? 0) > 0) classification = t('webComplianceReportOshaClassRestricted');
+      else if (i.was_hospitalization) classification = t('webComplianceReportOshaClassHospitalization');
 
       let details = i.description;
-      if (i.location) details += ` at ${i.location}`;
+      if (i.location) details += t('webComplianceReportOshaAtLocation', { location: i.location });
       if (i.involved_personnel && i.involved_personnel.length > 0) {
-        details += ` (Involved: ${i.involved_personnel.join(', ')})`;
+        details += t('webComplianceReportOshaInvolved', { names: i.involved_personnel.join(', ') });
       }
 
       return [
@@ -181,32 +181,32 @@ function ComplianceContent() {
     const crew = params.get('crew');
     if (type === 'osha' && oshaData) {
       const headers = [
-        'Case No.',
-        'Employee Name',
-        'Job Title',
-        'Date of Injury',
-        'Where Event Occurred',
-        'Describe Injury/Illness',
-        'Classify',
-        'Resulted in Death?',
-        'Days Away',
-        'Restricted Days',
-        'Case Classification'
+        t('webComplianceReportCsvColCaseNo'),
+        t('webComplianceReportCsvColEmployeeName'),
+        t('webComplianceReportCsvColJobTitle'),
+        t('webComplianceReportCsvColDateOfInjury'),
+        t('webComplianceReportCsvColWhereOccurred'),
+        t('webComplianceReportCsvColDescribeInjury'),
+        t('webComplianceReportCsvColClassify'),
+        t('webComplianceReportCsvColResultedInDeath'),
+        t('webComplianceReportCsvColDaysAway'),
+        t('webComplianceReportCsvColRestrictedDays'),
+        t('webComplianceReportCsvColCaseClassification')
       ];
       const rows = oshaData.map((r: any, index: number) => {
-        const fatality = r.was_fatality ? 'Yes' : 'No';
-        let classification = 'Other Recordable';
-        if (r.was_fatality) classification = 'Fatality';
-        else if ((r.days_away ?? 0) > 0) classification = 'Days Away';
-        else if ((r.restricted_days ?? 0) > 0) classification = 'Restricted';
-        else if (r.was_hospitalization) classification = 'Hospitalization';
+        const fatality = r.was_fatality ? t('webComplianceReportCsvYes') : t('webComplianceReportCsvNo');
+        let classification = t('webComplianceReportOshaClassOther');
+        if (r.was_fatality) classification = t('webComplianceReportOshaClassFatality');
+        else if ((r.days_away ?? 0) > 0) classification = t('webComplianceReportOshaClassDaysAway');
+        else if ((r.restricted_days ?? 0) > 0) classification = t('webComplianceReportOshaClassRestricted');
+        else if (r.was_hospitalization) classification = t('webComplianceReportOshaClassHospitalization');
 
         return [
           index + 1,
-          (r.involved_personnel ?? []).join('; ') || 'Unknown',
+          (r.involved_personnel ?? []).join('; ') || t('webComplianceReportCsvUnknown'),
           '',
           r.incident_date,
-          r.location ?? 'Unknown',
+          r.location ?? t('webComplianceReportCsvUnknown'),
           r.description,
           classification,
           fatality,
@@ -216,21 +216,22 @@ function ComplianceContent() {
         ];
       });
       const csv = [
-        'OSHA Form 300 - Log of Work-Related Injuries and Illnesses',
-        `Crew ID,${crew}`,
-        `Year,${new Date().getFullYear()}`,
+        t('webComplianceReportCsvFormTitle'),
+        t('webComplianceReportCsvCrewId', { crew: crew ?? '' }),
+        t('webComplianceReportCsvYear', { year: new Date().getFullYear() }),
         '',
         headers.join(','),
         ...rows.map((row) => row.map(csvEscape).join(','))
       ].join('\n');
       download(`osha-300-crew-${new Date().toISOString().split('T')[0]}.csv`, csv);
     } else if (type === 'eld' && eldData) {
-      const distanceHeader = system === 'imperial' ? 'DistanceMi' : 'DistanceKm';
+      const distanceHeader = system === 'imperial' ? t('webComplianceReportCsvDistanceMi') : t('webComplianceReportCsvDistanceKm');
       const distanceValue = (m: number) =>
         system === 'imperial' ? (m / 1609.344).toFixed(1) : (m / 1000).toFixed(1);
-      const csv = [`Driver,Date,DrivingHours,${distanceHeader},FatigueWarnings,HOSViolation`,
+      const csv = [
+        [t('webComplianceReportCsvDriver'), t('webComplianceReportCsvDate'), t('webComplianceReportCsvDrivingHours'), distanceHeader, t('webComplianceReportCsvFatigueWarnings'), t('webComplianceReportCsvHosViolation')].join(','),
         ...eldRows.map((r) => {
-          const violation = Number(r.hours) > 11.0 ? 'Yes - Exceeds 11h limit' : 'No';
+          const violation = Number(r.hours) > 11.0 ? t('webComplianceReportCsvExceeds11h') : t('webComplianceReportCsvNo');
           return [r.driverName || r.userId, r.startedAt, r.hours, distanceValue(r.distanceM), r.fatigue, violation]
             .map(csvEscape)
             .join(',')
@@ -238,8 +239,8 @@ function ComplianceContent() {
       ].join('\n');
       download(`eld-report-crew-${new Date().toISOString().split('T')[0]}.csv`, csv);
     } else if (type === 'dot' && dotData) {
-      const distanceHeader = system === 'imperial' ? 'Distance (mi)' : 'Distance (km)';
-      const speedHeader = system === 'imperial' ? 'Max Speed (mph)' : 'Max Speed (km/h)';
+      const distanceHeader = system === 'imperial' ? t('webComplianceReportColDistanceMi') : t('webComplianceReportColDistanceKm');
+      const speedHeader = system === 'imperial' ? t('webComplianceReportColMaxSpeedMph') : t('webComplianceReportColMaxSpeedKmh');
 
       const distanceValue = (m: number) =>
         system === 'imperial' ? (m / 1609.344).toFixed(1) : (m / 1000).toFixed(1);
@@ -247,11 +248,11 @@ function ComplianceContent() {
         system === 'imperial' ? (ms * 2.236936).toFixed(0) : (ms * 3.6).toFixed(0);
 
       const csv = [
-        `Driver,Date,${distanceHeader},Duration (min),Fatigue Warnings,Nighttime %,${speedHeader},Weather Risk,DOT Compliant`,
+        [t('webComplianceReportCsvDriver'), t('webComplianceReportCsvDate'), distanceHeader, t('webComplianceReportCsvDurationMin'), t('webComplianceReportCsvFatigueWarnings'), t('webComplianceReportCsvNighttimePct'), speedHeader, t('webComplianceReportCsvWeatherRisk'), t('webComplianceReportCsvDotCompliant')].join(','),
         ...dotData.map((s) => {
           const durationMin = Math.floor((s.driving_seconds ?? 0) / 60);
           const fatigueWarnings = s.fatigue_warnings ?? 0;
-          const dotCompliant = durationMin <= 660 && fatigueWarnings === 0 ? 'Yes' : 'No';
+          const dotCompliant = durationMin <= 660 && fatigueWarnings === 0 ? t('webComplianceReportCsvYes') : t('webComplianceReportCsvNo');
           const nighttimePct = `${Math.floor(((s.nighttime_seconds ?? 0) / 60))}%`;
 
           return [
@@ -319,13 +320,13 @@ function ComplianceContent() {
               onClick={() => window.print()}
               className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800 px-3.5 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-colors"
             >
-              Print Report
+              {t('webComplianceReportPrint')}
             </button>
             <button
               onClick={downloadCsv}
               className="inline-flex items-center gap-1.5 rounded-lg bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 px-3.5 py-2 text-xs font-semibold hover:opacity-90 transition-opacity"
             >
-              Download CSV
+              {t('webComplianceReportDownloadCsv')}
             </button>
           </div>
         </div>
@@ -334,17 +335,17 @@ function ComplianceContent() {
         {oshaData && (
           <div className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900 overflow-hidden print:hidden">
             <div className="px-4 py-3 border-b border-zinc-200 dark:border-zinc-700">
-              <h2 className="font-semibold text-sm text-zinc-900 dark:text-zinc-100">OSHA 300 Log</h2>
-              <p className="text-xs text-zinc-500">{oshaData.length} records</p>
+              <h2 className="font-semibold text-sm text-zinc-900 dark:text-zinc-100">{t('webComplianceReportOshaLogTitle')}</h2>
+              <p className="text-xs text-zinc-500">{t('webComplianceReportRecordsCount', { count: oshaData.length })}</p>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
                 <thead>
                   <tr className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800">
-                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">Date</th>
-                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">Type</th>
-                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">Severity</th>
-                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">Description</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">{t('webComplianceReportColDate')}</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">{t('webComplianceReportColType')}</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">{t('webComplianceReportColSeverity')}</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">{t('webComplianceReportColDescription')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
@@ -366,19 +367,19 @@ function ComplianceContent() {
         {eldData && (
           <div className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900 overflow-hidden print:hidden">
             <div className="px-4 py-3 border-b border-zinc-200 dark:border-zinc-700">
-              <h2 className="font-semibold text-sm text-zinc-900 dark:text-zinc-100">ELD Report</h2>
-              <p className="text-xs text-zinc-500">{eldData.length} records</p>
+              <h2 className="font-semibold text-sm text-zinc-900 dark:text-zinc-100">{t('webComplianceReportEldTitle')}</h2>
+              <p className="text-xs text-zinc-500">{t('webComplianceReportRecordsCount', { count: eldData.length })}</p>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
                 <thead>
                   <tr className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800">
-                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">Driver</th>
-                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">Date</th>
-                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">Hours</th>
-                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">Distance</th>
-                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">Fatigue</th>
-                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">Status</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">{t('webComplianceReportColDriver')}</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">{t('webComplianceReportColDate')}</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">{t('webComplianceReportColHours')}</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">{t('webComplianceReportColDistance')}</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">{t('webComplianceReportColFatigue')}</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">{t('webComplianceReportColStatus')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
@@ -392,11 +393,11 @@ function ComplianceContent() {
                       <td className="px-3 py-1.5 whitespace-nowrap">
                         {row.compliant ? (
                           <span className="inline-flex items-center rounded-md bg-green-50 px-1.5 py-0.5 text-[10px] font-medium text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-500/10 dark:text-green-400 dark:ring-green-500/20">
-                            Compliant
+                            {t('webComplianceReportStatusCompliant')}
                           </span>
                         ) : (
                           <span className="inline-flex items-center rounded-md bg-red-50 px-1.5 py-0.5 text-[10px] font-medium text-red-700 ring-1 ring-inset ring-red-600/10 dark:bg-red-500/10 dark:text-red-400 dark:ring-red-500/20">
-                            Violation
+                            {t('webComplianceReportStatusViolation')}
                           </span>
                         )}
                       </td>
@@ -412,22 +413,22 @@ function ComplianceContent() {
         {dotData && (
           <div className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900 overflow-hidden print:hidden">
             <div className="px-4 py-3 border-b border-zinc-200 dark:border-zinc-700">
-              <h2 className="font-semibold text-sm text-zinc-900 dark:text-zinc-100">DOT Compliance Report</h2>
-              <p className="text-xs text-zinc-500">{dotData.length} records</p>
+              <h2 className="font-semibold text-sm text-zinc-900 dark:text-zinc-100">{t('webComplianceReportDotTitle')}</h2>
+              <p className="text-xs text-zinc-500">{t('webComplianceReportRecordsCount', { count: dotData.length })}</p>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
                 <thead>
                   <tr className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800">
-                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">Driver</th>
-                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">Date</th>
-                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">{system === 'imperial' ? 'Distance (mi)' : 'Distance (km)'}</th>
-                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">Duration (min)</th>
-                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">Fatigue</th>
-                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">Nighttime %</th>
-                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">{system === 'imperial' ? 'Max Speed (mph)' : 'Max Speed (km/h)'}</th>
-                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">Weather Risk</th>
-                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">Status</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">{t('webComplianceReportColDriver')}</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">{t('webComplianceReportColDate')}</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">{t(system === 'imperial' ? 'webComplianceReportColDistanceMi' : 'webComplianceReportColDistanceKm')}</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">{t('webComplianceReportColDurationMin')}</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">{t('webComplianceReportColFatigue')}</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">{t('webComplianceReportColNighttimePct')}</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">{t(system === 'imperial' ? 'webComplianceReportColMaxSpeedMph' : 'webComplianceReportColMaxSpeedKmh')}</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">{t('webComplianceReportColWeatherRisk')}</th>
+                    <th className="px-3 py-2 text-left font-semibold text-zinc-500">{t('webComplianceReportColStatus')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
@@ -447,11 +448,11 @@ function ComplianceContent() {
                         <td className="px-3 py-1.5 whitespace-nowrap">
                           {row.compliant ? (
                             <span className="inline-flex items-center rounded-md bg-green-50 px-1.5 py-0.5 text-[10px] font-medium text-green-700 ring-1 ring-inset ring-green-600/20 dark:bg-green-500/10 dark:text-green-400 dark:ring-green-500/20">
-                              Compliant
+                              {t('webComplianceReportStatusCompliant')}
                             </span>
                           ) : (
                             <span className="inline-flex items-center rounded-md bg-red-50 px-1.5 py-0.5 text-[10px] font-medium text-red-700 ring-1 ring-inset ring-red-600/10 dark:bg-red-500/10 dark:text-red-400 dark:ring-red-500/20">
-                              Violation
+                              {t('webComplianceReportStatusViolation')}
                             </span>
                           )}
                         </td>
@@ -471,36 +472,36 @@ function ComplianceContent() {
             <div className="flex justify-between items-start">
               <div>
                 <h1 className="text-xl font-bold uppercase tracking-wide">
-                  {params.get('type') === 'osha' 
-                    ? 'OSHA Form 300 - Log of Work-Related Injuries' 
-                    : params.get('type') === 'eld' 
-                      ? 'FMCSA Electronic Logging Device (ELD) Audit' 
-                      : 'DOT Hours of Service & Safety Compliance Record'}
+                  {params.get('type') === 'osha'
+                    ? t('webComplianceReportPrintTitleOsha')
+                    : params.get('type') === 'eld'
+                      ? t('webComplianceReportPrintTitleEld')
+                      : t('webComplianceReportPrintTitleDot')}
                 </h1>
                 <p className="text-xs text-zinc-600 mt-1">
-                  {params.get('type') === 'osha' 
-                    ? 'U.S. Department of Labor — Occupational Safety and Health Administration' 
-                    : 'U.S. Department of Transportation — Federal Motor Carrier Safety Administration'}
+                  {params.get('type') === 'osha'
+                    ? t('webComplianceReportPrintAgencyOsha')
+                    : t('webComplianceReportPrintAgencyDot')}
                 </p>
               </div>
               <div className="text-right text-xs">
-                <p className="font-semibold">CREWRADR FLEET COMPLIANCE</p>
-                <p>Crew ID: {params.get('crew')}</p>
-                <p>Generated: {new Date().toLocaleString()}</p>
+                <p className="font-semibold">{t('webComplianceReportPrintFleetCompliance')}</p>
+                <p>{t('webComplianceReportPrintCrewId', { crew: params.get('crew') ?? '' })}</p>
+                <p>{t('webComplianceReportPrintGenerated', { date: new Date().toLocaleString() })}</p>
               </div>
             </div>
             <div className="mt-4 grid grid-cols-3 gap-4 text-xs bg-zinc-100 p-3 rounded border border-zinc-300">
               <div>
-                <span className="font-semibold text-zinc-600 uppercase block text-[10px]">Establishment / Operator</span>
-                <span className="font-medium text-sm text-black">CrewRadr Fleet Unit</span>
+                <span className="font-semibold text-zinc-600 uppercase block text-[10px]">{t('webComplianceReportPrintEstablishment')}</span>
+                <span className="font-medium text-sm text-black">{t('webComplianceReportPrintFleetUnit')}</span>
               </div>
               <div>
-                <span className="font-semibold text-zinc-600 uppercase block text-[10px]">Audit Period</span>
-                <span className="font-medium text-sm text-black">{params.get('type') === 'osha' ? 'Past 12 Months' : 'Past 30 Days'}</span>
+                <span className="font-semibold text-zinc-600 uppercase block text-[10px]">{t('webComplianceReportPrintAuditPeriod')}</span>
+                <span className="font-medium text-sm text-black">{t(params.get('type') === 'osha' ? 'webComplianceReportPrintPast12Months' : 'webComplianceReportPrintPast30Days')}</span>
               </div>
               <div>
-                <span className="font-semibold text-zinc-600 uppercase block text-[10px]">Record Status</span>
-                <span className="font-semibold text-sm uppercase text-green-700">Official Certified Log</span>
+                <span className="font-semibold text-zinc-600 uppercase block text-[10px]">{t('webComplianceReportPrintRecordStatus')}</span>
+                <span className="font-semibold text-sm uppercase text-green-700">{t('webComplianceReportPrintOfficialCertified')}</span>
               </div>
             </div>
           </div>
@@ -511,11 +512,11 @@ function ComplianceContent() {
               <table className="w-full text-[11px] border-collapse border border-black">
                 <thead>
                   <tr className="bg-zinc-100 border-b border-black">
-                    <th className="border-r border-black p-2 text-left font-bold">Case #</th>
-                    <th className="border-r border-black p-2 text-left font-bold">Incident Date</th>
-                    <th className="border-r border-black p-2 text-left font-bold">Incident Type</th>
-                    <th className="border-r border-black p-2 text-left font-bold">Severity Classification</th>
-                    <th className="p-2 text-left font-bold">Description / Incident Details</th>
+                    <th className="border-r border-black p-2 text-left font-bold">{t('webComplianceReportPrintColCaseNo')}</th>
+                    <th className="border-r border-black p-2 text-left font-bold">{t('webComplianceReportPrintColIncidentDate')}</th>
+                    <th className="border-r border-black p-2 text-left font-bold">{t('webComplianceReportPrintColIncidentType')}</th>
+                    <th className="border-r border-black p-2 text-left font-bold">{t('webComplianceReportPrintColSeverityClassification')}</th>
+                    <th className="p-2 text-left font-bold">{t('webComplianceReportPrintColDescription')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -530,7 +531,7 @@ function ComplianceContent() {
                   ))}
                   {oshaRows.length === 0 && (
                     <tr>
-                      <td colSpan={5} className="p-4 text-center text-zinc-500 italic">No recordable incidents logged during this period.</td>
+                      <td colSpan={5} className="p-4 text-center text-zinc-500 italic">{t('webComplianceReportPrintNoOshaIncidents')}</td>
                     </tr>
                   )}
                 </tbody>
@@ -543,12 +544,12 @@ function ComplianceContent() {
               <table className="w-full text-[11px] border-collapse border border-black">
                 <thead>
                   <tr className="bg-zinc-100 border-b border-black">
-                    <th className="border-r border-black p-2 text-left font-bold">Driver ID</th>
-                    <th className="border-r border-black p-2 text-left font-bold">Date</th>
-                    <th className="border-r border-black p-2 text-right font-bold">Driving Hours</th>
-                    <th className="border-r border-black p-2 text-right font-bold">Distance</th>
-                    <th className="border-r border-black p-2 text-center font-bold">Fatigue Warnings</th>
-                    <th className="p-2 text-center font-bold">Audit Status</th>
+                    <th className="border-r border-black p-2 text-left font-bold">{t('webComplianceReportPrintColDriverId')}</th>
+                    <th className="border-r border-black p-2 text-left font-bold">{t('webComplianceReportPrintColDate')}</th>
+                    <th className="border-r border-black p-2 text-right font-bold">{t('webComplianceReportPrintColDrivingHours')}</th>
+                    <th className="border-r border-black p-2 text-right font-bold">{t('webComplianceReportPrintColDistance')}</th>
+                    <th className="border-r border-black p-2 text-center font-bold">{t('webComplianceReportPrintColFatigueWarnings')}</th>
+                    <th className="p-2 text-center font-bold">{t('webComplianceReportPrintColAuditStatus')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -556,21 +557,21 @@ function ComplianceContent() {
                     <tr key={i} className="border-b border-zinc-400">
                       <td className="border-r border-black p-2">{row.driverName || row.userId.slice(0, 8)}</td>
                       <td className="border-r border-black p-2 whitespace-nowrap">{new Date(row.startedAt).toLocaleDateString()}</td>
-                      <td className="border-r border-black p-2 text-right">{row.hours} h</td>
+                      <td className="border-r border-black p-2 text-right">{row.hours}{t('webComplianceReportUnitH')}</td>
                       <td className="border-r border-black p-2 text-right">{formatDistanceMeters(row.distanceM, system)}</td>
                       <td className="border-r border-black p-2 text-center">{row.fatigue}</td>
                       <td className="p-2 text-center font-semibold uppercase">
                         {row.compliant ? (
-                          <span className="text-green-700">COMPLIANT</span>
+                          <span className="text-green-700">{t('webComplianceReportPrintStatusCompliant')}</span>
                         ) : (
-                          <span className="text-red-700">VIOLATION</span>
+                          <span className="text-red-700">{t('webComplianceReportPrintStatusViolation')}</span>
                         )}
                       </td>
                     </tr>
                   ))}
                   {eldRows.length === 0 && (
                     <tr>
-                      <td colSpan={6} className="p-4 text-center text-zinc-500 italic">No active driving sessions logged during this period.</td>
+                      <td colSpan={6} className="p-4 text-center text-zinc-500 italic">{t('webComplianceReportPrintNoEldSessions')}</td>
                     </tr>
                   )}
                 </tbody>
@@ -583,15 +584,15 @@ function ComplianceContent() {
               <table className="w-full text-[11px] border-collapse border border-black">
                 <thead>
                   <tr className="bg-zinc-100 border-b border-black">
-                    <th className="border-r border-black p-2 text-left font-bold">Driver ID</th>
-                    <th className="border-r border-black p-2 text-left font-bold">Date</th>
-                    <th className="border-r border-black p-2 text-right font-bold">Distance</th>
-                    <th className="border-r border-black p-2 text-right font-bold">Duration</th>
-                    <th className="border-r border-black p-2 text-center font-bold">Fatigue Alerts</th>
-                    <th className="border-r border-black p-2 text-right font-bold">Night %</th>
-                    <th className="border-r border-black p-2 text-right font-bold">Max Speed</th>
-                    <th className="border-r border-black p-2 text-center font-bold">Weather Risk</th>
-                    <th className="p-2 text-center font-bold">Audit Status</th>
+                    <th className="border-r border-black p-2 text-left font-bold">{t('webComplianceReportPrintColDriverId')}</th>
+                    <th className="border-r border-black p-2 text-left font-bold">{t('webComplianceReportPrintColDate')}</th>
+                    <th className="border-r border-black p-2 text-right font-bold">{t('webComplianceReportPrintColDistance')}</th>
+                    <th className="border-r border-black p-2 text-right font-bold">{t('webComplianceReportPrintColDuration')}</th>
+                    <th className="border-r border-black p-2 text-center font-bold">{t('webComplianceReportPrintColFatigueAlerts')}</th>
+                    <th className="border-r border-black p-2 text-right font-bold">{t('webComplianceReportPrintColNightPct')}</th>
+                    <th className="border-r border-black p-2 text-right font-bold">{t('webComplianceReportPrintColMaxSpeed')}</th>
+                    <th className="border-r border-black p-2 text-center font-bold">{t('webComplianceReportPrintColWeatherRisk')}</th>
+                    <th className="p-2 text-center font-bold">{t('webComplianceReportPrintColAuditStatus')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -602,17 +603,17 @@ function ComplianceContent() {
                       <tr key={i} className="border-b border-zinc-400">
                         <td className="border-r border-black p-2">{row.driverName || row.userId.slice(0, 8)}</td>
                         <td className="border-r border-black p-2 whitespace-nowrap">{new Date(row.startedAt).toLocaleDateString()}</td>
-                        <td className="border-r border-black p-2 text-right">{distVal} {system === 'imperial' ? 'mi' : 'km'}</td>
-                        <td className="border-r border-black p-2 text-right">{row.durationMin} min</td>
+                        <td className="border-r border-black p-2 text-right">{distVal} {t(system === 'imperial' ? 'webComplianceReportUnitMi' : 'webComplianceReportUnitKm')}</td>
+                        <td className="border-r border-black p-2 text-right">{row.durationMin}{t('webComplianceReportUnitMin')}</td>
                         <td className="border-r border-black p-2 text-center">{row.fatigue}</td>
                         <td className="border-r border-black p-2 text-right">{row.nighttimePct}</td>
-                        <td className="border-r border-black p-2 text-right">{speedVal} {system === 'imperial' ? 'mph' : 'km/h'}</td>
+                        <td className="border-r border-black p-2 text-right">{speedVal} {t(system === 'imperial' ? 'webComplianceReportUnitMph' : 'webComplianceReportUnitKmh')}</td>
                         <td className="border-r border-black p-2 text-center capitalize">{row.weather}</td>
                         <td className="p-2 text-center font-semibold uppercase">
                           {row.compliant ? (
-                            <span className="text-green-700">COMPLIANT</span>
+                            <span className="text-green-700">{t('webComplianceReportPrintStatusCompliant')}</span>
                           ) : (
-                            <span className="text-red-700">VIOLATION</span>
+                            <span className="text-red-700">{t('webComplianceReportPrintStatusViolation')}</span>
                           )}
                         </td>
                       </tr>
@@ -620,7 +621,7 @@ function ComplianceContent() {
                   })}
                   {dotRows.length === 0 && (
                     <tr>
-                      <td colSpan={9} className="p-4 text-center text-zinc-500 italic">No compliance data recorded during this period.</td>
+                      <td colSpan={9} className="p-4 text-center text-zinc-500 italic">{t('webComplianceReportPrintNoDotData')}</td>
                     </tr>
                   )}
                 </tbody>
@@ -630,18 +631,18 @@ function ComplianceContent() {
 
           {/* Certification Block */}
           <div className="mt-12 pt-8 border-t border-zinc-400">
-            <h3 className="text-xs font-bold uppercase tracking-wider mb-2">Record Certification & Sign-off</h3>
+            <h3 className="text-xs font-bold uppercase tracking-wider mb-2">{t('webComplianceReportCertificationTitle')}</h3>
             <p className="text-[10px] text-zinc-600 mb-6 leading-relaxed">
-              I certify that I have personally reviewed this compliance log and to the best of my knowledge and belief, all entries are complete, true, and correct. This audit document is produced in compliance with FMCSA safety reporting criteria.
+              {t('webComplianceReportCertificationText')}
             </p>
             <div className="flex justify-between gap-12 text-xs">
               <div className="flex-1">
                 <div className="border-b border-black h-8"></div>
-                <p className="mt-1 text-[10px] text-zinc-600 uppercase">Signature of Captain / Authorized Safety Officer</p>
+                <p className="mt-1 text-[10px] text-zinc-600 uppercase">{t('webComplianceReportPrintSignatureLabel')}</p>
               </div>
               <div className="w-1/3">
                 <div className="border-b border-black h-8"></div>
-                <p className="mt-1 text-[10px] text-zinc-600 uppercase">Date Certified</p>
+                <p className="mt-1 text-[10px] text-zinc-600 uppercase">{t('webComplianceReportPrintDateCertified')}</p>
               </div>
             </div>
           </div>

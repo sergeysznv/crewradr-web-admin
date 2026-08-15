@@ -3,6 +3,7 @@
 // In-place line edits keep the git diff minimal.
 //
 // Run: node scripts/merge_p1_i18n.js
+/* eslint-disable @typescript-eslint/no-require-imports */
 const fs = require('fs');
 const path = require('path');
 

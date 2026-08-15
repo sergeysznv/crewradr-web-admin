@@ -39,7 +39,7 @@ export function GeneralTab({
           className="px-3 py-1 rounded-xl text-xs font-bold"
           style={{ backgroundColor: `${tierColor(tier)}20`, color: tierColor(tier) }}
         >
-          {tierLabel(tier)}
+          {tierLabel(tier, t)}
         </span>
       </div>
 

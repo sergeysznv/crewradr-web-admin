@@ -87,14 +87,14 @@ export function ProvisioningView() {
       showSuccess(t('webProvisioningCopied'));
       setTimeout(() => setCopied(false), 2500);
     }).catch(() => {
-      showError('Clipboard access denied');
+      showError(t('webProvisioningClipboardDenied'));
     });
   }
 
   function statusLabel(s: string, hasKey: boolean, expiresAt?: string) {
     if (s === 'pending' && expiresAt && new Date(expiresAt) < new Date()) return t('webProvisioningStatusExpired');
     switch (s) {
-      case 'pending': return hasKey ? t('webProvisioningStatusActive') : (t('webProvisioningStatusAwaitingActivation') || 'Awaiting Activation');
+      case 'pending': return hasKey ? t('webProvisioningStatusActive') : t('webProvisioningStatusAwaitingActivation');
       case 'joined': return t('webProvisioningStatusJoined');
       case 'revoked': return t('webProvisioningStatusRevoked');
       default: return t('webProvisioningStatusActive');
@@ -169,7 +169,7 @@ export function ProvisioningView() {
                   <p className="font-mono text-sm text-on-surface truncate">{l.code}</p>
                   <p className={`text-xs ${statusColor(l.status, !!l.encrypted_crew_key, l.expires_at)}`}>
                     {statusLabel(l.status, !!l.encrypted_crew_key, l.expires_at)}
-                    {l.status === 'pending' && ` · ${l.usage_count} uses`}
+                    {l.status === 'pending' && t('webProvisioningUsageCount', { count: l.usage_count })}
                   </p>
                 </div>
                 <button onClick={() => copyLink(l.code)}

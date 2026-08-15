@@ -36,21 +36,21 @@ export function AlertFeed({ alerts }: { alerts: FleetDashboard['recent_alerts'] 
   );
 }
 
-function getAlertExplanation(alertType: string): string {
+function getAlertExplanation(t: (key: string, params?: Record<string, string | number>) => string, alertType: string): string {
   const type = alertType.toLowerCase();
   if (type.includes('fatigue')) {
-    return 'Fatigue alerts indicate driving for extended hours or overnight without rest. Operating while fatigued poses significant collision risk.';
+    return t('webAlertExplainFatigue');
   }
   if (type.includes('speed')) {
-    return 'Speeding alerts trigger when a vehicle exceeds the set speed threshold. High speed reduces driver reaction time and increases stopping distance.';
+    return t('webAlertExplainSpeed');
   }
   if (type.includes('weather') || type.includes('rain') || type.includes('snow')) {
-    return 'Weather alerts signal adverse local weather conditions. Drivers should reduce speed and increase follow distance below standard thresholds.';
+    return t('webAlertExplainWeather');
   }
   if (type.includes('braking') || type.includes('acceleration')) {
-    return 'Harsh telemetry events (braking/acceleration) indicate aggressive driving or unexpected obstacles, which decrease fuel efficiency and safety scores.';
+    return t('webAlertExplainHarsh');
   }
-  return 'Telemetry rule alert triggered by the mobile client. Review driver history to maintain compliance with the fleet safety policy.';
+  return t('webAlertExplainTelemetry');
 }
 
 function AlertFeedItem({ alert }: { alert: FleetDashboard['recent_alerts'][number] }) {
@@ -103,7 +103,7 @@ function AlertFeedItem({ alert }: { alert: FleetDashboard['recent_alerts'][numbe
       <SeverityBadge
         severity={SEVERITY_MAP[alert.severity] ?? 'info'}
         label={alert.alert_type}
-        subtitle={`${alert.display_name ?? t('webFleetUnknown') ?? 'Crew Member'} · ${new Date(
+        subtitle={`${alert.display_name ?? t('webFleetUnknown')} · ${new Date(
           alert.created_at
         ).toLocaleTimeString()}`}
       >
@@ -118,14 +118,14 @@ function AlertFeedItem({ alert }: { alert: FleetDashboard['recent_alerts'][numbe
           {alert.resolved ? (
             <div className="flex items-center gap-1.5 text-emerald-600 text-xs font-semibold">
               <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
-              <span>Resolved by {alert.resolved_by_name ?? 'Captain'}</span>
+              <span>{t('webAlertResolvedBy', { name: alert.resolved_by_name ?? t('webMembersRoleCaptain') })}</span>
               {(alert.resolution_notes || alert.resolved_at) && (
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     setExpanded(!expanded);
                   }}
-                  className="inline-flex items-center text-primary hover:underline ml-1"
+                  className="inline-flex items-center text-primary hover:underline ms-1"
                 >
                   {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
                 </button>
@@ -134,16 +134,16 @@ function AlertFeedItem({ alert }: { alert: FleetDashboard['recent_alerts'][numbe
           ) : (
             <div className="flex items-center gap-1.5 text-on-surface-variant/80 text-xs">
               <AlertCircle className="h-3.5 w-3.5 text-amber-500" />
-              <span className="font-medium text-amber-600">Unresolved</span>
+              <span className="font-medium text-amber-600">{t('webAlertUnresolved')}</span>
               {canResolve && !isResolving && (
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     setIsResolving(true);
                   }}
-                  className="text-primary hover:underline font-semibold ml-2"
+                  className="text-primary hover:underline font-semibold ms-2"
                 >
-                  Resolve Alert
+                  {t('webAlertResolveAction')}
                 </button>
               )}
             </div>
@@ -155,13 +155,13 @@ function AlertFeedItem({ alert }: { alert: FleetDashboard['recent_alerts'][numbe
           <div className="mt-2 p-2 bg-surface/50 border border-outline/30 rounded text-xs text-on-surface-variant animate-fade-in space-y-1">
             {alert.resolved_at && (
               <p>
-                <span className="font-semibold">Resolved At:</span>{' '}
+                <span className="font-semibold">{t('webAlertResolvedAt')}</span>{' '}
                 {new Date(alert.resolved_at).toLocaleString()}
               </p>
             )}
             {alert.resolution_notes && (
               <p>
-                <span className="font-semibold">Notes:</span> {alert.resolution_notes}
+                <span className="font-semibold">{t('webAlertNotes')}:</span> {alert.resolution_notes}
               </p>
             )}
           </div>
@@ -172,7 +172,7 @@ function AlertFeedItem({ alert }: { alert: FleetDashboard['recent_alerts'][numbe
           <div className="mt-3 p-2 bg-surface border border-outline rounded-lg space-y-2 animate-fade-in">
             <textarea
               className="w-full bg-surface text-xs text-on-surface border border-outline rounded p-2 focus:outline-none focus:ring-1 focus:ring-primary"
-              placeholder="Enter resolution notes (e.g. contacted driver)..."
+              placeholder={t('webAlertResolutionPlaceholder')}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={2}
@@ -187,7 +187,7 @@ function AlertFeedItem({ alert }: { alert: FleetDashboard['recent_alerts'][numbe
                 }}
                 disabled={resolveMutation.isPending}
               >
-                Cancel
+                {t('cancel')}
               </button>
               <button
                 className="px-2.5 py-1 text-xs bg-primary text-on-primary hover:bg-primary/95 rounded font-semibold disabled:opacity-50"
@@ -197,7 +197,7 @@ function AlertFeedItem({ alert }: { alert: FleetDashboard['recent_alerts'][numbe
                 }}
                 disabled={resolveMutation.isPending || !notes.trim()}
               >
-                {resolveMutation.isPending ? 'Saving...' : 'Resolve'}
+                {resolveMutation.isPending ? t('saving') : t('webAlertResolve')}
               </button>
             </div>
           </div>
@@ -209,39 +209,39 @@ function AlertFeedItem({ alert }: { alert: FleetDashboard['recent_alerts'][numbe
         <div className="absolute z-30 bottom-[calc(100%+8px)] left-1/2 -translate-x-1/2 w-72 p-4 bg-zinc-950 text-white dark:bg-zinc-900 dark:border dark:border-zinc-800 rounded-lg shadow-xl text-xs leading-normal animate-fade-in pointer-events-none">
           <div className="font-semibold mb-2 flex items-center gap-1.5 text-zinc-250 text-sm">
             <Info className="h-4 w-4 text-primary shrink-0" />
-            <span>{alert.alert_type} Details</span>
+            <span>{t('webAlertDetailsTitle', { type: alert.alert_type })}</span>
           </div>
           <div className="space-y-1.5 text-zinc-300 font-normal">
             <p>
-              <span className="text-zinc-500">Occurred:</span>{' '}
+              <span className="text-zinc-500">{t('webAlertOccurred')}</span>{' '}
               {new Date(alert.created_at).toLocaleString()}
             </p>
             <p>
-              <span className="text-zinc-500">Driver:</span>{' '}
-              {alert.display_name ?? 'Unknown Crew Member'}
+              <span className="text-zinc-500">{t('webAlertDriver')}</span>{' '}
+              {alert.display_name ?? t('webAlertUnknownMember')}
             </p>
             <p>
-              <span className="text-zinc-500">Severity:</span>{' '}
+              <span className="text-zinc-500">{t('webAlertSeverityLabel')}</span>{' '}
               <span className={alert.severity === 'critical' ? 'text-error font-medium capitalize' : 'text-warning font-medium capitalize'}>
                 {alert.severity}
               </span>
             </p>
             <p>
-              <span className="text-zinc-500">Status:</span>{' '}
+              <span className="text-zinc-500">{t('webAlertStatusLabel')}</span>{' '}
               <span className={alert.resolved ? 'text-emerald-400 font-medium' : 'text-amber-400 font-medium'}>
-                {alert.resolved ? 'Resolved' : 'Unresolved'}
+                {alert.resolved ? t('webAlertResolvedShort') : t('webAlertUnresolved')}
               </span>
             </p>
             {alert.message && (
               <p className="border-t border-zinc-800 pt-1.5 mt-1.5 text-zinc-400 italic font-light">
-                "{alert.message}"
+                &ldquo;{alert.message}&rdquo;
               </p>
             )}
             <p className="border-t border-zinc-800 pt-1.5 mt-1.5 text-zinc-400 text-[11px] leading-relaxed">
-              {getAlertExplanation(alert.alert_type)}
+              {getAlertExplanation(t, alert.alert_type)}
             </p>
             <p className="mt-2 text-[10px] text-primary font-medium flex items-center gap-0.5">
-              Click to open Compliance logs & reports <ArrowUpRight className="h-2.5 w-2.5 shrink-0" />
+              {t('webAlertClickForCompliance')} <ArrowUpRight className="h-2.5 w-2.5 shrink-0" />
             </p>
           </div>
           <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-zinc-950 dark:bg-zinc-900 rotate-45 -mt-1 border-r border-b border-transparent dark:border-zinc-800" />

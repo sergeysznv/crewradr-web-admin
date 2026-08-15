@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useCrew } from '@/hooks/useCrew';
 import { useSupabase } from '@/hooks/useSupabase';
+import { useT } from '@/hooks/use-translations';
 import { AICard } from './AICard';
 
 interface ETACardProps {
@@ -20,6 +21,7 @@ interface EtaPayload {
 
 export function ETACard({ memberId }: ETACardProps) {
   const { crewId } = useCrew();
+  const { t } = useT();
   const supabase = useSupabase();
 
   const { data: eta, isLoading, error } = useQuery({
@@ -49,14 +51,14 @@ export function ETACard({ memberId }: ETACardProps) {
   return (
     <AICard isLoading={isLoading} serviceDown={serviceDown}>
       {eta?.status === 'no_active_trip' ? (
-        <p className="text-xs text-on-surface-variant">No active trip for this member</p>
+        <p className="text-xs text-on-surface-variant">{t('webEtaNoActiveTrip')}</p>
       ) : eta?.status === 'ok' ? (
         <>
           <span className="text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant">
-            Arrival Prediction
+            {t('webEtaArrivalPrediction')}
           </span>
           <div className="mt-1">
-            <span className="text-base font-bold text-on-surface">{eta.member_name ?? 'Member'}</span>
+            <span className="text-base font-bold text-on-surface">{eta.member_name ?? t('webEtaMember')}</span>
             {eta.destination && (
               <span className="text-xs text-on-surface-variant"> → {eta.destination}</span>
             )}
@@ -66,11 +68,11 @@ export function ETACard({ memberId }: ETACardProps) {
             <span className="text-sm text-on-surface-variant">min</span>
           </div>
           <p className="text-[10px] text-on-surface-variant">
-            ±{Math.round((1 - (eta.confidence ?? 0.5)) * 100)}% margin
+            {t('webEtaMargin', { pct: Math.round((1 - (eta.confidence ?? 0.5)) * 100) })}
           </p>
         </>
       ) : (
-        <p className="text-xs text-on-surface-variant">No ETA data available for this member</p>
+        <p className="text-xs text-on-surface-variant">{t('webEtaNoData')}</p>
       )}
     </AICard>
   );
