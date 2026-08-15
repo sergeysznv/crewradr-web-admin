@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node -e \"const fs=require('fs');const cp=require('child_process');try{const sha=cp.execSync('git rev-parse --short HEAD').toString().trim();fs.writeFileSync('public/version.txt', sha);console.log('Version SHA written:', sha);}catch(e){console.log('Failed to write SHA, keeping existing file:', e.message);}\" && next build",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run"
