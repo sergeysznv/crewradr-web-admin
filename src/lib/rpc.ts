@@ -181,7 +181,7 @@ export async function getReportTemplates(supabase: SupabaseClient, crewId: strin
 export async function saveReportTemplate(
   supabase: SupabaseClient,
   crewId: string,
-  template: { name: string; widgets: ReportWidget[] },
+  template: { id?: string; name: string; widgets: ReportWidget[] },
 ): Promise<string> {
   const { data, error } = await supabase.rpc('save_report_template', {
     p_crew_id: crewId,

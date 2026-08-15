@@ -25,3 +25,21 @@ export function useSaveScheduledReport(crewId: string | null) {
     },
   });
 }
+
+export function useDeleteScheduledReport(crewId: string | null) {
+  const supabase = useSupabase();
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('enterprise_scheduled_reports')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['scheduledReports', crewId] });
+    },
+  });
+}
