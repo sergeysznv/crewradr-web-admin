@@ -625,6 +625,8 @@
 	"webSettingsDeleteAccountConfirm": "Type \"DELETE\" to confirm",
 	"webSettingsDeletingAccount": "Deleting…",
 	"webSettingsDeleteAccountFailed": "Account deletion failed",
+	"webSettingsDeleteAccountCaptainBlocked": "En tant que capitaine, vous devez transférer la propriété ou dissoudre vos équipages avant de supprimer votre compte.",
+	"webSettingsDeleteAccountApprovalRequired": "L'approbation du capitaine de l'équipage est requise avant la suppression du compte. La demande de sortie a été envoyée.",
 	"webAIServiceDown": "Informations prédictives sur les risques en cours de mise à jour…",
 	"webApiKeyActive": "Actif",
 	"webApiKeyClipboardDenied": "Accès au presse-papiers refusé",

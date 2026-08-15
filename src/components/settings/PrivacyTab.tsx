@@ -142,29 +142,54 @@ export function PrivacyTab() {
       if (!user?.email) {
         throw new Error('No authenticated user email available for account deletion.');
       }
-      await deleteWebAccount(supabase);
-      // Complete GDPR Art. 17 erasure: delete_web_account deliberately leaves
-      // auth.users intact; the delete_account Edge Function (service role)
-      // performs the final auth-level deletion, which cascades to the app
-      // user row. Runs before the client-side purge so sign-out only happens
-      // after full erasure.
       const { data: { session: s } } = await supabase.auth.getSession();
       const hdr: Record<string, string> = {};
       if (s?.access_token) hdr['Authorization'] = `Bearer ${s.access_token}`;
-      const { error: fnError } = await supabase.functions.invoke('delete_account', {
+      
+      // Call the Edge Function first to enforce all business logic / governance rules.
+      // This will return 409 status code if captain blocked or crew approval is required.
+      const { data, error: fnError } = await supabase.functions.invoke('delete_account', {
         body: { email: user.email },
         headers: hdr,
       });
-      if (fnError) throw fnError;
+
+      if (fnError) {
+        let errMsg = t('webSettingsDeleteAccountFailed');
+        try {
+          const body = typeof fnError.message === 'string' ? JSON.parse(fnError.message) : fnError;
+          if (body.code === 'CAPTAIN_BLOCKED') {
+            errMsg = t('webSettingsDeleteAccountCaptainBlocked');
+          } else if (body.code === 'CREW_APPROVAL_REQUIRED') {
+            errMsg = t('webSettingsDeleteAccountApprovalRequired');
+          }
+        } catch {
+          if (fnError.message?.includes('CAPTAIN_BLOCKED')) {
+            errMsg = t('webSettingsDeleteAccountCaptainBlocked');
+          } else if (fnError.message?.includes('CREW_APPROVAL_REQUIRED')) {
+            errMsg = t('webSettingsDeleteAccountApprovalRequired');
+          }
+        }
+        showError(errMsg);
+        setDeleting(false);
+        setShowDelete(false);
+        return;
+      }
+
       // Client-side purge (GDPR Art. 17): wipe local storage, drop all
       // TanStack Query caches, clear the Supabase session, redirect.
       localStorage.clear();
       queryClient.clear();
       await signOut();
       router.push('/');
-    } catch (e) {
+    } catch (e: any) {
       console.error('Delete account failed:', e);
-      showError(t('webSettingsDeleteAccountFailed'));
+      let errMsg = t('webSettingsDeleteAccountFailed');
+      if (e.message?.includes('CAPTAIN_BLOCKED')) {
+        errMsg = t('webSettingsDeleteAccountCaptainBlocked');
+      } else if (e.message?.includes('CREW_APPROVAL_REQUIRED')) {
+        errMsg = t('webSettingsDeleteAccountApprovalRequired');
+      }
+      showError(errMsg);
       setDeleting(false);
       setShowDelete(false);
     }

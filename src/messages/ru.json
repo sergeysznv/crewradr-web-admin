@@ -625,6 +625,8 @@
 	"webSettingsDeleteAccountConfirm": "Type \"DELETE\" to confirm",
 	"webSettingsDeletingAccount": "Deleting…",
 	"webSettingsDeleteAccountFailed": "Account deletion failed",
+	"webSettingsDeleteAccountCaptainBlocked": "Как капитан, вы должны передать руководство или распустить свои экипажи перед удалением аккаунта.",
+	"webSettingsDeleteAccountApprovalRequired": "Для удаления аккаунта требуется одобрение капитана экипажа. Запрос на выход отправлен.",
 	"webAIServiceDown": "Прогнозные оценки рисков обновляются…",
 	"webApiKeyActive": "Активен",
 	"webApiKeyClipboardDenied": "Доступ к буферу обмена запрещён",

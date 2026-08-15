@@ -648,6 +648,8 @@
 	"webSettingsDeleteAccountConfirm": "Type \"DELETE\" to confirm",
 	"webSettingsDeletingAccount": "Deleting…",
 	"webSettingsDeleteAccountFailed": "Account deletion failed",
+	"webSettingsDeleteAccountCaptainBlocked": "As a Captain, you must transfer ownership or disband your crews before deleting your account.",
+	"webSettingsDeleteAccountApprovalRequired": "Crew captain approval is required before account deletion. Deletion request has been submitted to your captain(s).",
 	"webAIServiceDown": "Predictive risk insights currently updating…",
 	"webApiKeyActive": "Active",
 	"webApiKeyClipboardDenied": "Clipboard access denied",

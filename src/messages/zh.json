@@ -625,6 +625,8 @@
 	"webSettingsDeleteAccountConfirm": "Type \"DELETE\" to confirm",
 	"webSettingsDeletingAccount": "Deleting…",
 	"webSettingsDeleteAccountFailed": "Account deletion failed",
+	"webSettingsDeleteAccountCaptainBlocked": "作为船长，您必须在删除账户前转让所有权或解散您的船队。",
+	"webSettingsDeleteAccountApprovalRequired": "删除账户前需要船长批准。已提交退出申请。",
 	"webAIServiceDown": "预测性风险洞察正在更新…",
 	"webApiKeyActive": "有效",
 	"webApiKeyClipboardDenied": "无法访问剪贴板",
