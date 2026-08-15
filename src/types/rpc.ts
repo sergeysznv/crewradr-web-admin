@@ -113,6 +113,7 @@ export interface ProvisioningLink {
   max_uses?: number;
   expires_at?: string;
   created_at: string;
+  encrypted_crew_key?: string | null;
 }
 
 export interface PrivacySettings {

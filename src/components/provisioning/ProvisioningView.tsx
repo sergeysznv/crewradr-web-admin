@@ -91,20 +91,20 @@ export function ProvisioningView() {
     });
   }
 
-  function statusLabel(s: string, expiresAt?: string) {
+  function statusLabel(s: string, hasKey: boolean, expiresAt?: string) {
     if (s === 'pending' && expiresAt && new Date(expiresAt) < new Date()) return t('webProvisioningStatusExpired');
     switch (s) {
-      case 'pending': return t('webProvisioningStatusPending');
+      case 'pending': return hasKey ? t('webProvisioningStatusActive') : (t('webProvisioningStatusAwaitingActivation') || 'Awaiting Activation');
       case 'joined': return t('webProvisioningStatusJoined');
       case 'revoked': return t('webProvisioningStatusRevoked');
       default: return t('webProvisioningStatusActive');
     }
   }
 
-  function statusColor(s: string, expiresAt?: string) {
+  function statusColor(s: string, hasKey: boolean, expiresAt?: string) {
     if (s === 'pending' && expiresAt && new Date(expiresAt) < new Date()) return 'text-error';
     switch (s) {
-      case 'pending': return 'text-warning';
+      case 'pending': return hasKey ? 'text-success' : 'text-warning';
       case 'joined': return 'text-primary';
       case 'revoked': return 'text-error';
       default: return 'text-success';
@@ -167,8 +167,8 @@ export function ProvisioningView() {
                 <Link className="h-5 w-5 text-on-surface-variant shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="font-mono text-sm text-on-surface truncate">{l.code}</p>
-                  <p className={`text-xs ${statusColor(l.status, l.expires_at)}`}>
-                    {statusLabel(l.status, l.expires_at)}
+                  <p className={`text-xs ${statusColor(l.status, !!l.encrypted_crew_key, l.expires_at)}`}>
+                    {statusLabel(l.status, !!l.encrypted_crew_key, l.expires_at)}
                     {l.status === 'pending' && ` · ${l.usage_count} uses`}
                   </p>
                 </div>
