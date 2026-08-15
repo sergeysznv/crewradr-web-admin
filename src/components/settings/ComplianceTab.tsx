@@ -141,9 +141,11 @@ export function ComplianceTab() {
             />
             <div>
               <span className="text-xs font-semibold text-on-surface">
-                Enable Geofencing Masking
+                {t('enableGeofencingMasking') || 'Enable Geofencing Masking'}
               </span>
-              <p className="text-[10px] text-on-surface-variant">Mask location tracking when outside designated geofenced work zones during duty cycle.</p>
+              <p className="text-[10px] text-on-surface-variant">
+                {t('enableGeofencingMaskingDesc') || 'Mask location tracking when outside designated geofenced work zones during duty cycle.'}
+              </p>
             </div>
           </label>
 
@@ -196,8 +198,12 @@ export function ComplianceTab() {
               className="mt-0.5 rounded border-outline text-primary focus:ring-primary/30"
             />
             <div>
-              <span className="text-xs font-semibold text-on-surface">Enable DOT/OSHA Compliance Mode</span>
-              <p className="text-[10px] text-on-surface-variant">Master toggle for FMCSA and OSHA compliance workflows.</p>
+              <span className="text-xs font-semibold text-on-surface">
+                {t('enableDotOshaMode') || 'Enable DOT/OSHA Compliance Mode'}
+              </span>
+              <p className="text-[10px] text-on-surface-variant">
+                {t('enableDotOshaModeDesc') || 'Master toggle for FMCSA and OSHA compliance workflows.'}
+              </p>
             </div>
           </label>
 
@@ -272,8 +278,12 @@ export function ComplianceTab() {
               className="mt-0.5 rounded border-outline text-primary focus:ring-primary/30"
             />
             <div>
-              <span className="text-xs font-semibold text-on-surface">Enable GDPR Enhanced Privacy Mode</span>
-              <p className="text-[10px] text-on-surface-variant">Master toggle for EU General Data Protection Regulation privacy tools.</p>
+              <span className="text-xs font-semibold text-on-surface">
+                {t('enableGdprMode') || 'Enable GDPR Enhanced Privacy Mode'}
+              </span>
+              <p className="text-[10px] text-on-surface-variant">
+                {t('enableGdprModeDesc') || 'Master toggle for EU General Data Protection Regulation privacy tools.'}
+              </p>
             </div>
           </label>
 
