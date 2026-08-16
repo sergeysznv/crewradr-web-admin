@@ -1,6 +1,6 @@
 export interface AccountProfile {
   profile: { user_id: string; display_name: string; email: string; avatar_url: string | null; language_preference: string; profile_emoji: string | null; profile_type: string; created_at: string; measurement_system?: 'metric' | 'imperial' | null; font_scale?: number | null; smart_home_webhook_url?: string | null } | null;
-  crews: Array<{ crew_id: string; role: string; joined_at: string; crew_name: string; tier: string }>;
+  crews: Array<{ crew_id: string; role: string; joined_at: string; crew_name: string; tier: string; is_commercial?: boolean }>;
 }
 
 export interface FleetDashboardTripStats {

@@ -14,7 +14,7 @@ import type { ProvisioningLink } from '@/types/rpc';
 
 export function ProvisioningView() {
   const { t } = useT();
-  const { crewId, tier } = useCrew();
+  const { crewId, tier, isCommercial } = useCrew();
   const supabase = useSupabase();
   const queryClient = useQueryClient();
   const { showSuccess, showError } = useSnackbar();
@@ -23,6 +23,7 @@ export function ProvisioningView() {
   const [creating, setCreating] = useState(false);
 
   const isAdmiral = tierRank(tier) >= 3;
+  const showProvisioning = isAdmiral && isCommercial;
 
   const linksQuery = useQuery({
     queryKey: ['provisioningLinks', crewId],
@@ -35,7 +36,7 @@ export function ProvisioningView() {
       if (error) throw error;
       return (data ?? []) as ProvisioningLink[];
     },
-    enabled: !!crewId && isAdmiral,
+    enabled: !!crewId && showProvisioning,
   });
 
   // Realtime — reload links when one is created/revoked/joined.
@@ -112,7 +113,7 @@ export function ProvisioningView() {
   }
 
   // ── Tier gate ──
-  if (!isAdmiral) {
+  if (!showProvisioning) {
     return (
       <div className="flex flex-1 items-center justify-center py-24" role="status">
         <div className="text-center max-w-sm">

@@ -59,7 +59,7 @@ interface TripSession {
 export function ComplianceView() {
   const { t } = useT();
   const { system } = useMeasurementSystem();
-  const { crewId, tier } = useCrew();
+  const { crewId, tier, isCommercial } = useCrew();
   const supabase = useSupabase();
   const { showSuccess, showError } = useSnackbar();
   const [genOsha, setGenOsha] = useState(false);
@@ -76,6 +76,7 @@ export function ComplianceView() {
   const [copied, setCopied] = useState(false);
 
   const isAdmiral = tierRank(tier) >= 3;
+  const showCompliance = isAdmiral && isCommercial;
 
   // ── Share helpers ──
   function buildShareUrl(reportType: 'osha' | 'eld' | 'dot'): string {
@@ -349,7 +350,7 @@ export function ComplianceView() {
   }
 
   // ── Tier gate ──
-  if (!isAdmiral) {
+  if (!showCompliance) {
     return (
       <div className="flex flex-1 items-center justify-center py-24" role="status">
         <div className="text-center max-w-sm">

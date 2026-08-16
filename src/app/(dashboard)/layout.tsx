@@ -110,7 +110,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       const c = (data?.crews ?? []) as CrewSummary[];
       setCrews(c);
       // Keep the CrewProvider context (used by pages) in sync.
-      setCrewContext(c.map((x) => ({ crew_id: x.crew_id, crew_name: x.crew_name, tier: x.tier, role: x.role })));
+      setCrewContext(c.map((x) => ({
+        crew_id: x.crew_id,
+        crew_name: x.crew_name,
+        tier: x.tier,
+        role: x.role,
+        is_commercial: x.is_commercial,
+      })));
       if (!activeCrewId && c.length > 0) {
         setActiveCrewId(c[0].crew_id);
         setCrew(c[0]);
@@ -195,11 +201,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     );
   }
 
+  const activeCrew = crews.find((c) => c.crew_id === activeCrewId);
   const visibleNav = [
-    ...NAV_ITEMS.filter((item) => userTier >= item.minTier),
+    ...NAV_ITEMS.filter((item) => {
+      if (userTier < item.minTier) return false;
+      // If it's an Admiral compliance/business page and Workplace mode is disabled, hide it
+      if (item.minTier === 3 && item.href !== '/map' && !activeCrew?.is_commercial) {
+        return false;
+      }
+      return true;
+    }),
     ...(isDeveloper ? [{ href: '/developer', label: 'webNavDeveloper', icon: Terminal, minTier: 0 }] : []),
   ];
-  const activeCrew = crews.find((c) => c.crew_id === activeCrewId);
   const userInitial = (displayName || user.email || '?').charAt(0).toUpperCase();
 
   return (

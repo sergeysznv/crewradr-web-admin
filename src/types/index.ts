@@ -7,4 +7,5 @@ export interface CrewSummary {
   joined_at: string;
   tier: CrewTier;
   expires_at?: string | null;
+  is_commercial?: boolean;
 }

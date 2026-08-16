@@ -26,7 +26,12 @@ function LockedFallback() {
 
 export function IntegrationsView() {
   const { t } = useT();
+  const { isCommercial } = useCrew();
   const [tab, setTab] = useState<'apiKeys' | 'webhooks'>('apiKeys');
+
+  if (!isCommercial) {
+    return <LockedFallback />;
+  }
 
   return (
     <TierGateGuard minTier="admiral" fallback={<LockedFallback />}>

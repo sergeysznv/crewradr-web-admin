@@ -17,7 +17,13 @@ export function CrewLoader({ children }: { children: ReactNode }) {
   // Sync crews from account profile on first load
   useEffect(() => {
     if (account.data?.crews && !crewId) {
-      const crews = account.data.crews.map(c => ({ crew_id: c.crew_id, crew_name: c.crew_name, tier: c.tier, role: c.role }));
+      const crews = account.data.crews.map(c => ({
+        crew_id: c.crew_id,
+        crew_name: c.crew_name,
+        tier: c.tier,
+        role: c.role,
+        is_commercial: c.is_commercial,
+      }));
       setCrews(crews);
       if (crews.length > 0) setCrew(crews[0]);
     }

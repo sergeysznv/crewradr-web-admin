@@ -21,10 +21,10 @@ const PRESET_DAYS: Record<DatePreset, number | null> = {
 
 export function AuditLogView() {
   const { t } = useT();
-  const { crewId, tier } = useCrew();
+  const { crewId, tier, isCommercial } = useCrew();
 
-  // Tier gate — admiral only (tier >= 3)
-  if (tierRank(tier) < 3) {
+  // Tier gate — admiral only (tier >= 3) and Workplace Compliance Mode enabled
+  if (tierRank(tier) < 3 || !isCommercial) {
     return (
       <div className="flex flex-1 items-center justify-center py-24" role="status">
         <div className="text-center max-w-sm">
