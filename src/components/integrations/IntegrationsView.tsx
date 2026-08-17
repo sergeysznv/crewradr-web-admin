@@ -7,6 +7,7 @@ import { WebhookManager } from '@/components/integrations/WebhookManager';
 import { FilterChips } from '@/components/shared/FilterChips';
 import { TierGateGuard } from '@/components/tier/TierGateGuard';
 import { useT } from '@/hooks/use-translations';
+import { useCrew } from '@/hooks/useCrew';
 import { Lock } from 'lucide-react';
 
 function LockedFallback() {
