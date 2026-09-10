@@ -99,6 +99,7 @@ export interface LivePosition {
   role: string;
   latitude: number | null;
   longitude: number | null;
+  speed_ms?: number | null;
   event_type: string | null;
   created_at: string | null;
   is_stale: boolean;

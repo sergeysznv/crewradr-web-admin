@@ -8,6 +8,8 @@ import { useCrew } from '@/hooks/useCrew';
 import { useSupabase } from '@/hooks/useSupabase';
 import { getLivePositions } from '@/lib/rpc';
 import { formatRelativeTime, tierRank } from '@/lib/utils';
+import { useMeasurementSystem } from '@/hooks/useMeasurementSystem';
+import { formatSpeedMps } from '@/lib/units';
 import { MapPin, X, AlertTriangle, Loader2, Lock } from 'lucide-react';
 import type { LivePosition } from '@/types/rpc';
 
@@ -25,6 +27,7 @@ const STALE_AFTER_MS = 15 * 60 * 1000;
 export function MapView() {
   const { t } = useT();
   const { crewId, tier } = useCrew();
+  const { system } = useMeasurementSystem();
   const supabase = useSupabase();
   const queryClient = useQueryClient();
 
@@ -64,6 +67,7 @@ export function MapView() {
             const lng = rec.longitude;
             const createdAt = String(rec.created_at ?? new Date().toISOString());
             const eventType = typeof rec.event_type === 'string' ? rec.event_type : null;
+            const speedMs = typeof rec.speed_ms === 'number' ? rec.speed_ms : null;
             queryClient.setQueryData<LivePosition[]>(['livePositions', crewId], (prev) => {
               const list = prev ?? [];
               const exists = list.some((p) => p.user_id === userId);
@@ -75,6 +79,7 @@ export function MapView() {
                         latitude: lat,
                         longitude: lng,
                         created_at: createdAt,
+                        speed_ms: speedMs ?? p.speed_ms,
                         is_stale: false,
                         last_seen_at: createdAt,
                       }
@@ -88,6 +93,7 @@ export function MapView() {
                   latitude: lat,
                   longitude: lng,
                   created_at: createdAt,
+                  speed_ms: speedMs,
                   is_stale: false,
                   last_seen_at: createdAt,
                   display_name: 'Crew Member',
@@ -269,6 +275,11 @@ export function MapView() {
               {selected.latitude != null && selected.longitude != null && (
                 <dd className="text-xs text-on-surface-variant">
                   {t('webMapCoordinates')}: {selected.latitude.toFixed(5)}, {selected.longitude.toFixed(5)}
+                </dd>
+              )}
+              {selected.speed_ms != null && selected.speed_ms > 0 && (
+                <dd className="text-xs text-on-surface-variant">
+                  {t('webTripsSpeed')}: {formatSpeedMps(selected.speed_ms, system)}
                 </dd>
               )}
               {selected.last_seen_at && selected.is_stale && (
