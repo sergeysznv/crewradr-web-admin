@@ -13,13 +13,17 @@ const supabaseMock = vi.hoisted(() => {
   const subscribe = vi.fn();
   const on = vi.fn(() => ({ subscribe }));
   const channel = vi.fn(() => ({ on }));
+  const getSession = vi.fn().mockResolvedValue({ data: { session: { user: { id: 'u1' } } } });
+  const auth = { getSession };
   return {
     upsert,
     from,
     subscribe,
     on,
     channel,
-    supabase: { from, channel },
+    getSession,
+    auth,
+    supabase: { from, channel, auth },
   };
 });
 

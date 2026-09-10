@@ -59,18 +59,45 @@ export function MapView() {
         (payload) => {
           const rec = (payload as { new?: Record<string, unknown> }).new;
           if (rec && typeof rec.user_id === 'string' && typeof rec.latitude === 'number' && typeof rec.longitude === 'number') {
-            queryClient.setQueryData<LivePosition[]>(['livePositions', crewId], (prev) =>
-              (prev ?? []).map((p) =>
-                p.user_id === rec.user_id
-                  ? {
-                      ...p,
-                      latitude: rec.latitude as number,
-                      longitude: rec.longitude as number,
-                      created_at: String(rec.created_at),
-                    }
-                  : p,
-              ),
-            );
+            const userId = rec.user_id;
+            const lat = rec.latitude;
+            const lng = rec.longitude;
+            const createdAt = String(rec.created_at ?? new Date().toISOString());
+            const eventType = typeof rec.event_type === 'string' ? rec.event_type : null;
+            queryClient.setQueryData<LivePosition[]>(['livePositions', crewId], (prev) => {
+              const list = prev ?? [];
+              const exists = list.some((p) => p.user_id === userId);
+              if (exists) {
+                return list.map((p) =>
+                  p.user_id === userId
+                    ? {
+                        ...p,
+                        latitude: lat,
+                        longitude: lng,
+                        created_at: createdAt,
+                        is_stale: false,
+                        last_seen_at: createdAt,
+                      }
+                    : p,
+                );
+              }
+              return [
+                ...list,
+                {
+                  user_id: userId,
+                  latitude: lat,
+                  longitude: lng,
+                  created_at: createdAt,
+                  is_stale: false,
+                  last_seen_at: createdAt,
+                  display_name: 'Crew Member',
+                  role: 'member',
+                  profile_emoji: null,
+                  avatar_url: null,
+                  event_type: eventType,
+                },
+              ];
+            });
             scheduleReconcile();
           }
         },

@@ -28,7 +28,9 @@ export function FleetOverview({ dashboard }: FleetOverviewProps) {
     refetchInterval: 60_000,
   });
 
-  const onlineCount = positionsQuery.data?.length ?? null;
+  const onlineCount = positionsQuery.data
+    ? positionsQuery.data.filter((p) => !p.is_stale && p.latitude != null && p.longitude != null).length
+    : null;
   const alertCount = dashboard.total_alert_count;
 
   return (
