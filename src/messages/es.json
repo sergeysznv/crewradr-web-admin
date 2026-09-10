@@ -1091,5 +1091,15 @@
 	"webWebhooksStatusInactive": "Inactivo",
 	"webWebhooksSubtitle": "Entrega eventos de ubicación y seguridad en tiempo real directamente a tus servidores.",
 	"webWebhooksToggleFailed": "No se pudo cambiar el estado.",
-	"webWebhooksUrlLabel": "URL de payload"
+	"webWebhooksUrlLabel": "URL de payload",
+	"webApiKeyNotSignedIn": "No has iniciado sesión",
+	"webApiKeyUserResolveFailed": "No se pudo identificar al usuario",
+	"webComplianceDotFailed": "Error al generar DOT",
+	"webErrorLoading": "Error al cargar",
+	"webFleetTripAlertBody": "Este viaje registró {count} alerta{plural} de seguridad telemática.",
+	"webFleetTripAlertCta": "Haz clic para ver el gráfico de velocidad y los detalles",
+	"webFleetTripAlertTitle": "Detalles de la alerta del viaje",
+	"webSettingsMaxMembers": "Miembros máximos",
+	"webSharedClickToOpen": "Haz clic para abrir la página detallada",
+	"webSharedMoreDetails": "Más detalles"
 }

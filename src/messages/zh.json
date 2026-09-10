@@ -1091,5 +1091,15 @@
 	"webWebhooksStatusInactive": "已停用",
 	"webWebhooksSubtitle": "将实时位置和安全事件直接传送到你的服务器。",
 	"webWebhooksToggleFailed": "切换状态失败。",
-	"webWebhooksUrlLabel": "载荷 URL"
+	"webWebhooksUrlLabel": "载荷 URL",
+	"webApiKeyNotSignedIn": "未登录",
+	"webApiKeyUserResolveFailed": "无法识别用户",
+	"webComplianceDotFailed": "DOT 报告生成失败",
+	"webErrorLoading": "加载失败",
+	"webFleetTripAlertBody": "本次行程记录了 {count} 条安全警报。",
+	"webFleetTripAlertCta": "点击查看行程速度图表和详情",
+	"webFleetTripAlertTitle": "行程警报详情",
+	"webSettingsMaxMembers": "成员上限",
+	"webSharedClickToOpen": "点击打开详情页",
+	"webSharedMoreDetails": "更多详情"
 }

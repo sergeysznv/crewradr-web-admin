@@ -1091,5 +1091,15 @@
 	"webWebhooksStatusInactive": "Неактивен",
 	"webWebhooksSubtitle": "Доставляйте события местоположения и безопасности в реальном времени прямо на ваши серверы.",
 	"webWebhooksToggleFailed": "Не удалось изменить статус.",
-	"webWebhooksUrlLabel": "URL полезной нагрузки"
+	"webWebhooksUrlLabel": "URL полезной нагрузки",
+	"webApiKeyNotSignedIn": "Вы не вошли в систему",
+	"webApiKeyUserResolveFailed": "Не удалось определить пользователя",
+	"webComplianceDotFailed": "Ошибка создания отчёта DOT",
+	"webErrorLoading": "Ошибка загрузки",
+	"webFleetTripAlertBody": "В этой поездке зафиксировано {count} оповещений о безопасности.",
+	"webFleetTripAlertCta": "Нажмите, чтобы открыть график скорости и подробности",
+	"webFleetTripAlertTitle": "Детали оповещения о поездке",
+	"webSettingsMaxMembers": "Максимум участников",
+	"webSharedClickToOpen": "Нажмите, чтобы открыть подробную страницу",
+	"webSharedMoreDetails": "Подробнее"
 }

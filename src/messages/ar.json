@@ -1091,5 +1091,15 @@
 	"webWebhooksStatusInactive": "غير نشط",
 	"webWebhooksSubtitle": "تسليم أحداث الموقع والسلامة اللحظية مباشرة إلى خوادمك.",
 	"webWebhooksToggleFailed": "تعذر تبديل الحالة.",
-	"webWebhooksUrlLabel": "عنوان URL للحمولة"
+	"webWebhooksUrlLabel": "عنوان URL للحمولة",
+	"webApiKeyNotSignedIn": "لم يتم تسجيل الدخول",
+	"webApiKeyUserResolveFailed": "تعذّر تحديد المستخدم",
+	"webComplianceDotFailed": "فشل إنشاء تقرير DOT",
+	"webErrorLoading": "فشل التحميل",
+	"webFleetTripAlertBody": "سجّلت هذه الرحلة {count} تنبيه سلامة.",
+	"webFleetTripAlertCta": "انقر لعرض مخطط السرعة والتفاصيل",
+	"webFleetTripAlertTitle": "تفاصيل تنبيه الرحلة",
+	"webSettingsMaxMembers": "الحد الأقصى للأعضاء",
+	"webSharedClickToOpen": "انقر لفتح الصفحة التفصيلية",
+	"webSharedMoreDetails": "مزيد من التفاصيل"
 }

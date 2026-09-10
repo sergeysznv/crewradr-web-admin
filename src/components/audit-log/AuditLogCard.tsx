@@ -1,4 +1,6 @@
 // src/components/audit-log/AuditLogCard.tsx
+'use client';
+import { useT } from '@/hooks/use-translations';
 import type { AuditLogEntry } from '@/types/rpc';
 
 const ACTION_COLORS: Record<string, string> = {
@@ -8,6 +10,8 @@ const ACTION_COLORS: Record<string, string> = {
 };
 
 export function AuditLogCard({ log }: { log: AuditLogEntry }) {
+  const { t } = useT();
+
   return (
     <div className="bg-surface border border-outline rounded-lg p-sz-md space-y-2">
       <div className="flex justify-between items-start">
@@ -16,7 +20,7 @@ export function AuditLogCard({ log }: { log: AuditLogEntry }) {
         </span>
         <span className="text-2xs text-on-surface-variant">{new Date(log.created_at).toLocaleString()}</span>
       </div>
-      <div className="text-sm text-on-surface">{log.actor_name ?? log.actor_email ?? 'System'}</div>
+      <div className="text-sm text-on-surface">{log.actor_name ?? log.actor_email ?? t('webAuditSystem')}</div>
       <div className="text-xs text-on-surface-variant">{log.target_type}: {log.target_id.slice(0, 12)}...</div>
       {log.metadata && Object.keys(log.metadata).length > 0 && (
         <div className="text-xs text-on-surface-variant font-mono truncate border-t border-outline-variant pt-2">

@@ -221,32 +221,32 @@ export function ComplianceView() {
 
   function downloadOsha() {
     const headers = [
-      'Case No.',
-      'Employee Name',
-      'Job Title',
-      'Date of Injury',
-      'Where Event Occurred',
-      'Describe Injury/Illness',
-      'Classify',
-      'Resulted in Death?',
-      'Days Away',
-      'Restricted Days',
-      'Case Classification'
+      t('webComplianceReportCsvColCaseNo'),
+      t('webComplianceReportCsvColEmployeeName'),
+      t('webComplianceReportCsvColJobTitle'),
+      t('webComplianceReportCsvColDateOfInjury'),
+      t('webComplianceReportCsvColWhereOccurred'),
+      t('webComplianceReportCsvColDescribeInjury'),
+      t('webComplianceReportCsvColClassify'),
+      t('webComplianceReportCsvColResultedInDeath'),
+      t('webComplianceReportCsvColDaysAway'),
+      t('webComplianceReportCsvColRestrictedDays'),
+      t('webComplianceReportCsvColCaseClassification')
     ];
     const rows = (oshaData ?? []).map((r: any, index: number) => {
-      const fatality = r.was_fatality ? 'Yes' : 'No';
-      let classification = 'Other Recordable';
-      if (r.was_fatality) classification = 'Fatality';
-      else if ((r.days_away ?? 0) > 0) classification = 'Days Away';
-      else if ((r.restricted_days ?? 0) > 0) classification = 'Restricted';
-      else if (r.was_hospitalization) classification = 'Hospitalization';
+      const fatality = r.was_fatality ? t('webComplianceReportCsvYes') : t('webComplianceReportCsvNo');
+      let classification = t('webComplianceReportOshaClassOther');
+      if (r.was_fatality) classification = t('webComplianceReportOshaClassFatality');
+      else if ((r.days_away ?? 0) > 0) classification = t('webComplianceReportOshaClassDaysAway');
+      else if ((r.restricted_days ?? 0) > 0) classification = t('webComplianceReportOshaClassRestricted');
+      else if (r.was_hospitalization) classification = t('webComplianceReportOshaClassHospitalization');
 
       return [
         index + 1,
-        (r.involved_personnel ?? []).join('; ') || 'Unknown',
+        (r.involved_personnel ?? []).join('; ') || t('webComplianceReportCsvUnknown'),
         '', // Job Title
         r.incident_date,
-        r.location ?? 'Unknown',
+        r.location ?? t('webComplianceReportCsvUnknown'),
         r.description,
         classification,
         fatality,
@@ -256,9 +256,9 @@ export function ComplianceView() {
       ];
     });
     const csv = [
-      'OSHA Form 300 - Log of Work-Related Injuries and Illnesses',
-      `Crew ID,${crewId}`,
-      `Year,${new Date().getFullYear()}`,
+      t('webComplianceReportCsvFormTitle'),
+      t('webComplianceReportCsvCrewId', { crew: crewId ?? '' }),
+      t('webComplianceReportCsvYear', { year: new Date().getFullYear() }),
       '',
       headers.join(','),
       ...rows.map((row) => row.map(csvEscape).join(','))
@@ -267,12 +267,12 @@ export function ComplianceView() {
   }
 
   function downloadEld() {
-    const distanceHeader = system === 'imperial' ? 'DistanceMi' : 'DistanceKm';
+    const distanceHeader = system === 'imperial' ? t('webComplianceReportCsvDistanceMi') : t('webComplianceReportCsvDistanceKm');
     const distanceValue = (m: number) =>
       system === 'imperial' ? (m / 1609.344).toFixed(1) : (m / 1000).toFixed(1);
-    const csv = [`Driver,Date,DrivingHours,${distanceHeader},FatigueWarnings,HOSViolation`,
+    const csv = [[t('webComplianceReportCsvDriver'), t('webComplianceReportCsvDate'), t('webComplianceReportCsvDrivingHours'), distanceHeader, t('webComplianceReportCsvFatigueWarnings'), t('webComplianceReportCsvHosViolation')].join(','),
       ...eldRows.map((r) => {
-        const violation = Number(r.hours) > 11.0 ? 'Yes - Exceeds 11h limit' : 'No';
+        const violation = Number(r.hours) > 11.0 ? t('webComplianceReportCsvExceeds11h') : t('webComplianceReportCsvNo');
         return [r.userId, r.startedAt, r.hours, distanceValue(r.distanceM), r.fatigue, violation]
           .map(csvEscape)
           .join(',')
@@ -308,15 +308,15 @@ export function ComplianceView() {
       setLastGen(new Date().toLocaleString());
       showSuccess(t('webComplianceDotSuccess') || 'DOT compliance report generated successfully.');
     } catch (e) {
-      showError(e instanceof Error ? e.message : 'Failed to generate DOT report');
+      showError(e instanceof Error ? e.message : t('webComplianceDotFailed'));
     }
     setGenDot(false);
   }
 
   function downloadDot() {
     if (!dotData) return;
-    const distanceHeader = system === 'imperial' ? 'Distance (mi)' : 'Distance (km)';
-    const speedHeader = system === 'imperial' ? 'Max Speed (mph)' : 'Max Speed (km/h)';
+    const distanceHeader = system === 'imperial' ? t('webComplianceReportColDistanceMi') : t('webComplianceReportColDistanceKm');
+    const speedHeader = system === 'imperial' ? t('webComplianceReportColMaxSpeedMph') : t('webComplianceReportColMaxSpeedKmh');
 
     const distanceValue = (m: number) =>
       system === 'imperial' ? (m / 1609.344).toFixed(1) : (m / 1000).toFixed(1);
@@ -324,11 +324,11 @@ export function ComplianceView() {
       system === 'imperial' ? (ms * 2.236936).toFixed(0) : (ms * 3.6).toFixed(0);
 
     const csv = [
-      `Driver ID,Date,${distanceHeader},Duration (min),Fatigue Warnings,Nighttime %,${speedHeader},Weather Risk,DOT Compliant`,
+      [t('webComplianceReportCsvDriver'), t('webComplianceReportCsvDate'), distanceHeader, t('webComplianceReportCsvDurationMin'), t('webComplianceReportCsvFatigueWarnings'), t('webComplianceReportCsvNighttimePct'), speedHeader, t('webComplianceReportCsvWeatherRisk'), t('webComplianceReportCsvDotCompliant')].join(','),
       ...dotData.map((s) => {
         const durationMin = Math.floor((s.driving_seconds ?? 0) / 60);
         const fatigueWarnings = s.fatigue_warnings ?? 0;
-        const dotCompliant = durationMin <= 660 && fatigueWarnings === 0 ? 'Yes' : 'No';
+        const dotCompliant = durationMin <= 660 && fatigueWarnings === 0 ? t('webComplianceReportCsvYes') : t('webComplianceReportCsvNo');
         const nighttimePct = `${Math.floor(((s.nighttime_seconds ?? 0) / 60))}%`;
 
         return [

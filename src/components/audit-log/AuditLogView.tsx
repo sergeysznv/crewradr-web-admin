@@ -81,11 +81,14 @@ export function AuditLogView() {
               return `"${s}"`;
             };
             const rows = logs.map((l) =>
-              [l.created_at, l.actor_name ?? l.actor_email ?? 'System', l.action, `${l.target_type}: ${l.target_id}`, JSON.stringify(l.metadata)]
+              [l.created_at, l.actor_name ?? l.actor_email ?? t('webAuditSystem'), l.action, `${l.target_type}: ${l.target_id}`, JSON.stringify(l.metadata)]
                 .map(csvEscape)
                 .join(','),
             );
-            const csv = ['Timestamp,Actor,Action,Target,Details', ...rows].join('\n');
+            const csv = [
+              [t('webAuditColTimestamp'), t('webAuditColActor'), t('webAuditColAction'), t('webAuditColTarget'), t('webAuditColDetails')].join(','),
+              ...rows,
+            ].join('\n');
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');

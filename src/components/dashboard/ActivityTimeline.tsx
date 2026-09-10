@@ -102,6 +102,7 @@ export function ActivityTimeline({ days: daysOverride }: { days?: number }) {
 
 function TripAlertBadge({ count, tripId }: { count: number; tripId: string }) {
   const router = useRouter();
+  const { t } = useT();
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -113,20 +114,20 @@ function TripAlertBadge({ count, tripId }: { count: number; tripId: string }) {
         onClick={() => router.push(`/trips?tripId=${tripId}`)}
         className="cursor-pointer rounded-full bg-warning-container px-2 py-0.5 text-[10px] font-semibold text-on-warning-container hover:bg-warning-container/85 hover:scale-105 active:scale-100 transition-all shadow-sm flex items-center gap-0.5"
       >
-        <span>{count} alert{count > 1 ? 's' : ''}</span>
+        <span>{t('webFleetAlertsCount', { count, plural: count > 1 ? 's' : '' })}</span>
       </button>
 
       {hovered && (
         <div className="absolute z-30 bottom-[calc(100%+6px)] right-0 w-56 p-2.5 bg-zinc-950 text-white dark:bg-zinc-900 dark:border dark:border-zinc-800 rounded-lg shadow-xl text-[10px] leading-normal animate-fade-in pointer-events-none">
           <div className="font-semibold mb-1 flex items-center gap-1 text-zinc-200">
             <Info className="h-3 w-3 text-primary shrink-0" />
-            Trip Alert Details
+            {t('webFleetTripAlertTitle')}
           </div>
           <p className="text-zinc-400 font-normal">
-            This trip recorded {count} telemetry safety alert{count > 1 ? 's' : ''}.
+            {t('webFleetTripAlertBody', { count, plural: count > 1 ? 's' : '' })}
           </p>
           <p className="mt-1.5 text-primary font-medium flex items-center gap-0.5">
-            Click to view trip speed graph & details <ArrowUpRight className="h-2 w-2 shrink-0" />
+            {t('webFleetTripAlertCta')} <ArrowUpRight className="h-2 w-2 shrink-0" />
           </p>
           <div className="absolute top-full right-4 w-1.5 h-1.5 bg-zinc-950 dark:bg-zinc-900 rotate-45 -mt-0.75 border-r border-b border-transparent dark:border-zinc-800" />
         </div>

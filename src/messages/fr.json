@@ -1091,5 +1091,15 @@
 	"webWebhooksStatusInactive": "Inactif",
 	"webWebhooksSubtitle": "Livrez les événements de localisation et de sécurité en temps réel directement à vos serveurs.",
 	"webWebhooksToggleFailed": "Échec du changement de statut.",
-	"webWebhooksUrlLabel": "URL de charge utile"
+	"webWebhooksUrlLabel": "URL de charge utile",
+	"webApiKeyNotSignedIn": "Non connecté",
+	"webApiKeyUserResolveFailed": "Impossible d'identifier l'utilisateur",
+	"webComplianceDotFailed": "Échec de la génération du rapport DOT",
+	"webErrorLoading": "Échec du chargement",
+	"webFleetTripAlertBody": "Ce trajet a enregistré {count} alerte{plural} de sécurité télématique.",
+	"webFleetTripAlertCta": "Cliquez pour voir le graphique de vitesse et les détails",
+	"webFleetTripAlertTitle": "Détails de l'alerte de trajet",
+	"webSettingsMaxMembers": "Membres maximum",
+	"webSharedClickToOpen": "Cliquez pour ouvrir la page détaillée",
+	"webSharedMoreDetails": "Plus de détails"
 }

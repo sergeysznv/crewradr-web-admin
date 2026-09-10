@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowUpRight, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useT } from '@/hooks/use-translations';
 
 export function StatTile({
   label,
@@ -21,6 +22,7 @@ export function StatTile({
   tooltip?: string;
 }) {
   const router = useRouter();
+  const { t } = useT();
   const [isHovered, setIsHovered] = useState(false);
 
   const handleClick = () => {
@@ -68,12 +70,12 @@ export function StatTile({
         <div className="absolute z-30 bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-3 bg-zinc-950 text-white dark:bg-zinc-900 dark:border dark:border-zinc-800 rounded-lg shadow-xl text-xs leading-normal animate-fade-in pointer-events-none">
           <div className="font-semibold mb-1 flex items-center gap-1.5 text-zinc-200">
             <Info className="h-3.5 w-3.5 text-primary shrink-0" />
-            More Details
+            {t('webSharedMoreDetails')}
           </div>
           <p className="text-zinc-400 font-normal">{tooltip}</p>
           {href && (
             <p className="mt-1.5 text-[10px] text-primary font-medium flex items-center gap-0.5">
-              Click to open detailed page <ArrowUpRight className="h-2.5 w-2.5 shrink-0" />
+              {t('webSharedClickToOpen')} <ArrowUpRight className="h-2.5 w-2.5 shrink-0" />
             </p>
           )}
           <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 bg-zinc-950 dark:bg-zinc-900 rotate-45 -mt-1 border-r border-b border-transparent dark:border-zinc-800" />

@@ -80,7 +80,7 @@ export function ApiKeyDashboard() {
 
   const createMutation = useMutation({
     mutationFn: async () => {
-      if (!user) throw new Error('Not signed in');
+      if (!user) throw new Error(t('webApiKeyNotSignedIn'));
 
       // Resolve the app-level user id (public.users.id) — api_keys.created_by
       // references public.users(id), and the insert policy requires
@@ -90,7 +90,7 @@ export function ApiKeyDashboard() {
         .select('id')
         .eq('auth_user_id', user.id)
         .single();
-      if (userErr || !appUser) throw userErr ?? new Error('Could not resolve user');
+      if (userErr || !appUser) throw userErr ?? new Error(t('webApiKeyUserResolveFailed'));
 
       const raw = generateRawKey();
       const keyHash = await sha256Hex(raw);
