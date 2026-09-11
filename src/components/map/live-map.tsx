@@ -1,8 +1,10 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Loader } from '@googlemaps/js-api-loader';
+import { Sun, Moon, Monitor, Palette } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
+import { useT } from '@/hooks/use-translations';
 import type { LivePosition } from '@/types/rpc';
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '';
@@ -34,6 +36,33 @@ const DARK_MAP_STYLE: google.maps.MapTypeStyle[] = [
   { featureType: 'transit.station', elementType: 'geometry', stylers: [{ color: '#2e2e2e' }] },
   { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#000000' }] },
   { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#3d3d3d' }] },
+];
+
+type MapThemeOption = 'system' | 'light' | 'dark';
+
+const MAP_THEME_STORAGE_KEY = 'crewradr-admin-map-theme';
+
+function readStoredMapTheme(): MapThemeOption {
+  try {
+    const v = localStorage.getItem(MAP_THEME_STORAGE_KEY);
+    return v === 'light' || v === 'dark' ? v : 'system';
+  } catch {
+    return 'system';
+  }
+}
+
+function persistMapTheme(option: MapThemeOption): void {
+  try {
+    localStorage.setItem(MAP_THEME_STORAGE_KEY, option);
+  } catch {
+    // Private mode — the session still works, just not persisted.
+  }
+}
+
+const THEME_OPTIONS: { value: MapThemeOption; icon: typeof Sun; labelKey: string }[] = [
+  { value: 'system', icon: Monitor, labelKey: 'webMapThemeSystem' },
+  { value: 'light', icon: Sun, labelKey: 'webMapThemeLight' },
+  { value: 'dark', icon: Moon, labelKey: 'webMapThemeDark' },
 ];
 
 const STALE_AFTER_MS = 15 * 60 * 1000;
@@ -159,6 +188,13 @@ interface LiveMapProps {
 
 export default function LiveMap({ positions, selectedUserId, onSelect, onError }: LiveMapProps) {
   const { resolved } = useTheme();
+  const { t } = useT();
+  const [mapTheme, setMapTheme] = useState<MapThemeOption>(readStoredMapTheme);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const mapThemeRef = useRef(mapTheme);
+  mapThemeRef.current = mapTheme;
+
+  const mapDark = mapTheme === 'dark' || (mapTheme === 'system' && resolved === 'dark');
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   // Stable ref for the resolved theme — keeps the one-time map init effect
@@ -278,7 +314,9 @@ export default function LiveMap({ positions, selectedUserId, onSelect, onError }
         center: { lat: 39.8, lng: -98.5 },
         zoom: 4,
         mapId: MAP_ID,
-        styles: resolvedRef.current === 'dark' ? DARK_MAP_STYLE : undefined,
+        styles: mapThemeRef.current === 'dark' || (mapThemeRef.current === 'system' && resolvedRef.current === 'dark')
+          ? DARK_MAP_STYLE
+          : undefined,
         disableDefaultUI: false,
         zoomControl: true,
         mapTypeControl: true,
@@ -310,8 +348,8 @@ export default function LiveMap({ positions, selectedUserId, onSelect, onError }
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    map.setOptions({ styles: resolved === 'dark' ? DARK_MAP_STYLE : null });
-  }, [resolved]);
+    map.setOptions({ styles: mapDark ? DARK_MAP_STYLE : null });
+  }, [mapDark]);
 
   // Sync click handler
   useEffect(() => {
@@ -345,5 +383,51 @@ export default function LiveMap({ positions, selectedUserId, onSelect, onError }
     }
   }, [selectedUserId]);
 
-  return <div ref={containerRef} style={{ width: '100%', height: '100%' }} />;
+  const selectedOption = THEME_OPTIONS.find((o) => o.value === mapTheme) ?? THEME_OPTIONS[0];
+  const SelectedIcon = selectedOption.icon;
+
+  return (
+    <div className="relative h-full w-full">
+      <div ref={containerRef} className="h-full w-full" />
+      <div className="absolute right-3 top-3 z-[1100]">
+        <button
+          onClick={() => setMenuOpen((open) => !open)}
+          aria-label={t('webMapThemeTitle')}
+          aria-haspopup="menu"
+          aria-expanded={menuOpen}
+          className="flex items-center gap-1.5 rounded-lg border border-outline bg-surface px-2.5 py-1.5 text-xs font-semibold text-on-surface shadow-sm hover:bg-surface-container"
+        >
+          <Palette className="h-4 w-4" />
+          <SelectedIcon className="h-3.5 w-3.5" />
+        </button>
+        {menuOpen && (
+          <div
+            role="menu"
+            className="absolute right-0 top-9 min-w-[140px] rounded-lg border border-outline bg-surface p-1 shadow-md"
+          >
+            {THEME_OPTIONS.map(({ value, icon: Icon, labelKey }) => (
+              <button
+                key={value}
+                role="menuitemradio"
+                aria-checked={mapTheme === value}
+                onClick={() => {
+                  setMapTheme(value);
+                  persistMapTheme(value);
+                  setMenuOpen(false);
+                }}
+                className={`flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm ${
+                  mapTheme === value
+                    ? 'bg-primary-container font-semibold text-on-primary-container'
+                    : 'text-on-surface hover:bg-surface-container'
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                {t(labelKey)}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
