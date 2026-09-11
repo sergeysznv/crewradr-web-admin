@@ -14,12 +14,12 @@ import { tierLabel, tierColor } from '@/lib/utils';
 import { Globe, Users, Loader2, Check, LogOut, Home, Lock } from 'lucide-react';
 
 const LANGUAGES = [
-  { code: 'en', label: 'English' },
-  { code: 'es', label: 'Español' },
-  { code: 'fr', label: 'Français' },
-  { code: 'ar', label: 'العربية' },
-  { code: 'zh', label: '中文' },
-  { code: 'ru', label: 'Русский' },
+  { code: 'en', label: 'English', flag: '🇺🇸' },
+  { code: 'es', label: 'Español', flag: '🇪🇸' },
+  { code: 'fr', label: 'Français', flag: '🇫🇷' },
+  { code: 'ar', label: 'العربية', flag: '🇸🇦' },
+  { code: 'zh', label: '中文', flag: '🇨🇳' },
+  { code: 'ru', label: 'Русский', flag: '🇷🇺' },
 ];
 
 export function AccountView() {
@@ -200,7 +200,7 @@ export function AccountView() {
             className="w-full sm:w-64 rounded-xl border border-outline bg-surface px-3 py-2 text-sm text-on-surface"
           >
             {LANGUAGES.map((l) => (
-              <option key={l.code} value={l.code}>{l.label}</option>
+              <option key={l.code} value={l.code}>{l.flag} {l.label}</option>
             ))}
           </select>
         </div>
