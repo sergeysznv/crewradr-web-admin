@@ -192,7 +192,6 @@ export default function LiveMap({ positions, selectedUserId, onSelect, onError }
   const [mapTheme, setMapTheme] = useState<MapThemeOption>(readStoredMapTheme);
   const [menuOpen, setMenuOpen] = useState(false);
   const mapThemeRef = useRef(mapTheme);
-  mapThemeRef.current = mapTheme;
 
   const mapDark = mapTheme === 'dark' || (mapTheme === 'system' && resolved === 'dark');
   const containerRef = useRef<HTMLDivElement>(null);
@@ -209,6 +208,12 @@ export default function LiveMap({ positions, selectedUserId, onSelect, onError }
   // closures from re-registering on every render.
   const selectedRef = useRef<string | null>(selectedUserId);
   selectedRef.current = selectedUserId;
+
+  // Ref write in an effect so the map-init callback reads the settled value
+  // without tripping react-hooks/refs on render.
+  useEffect(() => {
+    mapThemeRef.current = mapTheme;
+  }, [mapTheme]);
 
   function fitAllMarkers(map: google.maps.Map) {
     const markers = markersRef.current;
