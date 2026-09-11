@@ -189,13 +189,22 @@ interface LiveMapProps {
 export default function LiveMap({ positions, selectedUserId, onSelect, onError }: LiveMapProps) {
   const { resolved } = useTheme();
   const { t } = useT();
-  const [mapTheme, setMapTheme] = useState<MapThemeOption>(readStoredMapTheme);
+  const [mapTheme, setMapTheme] = useState<MapThemeOption>('system');
   const [menuOpen, setMenuOpen] = useState(false);
   const mapThemeRef = useRef(mapTheme);
+
+  // Post-mount hydration: reading localStorage during first client render
+  // would diverge from SSR HTML.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMapTheme(readStoredMapTheme());
+  }, []);
 
   const mapDark = mapTheme === 'dark' || (mapTheme === 'system' && resolved === 'dark');
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   // Stable ref for the resolved theme — keeps the one-time map init effect
   // from re-running when the theme flips (mapId is fixed at init).
   const resolvedRef = useRef(resolved);
@@ -388,6 +397,28 @@ export default function LiveMap({ positions, selectedUserId, onSelect, onError }
     }
   }, [selectedUserId]);
 
+  // Close the menu on outside click / Escape.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onPointerDown = (e: PointerEvent) => {
+      if (
+        !buttonRef.current?.contains(e.target as Node) &&
+        !menuRef.current?.contains(e.target as Node)
+      ) {
+        setMenuOpen(false);
+      }
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMenuOpen(false);
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [menuOpen]);
+
   const selectedOption = THEME_OPTIONS.find((o) => o.value === mapTheme) ?? THEME_OPTIONS[0];
   const SelectedIcon = selectedOption.icon;
 
@@ -396,8 +427,9 @@ export default function LiveMap({ positions, selectedUserId, onSelect, onError }
       <div ref={containerRef} className="h-full w-full" />
       <div className="absolute right-3 top-3 z-[1100]">
         <button
+          ref={buttonRef}
           onClick={() => setMenuOpen((open) => !open)}
-          aria-label={t('webMapThemeTitle')}
+          aria-label={`${t('webMapThemeTitle')}: ${t(selectedOption.labelKey)}`}
           aria-haspopup="menu"
           aria-expanded={menuOpen}
           className="flex items-center gap-1.5 rounded-lg border border-outline bg-surface px-2.5 py-1.5 text-xs font-semibold text-on-surface shadow-sm hover:bg-surface-container"
@@ -407,6 +439,7 @@ export default function LiveMap({ positions, selectedUserId, onSelect, onError }
         </button>
         {menuOpen && (
           <div
+            ref={menuRef}
             role="menu"
             className="absolute right-0 top-9 min-w-[140px] rounded-lg border border-outline bg-surface p-1 shadow-md"
           >
