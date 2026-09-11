@@ -4,7 +4,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { useCrew } from '@/hooks/useCrew';
 import { useSupabase } from '@/hooks/useSupabase';
-import { useT, formatDistance } from '@/hooks/use-translations';
+import { useT } from '@/hooks/use-translations';
+import { useMeasurementSystem } from '@/hooks/useMeasurementSystem';
+import { formatDistanceMeters } from '@/lib/units';
 import { StatTile } from '@/components/shared/StatTile';
 import type { FleetDashboard } from '@/types/rpc';
 
@@ -14,6 +16,7 @@ export function KpiStrip({ data }: { data: FleetDashboard }) {
   const { crewId } = useCrew();
   const supabase = useSupabase();
   const { t } = useT();
+  const { system } = useMeasurementSystem();
   const { trip_stats: ts, total_alert_count } = data;
 
   // Trips started today (UTC midnight — matches server current_date)
@@ -55,7 +58,7 @@ export function KpiStrip({ data }: { data: FleetDashboard }) {
       />
       <StatTile
         label={t('webFleetTotalDistance')}
-        value={formatDistance(ts.total_distance_km)}
+        value={formatDistanceMeters((ts.total_distance_km ?? 0) * 1000, system)}
         href="/reports"
         tooltip={t('webFleetTotalDistanceTooltip')}
       />

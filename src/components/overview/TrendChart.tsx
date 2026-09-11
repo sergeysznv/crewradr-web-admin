@@ -4,7 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
 import { useTier } from '@/hooks/useTier';
 import { useSupabase } from '@/hooks/useSupabase';
-import { useT, isImperial, getLocale } from '@/hooks/use-translations';
+import { useT, getLocale } from '@/hooks/use-translations';
+import { useMeasurementSystem } from '@/hooks/useMeasurementSystem';
 import { tierHistoryDays } from '@/lib/tier';
 import { getWebTrendData, type TrendMetric } from '@/lib/rpc';
 
@@ -19,6 +20,7 @@ interface TrendChartProps {
 export function TrendChart({ metric, crewId, label, days: daysOverride }: TrendChartProps) {
   const { t } = useT();
   const { settings, tier } = useTier();
+  const { system } = useMeasurementSystem();
   const supabase = useSupabase();
   // Prefer explicit override, then settings.historyDays, then tier ladder.
   const days = daysOverride ?? settings?.historyDays ?? tierHistoryDays(tier);
@@ -31,7 +33,7 @@ export function TrendChart({ metric, crewId, label, days: daysOverride }: TrendC
     enabled: !!crewId,
   });
 
-  const imperial = isImperial();
+  const imperial = system === 'imperial';
   const isDistance = metric === 'miles';
 
   const unitLabel = isDistance

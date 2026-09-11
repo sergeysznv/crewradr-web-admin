@@ -38,10 +38,23 @@ export function TripsView() {
     useTripList(crewId, tierHistoryDays(tier as CrewTier));
   const { data: trip, isLoading, isError, refetch } = useTripDetail(selectedTripId);
 
-  const distanceLabel = (miles: number) =>
-    isImperial()
-      ? t('webTripsMiles', { n: miles < 10 ? miles.toFixed(1) : Math.round(miles) })
-      : t('webTripsKm', { n: Math.round(miles * 1.60934) });
+  const distanceLabel = (miles: number) => {
+    const safeMiles = isFinite(miles) && miles > 0 ? miles : 0;
+    if (system === 'imperial') {
+      return t('webTripsMiles', { n: safeMiles < 10 ? safeMiles.toFixed(1) : Math.round(safeMiles) });
+    }
+    const km = safeMiles * 1.60934;
+    return t('webTripsKm', { n: km < 10 ? km.toFixed(1) : Math.round(km) });
+  };
+
+  const formatTripDate = (dateStr: string) => {
+    try {
+      const d = new Date(dateStr);
+      return !isNaN(d.getTime()) ? d.toLocaleDateString() : '--';
+    } catch {
+      return '--';
+    }
+  };
 
   // Tier gate — first mate+ (tier >= 1)
   if (tierRank(tier) < 1) {
@@ -106,19 +119,24 @@ export function TripsView() {
                           {tr.member_name || t('webTripsMember')}
                         </span>
                         <span className="shrink-0 text-xs text-on-surface-variant">
-                          {new Date(tr.started_at).toLocaleDateString()}
+                          {formatTripDate(tr.started_at)}
                         </span>
                       </div>
                       <div className="mt-1 flex items-center justify-between gap-2 text-xs text-on-surface-variant">
                         <span className="flex items-center gap-1">
                           <MapPin className="h-3 w-3" aria-hidden="true" />
                           {distanceLabel(tr.distance_miles)}
-                          {tr.duration_min > 0 && (
+                          {tr.duration_min > 0 ? (
                             <>
                               <span aria-hidden="true">·</span>
                               {t('webTripsDurationMin', { n: tr.duration_min })}
                             </>
-                          )}
+                          ) : tr.duration_min === 0 ? (
+                            <>
+                              <span aria-hidden="true">·</span>
+                              {t('webTripsDurationMin', { n: '< 1' })}
+                            </>
+                          ) : null}
                           {tr.max_speed_ms > 0 && (
                             <>
                               <span aria-hidden="true">·</span>

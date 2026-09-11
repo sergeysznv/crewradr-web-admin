@@ -2,15 +2,27 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { useT, isImperial, getLocale } from '@/hooks/use-translations';
+import { useT, getLocale } from '@/hooks/use-translations';
+import { useMeasurementSystem } from '@/hooks/useMeasurementSystem';
+import type { MeasurementSystem } from '@/lib/units';
 
 export interface SpeedSample {
   timestamp: string;
   speedMph: number;
 }
 
-export function SpeedGraph({ samples, height = 240 }: { samples: SpeedSample[]; height?: number }) {
+export function SpeedGraph({
+  samples,
+  height = 240,
+  system: propSystem,
+}: {
+  samples: SpeedSample[];
+  height?: number;
+  system?: MeasurementSystem;
+}) {
   const { t } = useT();
+  const { system: contextSystem } = useMeasurementSystem();
+  const system = propSystem ?? contextSystem;
   const containerRef = useRef<HTMLDivElement>(null);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
 
@@ -23,12 +35,14 @@ export function SpeedGraph({ samples, height = 240 }: { samples: SpeedSample[]; 
   }
 
   // Unit settings
-  const imperial = isImperial();
+  const imperial = system === 'imperial';
   const speedUnit = imperial ? 'mph' : 'km/h';
   const speedMultiplier = imperial ? 1 : 1.60934;
 
+  const safeSpeed = (s: number) => (isFinite(s) && s > 0 ? s : 0);
+
   // Find max speed in the appropriate unit system
-  const maxSpeedVal = Math.max(...samples.map((s) => s.speedMph * speedMultiplier), 1);
+  const maxSpeedVal = Math.max(...samples.map((s) => safeSpeed(s.speedMph) * speedMultiplier), 1);
   // Round up to the nearest multiple of 10 or 5 for nice axis ticks
   const roundedMaxSpeed = Math.max(10, Math.ceil(maxSpeedVal / 10) * 10);
 
@@ -49,7 +63,7 @@ export function SpeedGraph({ samples, height = 240 }: { samples: SpeedSample[]; 
   };
 
   const getY = (speedMph: number) => {
-    const val = speedMph * speedMultiplier;
+    const val = safeSpeed(speedMph) * speedMultiplier;
     return paddingTop + (1 - val / roundedMaxSpeed) * chartHeight;
   };
 
@@ -205,6 +219,16 @@ export function SpeedGraph({ samples, height = 240 }: { samples: SpeedSample[]; 
           strokeLinejoin="round"
         />
 
+        {/* Single point rendering when samples.length === 1 */}
+        {samples.length === 1 && (
+          <circle
+            cx={getX(0)}
+            cy={getY(samples[0].speedMph)}
+            r="5"
+            className="fill-primary"
+          />
+        )}
+
         {/* Interactive Hover Guides & Focus Dot */}
         {activeSample && (
           <g>
@@ -248,7 +272,7 @@ export function SpeedGraph({ samples, height = 240 }: { samples: SpeedSample[]; 
           }}
         >
           <div className="font-semibold text-on-surface">
-            {Math.round(activeSample.speedMph * speedMultiplier)} {speedUnit}
+            {Math.round(safeSpeed(activeSample.speedMph) * speedMultiplier)} {speedUnit}
           </div>
           <div className="mt-0.5 whitespace-nowrap text-[10px] text-on-surface-variant">
             {formatTime(activeSample.timestamp)}

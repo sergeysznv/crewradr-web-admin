@@ -4,6 +4,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useSupabase } from '@/hooks/useSupabase';
 import { useTier } from '@/hooks/useTier';
+import { useMeasurementSystem } from '@/hooks/useMeasurementSystem';
 import { useT } from '@/hooks/use-translations';
 import { tierHistoryDays } from '@/lib/tier';
 import type { MemberScorecard } from '@/types/tier';
@@ -11,7 +12,7 @@ import { useState } from 'react';
 
 const DAY_OPTIONS = [7, 30, 90, 365] as const;
 
-// Units match get_web_member_scorecard: braking = events per 100 miles,
+// Units match get_web_member_scorecard: braking = events per 100 miles/km,
 // speeding/phone = events per trip, night = share of driving time.
 const SUBSCORE_KEYS: Record<string, { labelKey: string; unit: string }> = {
   braking: { labelKey: 'webScorecardBraking', unit: 'events/100mi' },
@@ -28,6 +29,7 @@ function scoreColor(score: number): string {
 
 export function Scorecard({ memberId }: { memberId: string }) {
   const { t } = useT();
+  const { system } = useMeasurementSystem();
   const supabase = useSupabase();
   const { tier, settings } = useTier();
   const maxDays = settings?.historyDays ?? tierHistoryDays(tier);
@@ -99,12 +101,17 @@ export function Scorecard({ memberId }: { memberId: string }) {
       <div className="mt-5 grid grid-cols-2 gap-3">
         {Object.entries(data.subscores).map(([key, value]) => {
           const meta = SUBSCORE_KEYS[key] ?? { labelKey: key, unit: '' };
+          const isMetric = system === 'metric';
+          const unit = key === 'braking' && isMetric ? 'events/100km' : meta.unit;
+          const displayValue = key === 'braking' && isMetric && typeof value === 'number'
+            ? Math.round((value / 1.60934) * 10) / 10
+            : value;
           return (
             <div key={key} className="rounded-lg bg-surface p-3">
               <span className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">{t(meta.labelKey)}</span>
               <div className="mt-1 flex items-baseline gap-1">
-                <span className="text-lg font-bold text-on-surface">{value}</span>
-                <span className="text-xs text-on-surface-variant">{meta.unit}</span>
+                <span className="text-lg font-bold text-on-surface">{displayValue}</span>
+                <span className="text-xs text-on-surface-variant">{unit}</span>
               </div>
             </div>
           );

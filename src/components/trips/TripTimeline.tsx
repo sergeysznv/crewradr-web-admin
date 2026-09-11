@@ -30,16 +30,23 @@ export function TripTimeline({ trip }: { trip: TripDetail }) {
 
       {/* Time range */}
       <p className="text-sm text-on-surface-variant">
-        {new Date(trip.startTime).toLocaleString()} —{' '}
-        {trip.endTime ? new Date(trip.endTime).toLocaleString() : t('webTripsInProgress')}
+        {(() => {
+          const startDate = trip.startTime ? new Date(trip.startTime) : null;
+          const startValid = startDate && !isNaN(startDate.getTime());
+          const endDate = trip.endTime ? new Date(trip.endTime) : null;
+          const endValid = endDate && !isNaN(endDate.getTime());
+          const startStr = startValid ? startDate.toLocaleString() : '--';
+          const endStr = trip.endTime ? (endValid ? endDate.toLocaleString() : '--') : t('webTripsInProgress');
+          return `${startStr} — ${endStr}`;
+        })()}
       </p>
 
       {/* Speed graph */}
       <div>
         <h3 className="mb-2 text-base font-semibold text-on-surface">{t('webTripsSpeed')}</h3>
-        <SpeedGraph samples={trip.speedSamples} />
-        {/* Fallback when no detailed speed samples exist but trip-level max/avg are available */}
-        {trip.speedSamples.length === 0 && trip.maxSpeedMs > 0 && (
+        <SpeedGraph samples={trip.speedSamples} system={system} />
+        {/* Speed metrics summary */}
+        {trip.maxSpeedMs > 0 && (
           <p className="mt-2 text-sm text-on-surface-variant">
             {t('webTripsMaxSpeed')}: {formatSpeedMps(trip.maxSpeedMs, system)}
             {trip.avgSpeedMs > 0 && ` · ${t('webTripsAvgSpeed')}: ${formatSpeedMps(trip.avgSpeedMs, system)}`}
