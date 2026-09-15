@@ -5,6 +5,8 @@ import { useState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useT } from '@/hooks/use-translations';
 import { useCrew } from '@/hooks/useCrew';
+import { useMeasurementSystem } from '@/hooks/useMeasurementSystem';
+import { speedUnit, mphToDisplaySpeed, displaySpeedToMph } from '@/lib/units';
 import { useFleetPolicy, useSaveFleetPolicy } from '@/hooks/queries/useFleetPolicy';
 import { useSnackbar } from '@/components/shared/Snackbar';
 import { FLEET_POLICY_DEFAULTS } from '@/types/tier';
@@ -13,6 +15,7 @@ import type { FleetPolicy } from '@/types/tier';
 export function FleetPolicyTab() {
   const { t } = useT();
   const { crewId } = useCrew();
+  const { system } = useMeasurementSystem();
   const { showSuccess, showError } = useSnackbar();
 
   const { data: policy, isLoading } = useFleetPolicy(crewId);
@@ -21,7 +24,7 @@ export function FleetPolicyTab() {
   const current = policy ?? FLEET_POLICY_DEFAULTS;
 
   const [fatigueLimit, setFatigueLimit] = useState(current.fatigue_limit_hours);
-  const [extremeSpeed, setExtremeSpeed] = useState(current.extreme_speed_mph);
+  const [extremeSpeed, setExtremeSpeed] = useState(() => mphToDisplaySpeed(current.extreme_speed_mph, system));
   const [phonePolicy, setPhonePolicy] = useState<string>(current.phone_policy);
   const [scoringMode, setScoringMode] = useState<string>(current.scoring_mode);
   const [retentionDays, setRetentionDays] = useState(current.audit_retention_days);
@@ -29,18 +32,19 @@ export function FleetPolicyTab() {
   useEffect(() => {
     if (policy) {
       setFatigueLimit(policy.fatigue_limit_hours);
-      setExtremeSpeed(policy.extreme_speed_mph);
+      setExtremeSpeed(mphToDisplaySpeed(policy.extreme_speed_mph, system));
       setPhonePolicy(policy.phone_policy);
       setScoringMode(policy.scoring_mode);
       setRetentionDays(policy.audit_retention_days);
     }
-  }, [policy]);
+  }, [policy, system]);
 
   const handleSave = () => {
+    const extremeSpeedMph = displaySpeedToMph(extremeSpeed, system);
     saveMutation.mutate(
       {
         fatigue_limit_hours: fatigueLimit,
-        extreme_speed_mph: extremeSpeed,
+        extreme_speed_mph: extremeSpeedMph,
         phone_policy: phonePolicy as FleetPolicy['phone_policy'],
         scoring_mode: scoringMode as FleetPolicy['scoring_mode'],
         audit_retention_days: retentionDays,
@@ -72,19 +76,19 @@ export function FleetPolicyTab() {
       {/* Extreme Speed Threshold */}
       <div>
         <label htmlFor="fleet-speed" className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-          {t('webFleetPolicyExtremeSpeed')}
+          {t('webFleetPolicyExtremeSpeed')} ({speedUnit(system)})
         </label>
         <div className="mt-1 flex items-center gap-2">
           <input
             id="fleet-speed"
             type="number"
-            min={20}
-            max={150}
+            min={system === 'metric' ? 30 : 20}
+            max={system === 'metric' ? 240 : 150}
             value={extremeSpeed}
             onChange={(e) => setExtremeSpeed(Number(e.target.value))}
             className="w-24 rounded-lg border border-outline bg-surface px-4 py-2.5 text-sm text-on-surface focus:border-primary/50 focus:outline-none"
           />
-          <span className="text-sm text-on-surface-variant">{t('webFleetPolicyMph')}</span>
+          <span className="text-sm text-on-surface-variant">{speedUnit(system)}</span>
         </div>
         <p className="mt-1 text-xs text-on-surface-variant">{t('webFleetPolicyExtremeSpeedHint')}</p>
       </div>

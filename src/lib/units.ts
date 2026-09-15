@@ -56,3 +56,43 @@ export function formatTemperatureCelsius(celsius: number, system: MeasurementSys
   }
   return `${Math.round(celsius)}°C`;
 }
+
+/**
+ * Returns the speed unit string ('mph' or 'km/h').
+ */
+export function speedUnit(system: MeasurementSystem): string {
+  return system === 'imperial' ? 'mph' : 'km/h';
+}
+
+/**
+ * Returns the distance unit string ('mi' or 'km').
+ */
+export function distanceUnit(system: MeasurementSystem): string {
+  return system === 'imperial' ? 'mi' : 'km';
+}
+
+/**
+ * Converts a speed in mph to display speed in current unit system.
+ */
+export function mphToDisplaySpeed(mph: number, system: MeasurementSystem): number {
+  if (!isFinite(mph)) return 0;
+  return system === 'imperial' ? Math.round(mph) : Math.round(mph * 1.609344);
+}
+
+/**
+ * Converts a display speed back to mph for storage.
+ */
+export function displaySpeedToMph(displaySpeed: number, system: MeasurementSystem): number {
+  if (!isFinite(displaySpeed)) return 0;
+  return system === 'imperial' ? Math.round(displaySpeed) : Math.round(displaySpeed / 1.609344);
+}
+
+/**
+ * Formats a speed given in mph to a localized display string with unit.
+ */
+export function formatSpeedMph(mph: number, system: MeasurementSystem): string {
+  if (!isFinite(mph)) return '--';
+  const val = mphToDisplaySpeed(mph, system);
+  const unit = speedUnit(system);
+  return `${val} ${unit}`;
+}

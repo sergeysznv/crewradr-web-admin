@@ -4,6 +4,11 @@ import {
   formatSpeedMps,
   formatDistanceMeters,
   formatTemperatureCelsius,
+  speedUnit,
+  distanceUnit,
+  mphToDisplaySpeed,
+  displaySpeedToMph,
+  formatSpeedMph,
 } from '@/lib/units';
 
 describe('deriveSystemFromLocale', () => {
@@ -125,5 +130,35 @@ describe('formatTemperatureCelsius', () => {
   it('rounds to the nearest whole degree', () => {
     expect(formatTemperatureCelsius(36.7, 'metric')).toBe('37°C');
     expect(formatTemperatureCelsius(36.7, 'imperial')).toBe('98°F');
+  });
+});
+
+describe('unit string getters', () => {
+  it('returns mph/mi for imperial', () => {
+    expect(speedUnit('imperial')).toBe('mph');
+    expect(distanceUnit('imperial')).toBe('mi');
+  });
+
+  it('returns km/h and km for metric', () => {
+    expect(speedUnit('metric')).toBe('km/h');
+    expect(distanceUnit('metric')).toBe('km');
+  });
+});
+
+describe('mphToDisplaySpeed and displaySpeedToMph', () => {
+  it('converts correctly between mph and display speed', () => {
+    expect(mphToDisplaySpeed(75, 'imperial')).toBe(75);
+    expect(mphToDisplaySpeed(75, 'metric')).toBe(121);
+    expect(mphToDisplaySpeed(85, 'metric')).toBe(137);
+
+    expect(displaySpeedToMph(75, 'imperial')).toBe(75);
+    expect(displaySpeedToMph(121, 'metric')).toBe(75);
+    expect(displaySpeedToMph(137, 'metric')).toBe(85);
+  });
+
+  it('formats speed from mph with unit', () => {
+    expect(formatSpeedMph(75, 'imperial')).toBe('75 mph');
+    expect(formatSpeedMph(75, 'metric')).toBe('121 km/h');
+    expect(formatSpeedMph(NaN, 'metric')).toBe('--');
   });
 });
