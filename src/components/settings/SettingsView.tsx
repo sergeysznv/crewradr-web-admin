@@ -31,19 +31,6 @@ export function SettingsView() {
   const { t } = useT();
   const { crewId, tier, isCommercial } = useCrew();
 
-  // Tier gate — first mate+ (tier >= 1)
-  if (tierRank(tier) < 1) {
-    return (
-      <div className="flex flex-1 items-center justify-center py-24" role="status">
-        <div className="text-center max-w-sm">
-          <Lock className="mx-auto h-10 w-10 text-on-surface-variant opacity-50" aria-hidden="true" />
-          <h1 className="mt-4 text-xl font-bold text-on-surface">{t('webCrewSettingsTitle')}</h1>
-          <p className="mt-2 text-sm text-on-surface-variant">{t('webUpgradeRequired')}</p>
-        </div>
-      </div>
-    );
-  }
-
   const { data: settings } = useCrewSettings(crewId);
   const [tab, setTab] = useState<Tab>('general');
 

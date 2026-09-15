@@ -38,7 +38,7 @@ const NAV_ITEMS = [
   { href: '/trips', label: 'webNavTrips', icon: Route, minTier: 1 },
   { href: '/members', label: 'webNavMembers', icon: Users, minTier: 1 }, // first mate: read-only
   { href: '/reports', label: 'webNavReports', icon: BarChart3, minTier: 1 },
-  { href: '/settings', label: 'webNavCrewSettings', icon: Settings, minTier: 1 }, // first mate: general/privacy; captain: policy; admiral: compliance
+  { href: '/settings', label: 'webNavCrewSettings', icon: Settings, minTier: 0 }, // minTier: 0 allows deckhand to access general/billing & upgrade
   { href: '/audit-log', label: 'webNavAuditLog', icon: FileText, minTier: 3 },
   { href: '/compliance', label: 'webNavCompliance', icon: ShieldCheck, minTier: 3 },
   { href: '/provisioning', label: 'webNavProvisioning', icon: Link, minTier: 3 },
