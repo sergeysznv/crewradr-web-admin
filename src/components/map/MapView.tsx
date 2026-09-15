@@ -25,6 +25,31 @@ const LiveMap = nextDynamic(() => import('@/components/map/live-map'), {
 
 const STALE_AFTER_MS = 15 * 60 * 1000;
 
+function getMovementMode(speedMs: number | null | undefined, eventType?: string | null): { mode: string; emoji: string; label: string } {
+  if (eventType === 'flying') return { mode: 'flying', emoji: '✈️', label: 'Flying' };
+  if (eventType === 'driving') return { mode: 'driving', emoji: '🚗', label: 'Driving' };
+  if (eventType === 'cycling') return { mode: 'cycling', emoji: '🚴', label: 'Cycling' };
+  if (eventType === 'running') return { mode: 'running', emoji: '🏃', label: 'Running' };
+  if (eventType === 'walking') return { mode: 'walking', emoji: '🚶', label: 'Walking' };
+
+  if (speedMs == null || speedMs <= 0.5) {
+    return { mode: 'stationary', emoji: '🛑', label: 'Stationary' };
+  }
+  if (speedMs <= 2.2) {
+    return { mode: 'walking', emoji: '🚶', label: 'Walking' };
+  }
+  if (speedMs <= 6.0) {
+    return { mode: 'running', emoji: '🏃', label: 'Running' };
+  }
+  if (speedMs <= 10.0) {
+    return { mode: 'cycling', emoji: '🚴', label: 'Cycling' };
+  }
+  if (speedMs <= 70.0) {
+    return { mode: 'driving', emoji: '🚗', label: 'Driving' };
+  }
+  return { mode: 'flying', emoji: '✈️', label: 'Flying' };
+}
+
 export function MapView() {
   const { t } = useT();
   const { crewId, tier } = useCrew();
@@ -223,20 +248,19 @@ export function MapView() {
         <span className="rounded-full bg-primary-container px-2.5 py-0.5 text-xs font-semibold text-on-primary-container">
           {t('webMapMembersTracked', { count: positions.length })}
         </span>
-        {zones.length > 0 && (
-          <button
-            type="button"
-            onClick={() => setShowZones((v) => !v)}
-            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors ${
-              showZones
-                ? 'border-emerald-500/30 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300'
-                : 'border-outline text-on-surface-variant hover:bg-surface-container'
-            }`}
-          >
-            <ShieldCheck className="h-3 w-3" />
-            <span>Safe Landings ({zones.length})</span>
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={() => setShowZones((v) => !v)}
+          className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors ${
+            showZones
+              ? 'border-emerald-500/30 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300'
+              : 'border-outline text-on-surface-variant hover:bg-surface-container'
+          }`}
+          title={zones.length === 0 ? 'No Safe Landings configured for this crew' : `${zones.length} Safe Landings`}
+        >
+          <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+          <span>Safe Landings ({zones.length})</span>
+        </button>
         {lastUpdated > 0 && (
           <span className="ml-auto text-xs text-on-surface-variant">
             {t('webMapUpdated', { time: formatRelativeTime(new Date(lastUpdated).toISOString(), t) })}
@@ -305,6 +329,17 @@ export function MapView() {
                 <p className="text-sm font-semibold text-on-surface">{selected.display_name}</p>
                 <p className="text-xs text-on-surface-variant">{selected.user_id.slice(0, 8)}</p>
               </div>
+            </div>
+            <div className="mt-2.5 flex items-center gap-2">
+              <span className="inline-flex items-center gap-1 rounded-md bg-surface-container px-2 py-0.5 text-xs font-medium text-on-surface">
+                <span>{getMovementMode(selected.speed_ms, selected.event_type).emoji}</span>
+                <span>{getMovementMode(selected.speed_ms, selected.event_type).label}</span>
+              </span>
+              {selected.speed_ms != null && selected.speed_ms > 0 && (
+                <span className="rounded-md bg-primary-container px-2 py-0.5 text-xs font-semibold text-on-primary-container">
+                  {formatSpeedMps(selected.speed_ms, system)}
+                </span>
+              )}
             </div>
             <dl className="mt-3 space-y-1 text-sm">
               <dt className="sr-only">{t('webMapLastSeen')}</dt>

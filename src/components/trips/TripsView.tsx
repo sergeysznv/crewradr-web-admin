@@ -100,6 +100,14 @@ export function TripsView() {
     }
   };
 
+  const getTripModeIcon = (maxSpeedMs: number): string => {
+    if (maxSpeedMs > 70) return '✈️';
+    if (maxSpeedMs > 10) return '🚗';
+    if (maxSpeedMs > 6) return '🚴';
+    if (maxSpeedMs > 2.2) return '🏃';
+    return '🚶';
+  };
+
   // Tier gate — first mate+ (tier >= 1)
   if (tierRank(tier) < 1) {
     return (
@@ -172,8 +180,9 @@ export function TripsView() {
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span className="truncate text-sm font-semibold text-on-surface">
-                          {tr.member_name || t('webTripsMember')}
+                        <span className="inline-flex items-center gap-1.5 truncate text-sm font-semibold text-on-surface">
+                          <span title={getTripModeIcon(tr.max_speed_ms)}>{getTripModeIcon(tr.max_speed_ms)}</span>
+                          <span className="truncate">{tr.member_name || t('webTripsMember')}</span>
                         </span>
                         <span className="shrink-0 text-xs text-on-surface-variant">
                           {formatTripDate(tr.started_at)}
