@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import { useT } from '@/hooks/use-translations';
 import { SpeedGraph } from './SpeedGraph';
+import { TripRouteMap } from './TripRouteMap';
 import { formatSpeedMps } from '@/lib/units';
 import { useMeasurementSystem } from '@/hooks/useMeasurementSystem';
 import type { TripDetail } from '@/types/tier';
@@ -40,6 +41,17 @@ export function TripTimeline({ trip }: { trip: TripDetail }) {
           return `${startStr} — ${endStr}`;
         })()}
       </p>
+
+      {/* Route map */}
+      <div>
+        <h3 className="mb-2 text-base font-semibold text-on-surface">Route Map</h3>
+        <TripRouteMap
+          polyline={trip.polyline}
+          stops={trip.stops}
+          alerts={trip.alerts}
+          isLive={trip.isLive}
+        />
+      </div>
 
       {/* Speed graph */}
       <div>

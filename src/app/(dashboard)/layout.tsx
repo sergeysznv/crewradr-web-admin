@@ -33,11 +33,11 @@ import type { CrewSummary } from '@/types';
 // 2 captain, 3 admiral.
 const NAV_ITEMS = [
   { href: '/fleet', label: 'webNavFleet', icon: LayoutDashboard, minTier: 1 }, // first mate+
-  { href: '/map', label: 'webNavLiveMap', icon: MapPin, minTier: 3 },
+  { href: '/map', label: 'webNavLiveMap', icon: MapPin, minTier: 1 }, // first mate+
   { href: '/trips', label: 'webNavTrips', icon: Route, minTier: 1 },
   { href: '/members', label: 'webNavMembers', icon: Users, minTier: 1 }, // first mate: read-only
   { href: '/reports', label: 'webNavReports', icon: BarChart3, minTier: 1 },
-  { href: '/settings', label: 'webNavCrewSettings', icon: Settings, minTier: 2 },
+  { href: '/settings', label: 'webNavCrewSettings', icon: Settings, minTier: 1 }, // first mate: general/privacy; captain: policy; admiral: compliance
   { href: '/audit-log', label: 'webNavAuditLog', icon: FileText, minTier: 3 },
   { href: '/compliance', label: 'webNavCompliance', icon: ShieldCheck, minTier: 3 },
   { href: '/provisioning', label: 'webNavProvisioning', icon: Link, minTier: 3 },

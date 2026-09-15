@@ -31,8 +31,8 @@ export function SettingsView() {
   const { t } = useT();
   const { crewId, tier, isCommercial } = useCrew();
 
-  // Tier gate — captain+ (tier >= 2)
-  if (tierRank(tier) < 2) {
+  // Tier gate — first mate+ (tier >= 1)
+  if (tierRank(tier) < 1) {
     return (
       <div className="flex flex-1 items-center justify-center py-24" role="status">
         <div className="text-center max-w-sm">
@@ -56,12 +56,17 @@ export function SettingsView() {
   );
 
   const showCompliance = tier === 'admiral' && isCommercial;
-  const activeTab = (tab === 'compliance' && !showCompliance) ? 'general' : tab;
+  const showFleetPolicy = tierRank(tier) >= 2;
 
   const visibleTabs = TABS.filter((t) => {
+    if (t.value === 'fleetPolicy') return showFleetPolicy;
     if (t.value === 'compliance') return showCompliance;
     return true;
   });
+
+  const activeTab = (tab === 'compliance' && !showCompliance) || (tab === 'fleetPolicy' && !showFleetPolicy)
+    ? 'general'
+    : tab;
 
   return (
     <div className="max-w-3xl space-y-sz-lg animate-fade-in">

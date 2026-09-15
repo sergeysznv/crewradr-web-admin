@@ -31,22 +31,23 @@ export function MapView() {
   const supabase = useSupabase();
   const queryClient = useQueryClient();
 
+  const isPaidTier = tierRank(tier) >= 1;
+
   const positionsQuery = useQuery({
     queryKey: ['livePositions', crewId],
     queryFn: () => getLivePositions(supabase, crewId!),
-    enabled: !!crewId && tierRank(tier) >= 3,
-    refetchInterval: 30_000,
+    enabled: !!crewId && isPaidTier,
+    refetchInterval: tierRank(tier) >= 2 ? 15_000 : 30_000,
   });
 
   const [selected, setSelected] = useState<LivePosition | null>(null);
   const [mapLoadError, setMapLoadError] = useState<string | null>(null);
 
   const positions = positionsQuery.data ?? [];
-  const isAdmiral = tierRank(tier) >= 3;
 
   // Realtime — instant marker upsert + 5s RPC reconcile (ported from production).
   useEffect(() => {
-    if (!crewId || !isAdmiral) return;
+    if (!crewId || !isPaidTier) return;
     let reconcileTimer: ReturnType<typeof setTimeout> | undefined;
     const scheduleReconcile = () => {
       if (reconcileTimer) clearTimeout(reconcileTimer);
@@ -118,7 +119,7 @@ export function MapView() {
       channel.unsubscribe();
       if (reconcileTimer) clearTimeout(reconcileTimer);
     };
-  }, [crewId, isAdmiral, supabase, queryClient]);
+  }, [crewId, isPaidTier, supabase, queryClient]);
 
   // Refetch on tab focus — skip if refreshed recently to prevent double-fetch.
   const lastFocusRef = useRef<number>(0);
@@ -145,7 +146,7 @@ export function MapView() {
   const lastUpdated = positionsQuery.dataUpdatedAt;
 
   // ── Tier gate ──
-  if (!isAdmiral) {
+  if (!isPaidTier) {
     return (
       <div className="flex flex-1 items-center justify-center py-24" role="status">
         <div className="text-center max-w-sm">

@@ -14,7 +14,7 @@ import { useMeasurementSystem } from '@/hooks/useMeasurementSystem';
 import { tierRank } from '@/lib/utils';
 import { tierHistoryDays } from '@/lib/tier';
 import type { CrewTier } from '@/types/tier';
-import { Route, Lock, Loader2, TriangleAlert, MapPin, Gauge } from 'lucide-react';
+import { Route, Lock, Loader2, TriangleAlert, MapPin, Gauge, Download } from 'lucide-react';
 
 export function TripsView() {
   const { t } = useT();
@@ -37,6 +37,50 @@ export function TripsView() {
   const { data: trips, isLoading: isListLoading, isError: isListError, refetch: refetchList } =
     useTripList(crewId, tierHistoryDays(tier as CrewTier));
   const { data: trip, isLoading, isError, refetch } = useTripDetail(selectedTripId);
+
+  const handleExportCsv = () => {
+    if (!trips || trips.length === 0) return;
+    const isImp = system === 'imperial';
+    const distUnit = isImp ? 'miles' : 'km';
+    const spdUnit = isImp ? 'mph' : 'km/h';
+    const headers = [
+      'Trip ID',
+      'Driver',
+      'Start Time',
+      'End Time',
+      `Distance (${distUnit})`,
+      'Duration (min)',
+      `Max Speed (${spdUnit})`,
+      `Avg Speed (${spdUnit})`,
+      'Alerts',
+    ];
+    const rows = trips.map((tr) => {
+      const dist = isImp ? tr.distance_miles : tr.distance_miles * 1.60934;
+      const maxSpd = isImp ? Math.round(tr.max_speed_ms * 2.23694) : Math.round(tr.max_speed_ms * 3.6);
+      const avgSpd = isImp ? Math.round(tr.avg_speed_ms * 2.23694) : Math.round(tr.avg_speed_ms * 3.6);
+      return [
+        `"${tr.id}"`,
+        `"${(tr.member_name || 'Member').replace(/"/g, '""')}"`,
+        `"${tr.started_at}"`,
+        `"${tr.ended_at || 'In Progress'}"`,
+        dist.toFixed(2),
+        tr.duration_min,
+        maxSpd,
+        avgSpd,
+        tr.alert_count,
+      ].join(',');
+    });
+    const csvContent = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `crew-trips-${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   const distanceLabel = (miles: number) => {
     const safeMiles = isFinite(miles) && miles > 0 ? miles : 0;
@@ -77,7 +121,20 @@ export function TripsView() {
         {/* Trip list */}
         <div className="lg:col-span-1">
           <div className="rounded-xl border border-outline bg-surface p-sz-lg">
-            <h2 className="text-base font-semibold text-on-surface">{t('webTripsListTitle')}</h2>
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="text-base font-semibold text-on-surface">{t('webTripsListTitle')}</h2>
+              {trips && trips.length > 0 && (
+                <button
+                  type="button"
+                  onClick={handleExportCsv}
+                  title="Export trips to CSV"
+                  className="inline-flex items-center gap-1 rounded-md border border-outline bg-surface px-2 py-1 text-xs font-semibold text-on-surface transition-colors hover:bg-surface-container"
+                >
+                  <Download className="h-3.5 w-3.5" />
+                  <span>CSV</span>
+                </button>
+              )}
+            </div>
 
             {isListLoading ? (
               <div className="flex items-center gap-2 py-8 text-sm text-on-surface-variant">
