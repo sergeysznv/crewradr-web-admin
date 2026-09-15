@@ -21,7 +21,7 @@ body {
 /*
  * Brand CSS vars consumed by the ported auth/dashboard shell
  * (var(--brand-surface)). Values mirror the
- * CrewBeacon tokens: light scaffold + primary seed.
+ * CrewRadr tokens: light scaffold + primary seed.
  */
 :root {
   --brand-surface: #F3F0E9;

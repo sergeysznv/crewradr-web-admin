@@ -10,8 +10,9 @@ import { getLivePositions } from '@/lib/rpc';
 import { formatRelativeTime, tierRank } from '@/lib/utils';
 import { useMeasurementSystem } from '@/hooks/useMeasurementSystem';
 import { formatSpeedMps } from '@/lib/units';
-import { MapPin, X, AlertTriangle, Loader2, Lock } from 'lucide-react';
+import { MapPin, X, AlertTriangle, Loader2, Lock, ShieldCheck } from 'lucide-react';
 import type { LivePosition } from '@/types/rpc';
+import type { GeofenceZone } from '@/components/map/live-map';
 
 const LiveMap = nextDynamic(() => import('@/components/map/live-map'), {
   ssr: false,
@@ -32,6 +33,7 @@ export function MapView() {
   const queryClient = useQueryClient();
 
   const isPaidTier = tierRank(tier) >= 1;
+  const [showZones, setShowZones] = useState(true);
 
   const positionsQuery = useQuery({
     queryKey: ['livePositions', crewId],
@@ -40,10 +42,32 @@ export function MapView() {
     refetchInterval: tierRank(tier) >= 2 ? 15_000 : 30_000,
   });
 
+  const zonesQuery = useQuery({
+    queryKey: ['savedPlaces', crewId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('saved_places')
+        .select('id, name, latitude, longitude, radius_m, category, emoji')
+        .order('name');
+      if (error) return [];
+      return (data ?? []).map((z: any) => ({
+        id: String(z.id),
+        name: String(z.name || 'Safe Landing'),
+        latitude: Number(z.latitude),
+        longitude: Number(z.longitude),
+        radiusM: Number(z.radius_m ?? 75),
+        category: z.category ? String(z.category) : undefined,
+        emoji: z.emoji ? String(z.emoji) : undefined,
+      })) as GeofenceZone[];
+    },
+    enabled: !!crewId && isPaidTier,
+  });
+
   const [selected, setSelected] = useState<LivePosition | null>(null);
   const [mapLoadError, setMapLoadError] = useState<string | null>(null);
 
   const positions = positionsQuery.data ?? [];
+  const zones = zonesQuery.data ?? [];
 
   // Realtime — instant marker upsert + 5s RPC reconcile (ported from production).
   useEffect(() => {
@@ -199,6 +223,20 @@ export function MapView() {
         <span className="rounded-full bg-primary-container px-2.5 py-0.5 text-xs font-semibold text-on-primary-container">
           {t('webMapMembersTracked', { count: positions.length })}
         </span>
+        {zones.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setShowZones((v) => !v)}
+            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors ${
+              showZones
+                ? 'border-emerald-500/30 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300'
+                : 'border-outline text-on-surface-variant hover:bg-surface-container'
+            }`}
+          >
+            <ShieldCheck className="h-3 w-3" />
+            <span>Safe Landings ({zones.length})</span>
+          </button>
+        )}
         {lastUpdated > 0 && (
           <span className="ml-auto text-xs text-on-surface-variant">
             {t('webMapUpdated', { time: formatRelativeTime(new Date(lastUpdated).toISOString(), t) })}
@@ -213,6 +251,8 @@ export function MapView() {
             selectedUserId={selected?.user_id ?? null}
             onSelect={setSelected}
             onError={(err) => setMapLoadError(err.message)}
+            zones={zones}
+            showZones={showZones}
           />
           {mapLoadError && (
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-xl border border-outline bg-surface-container" role="alert">

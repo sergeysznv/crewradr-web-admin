@@ -25,8 +25,9 @@ import { tierColor, tierLabel } from '@/lib/utils';
 import {
   LayoutDashboard, Users, Settings, ShieldCheck, FileText, Link, MapPin, LogOut,
   Loader2, ChevronLeft, ChevronRight, Menu, X, Sparkles, Crown, ArrowUp, Plug,
-  Route, BarChart3, Terminal,
+  Route, BarChart3, Terminal, CreditCard,
 } from 'lucide-react';
+import { startStripeCheckout } from '@/lib/stripe';
 import type { CrewSummary } from '@/types';
 
 // Routes that exist in the redesign. minTier: 0 deckhand, 1 first mate,
@@ -93,6 +94,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [isDeveloper, setIsDeveloper] = useState(false);
   const [loadError, setLoadError] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   const palette = useBranding(activeCrewId, userTier);
   const { idleWarning, staySignedIn, handleSignOut } = useSessionTimeout();
@@ -451,10 +453,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
 
             <p className="text-xs text-on-surface-variant text-center mb-4">{t('webUpgradeFooter')}</p>
-            <button onClick={() => setShowUpgrade(false)}
-              className="w-full rounded-xl bg-[var(--brand-seed)] px-4 py-2.5 text-sm font-semibold text-on-brand hover:opacity-90">
-              {t('webUpgradeCta')}
-            </button>
+            <div className="space-y-2">
+              <button
+                type="button"
+                disabled={checkoutLoading}
+                onClick={async () => {
+                  setCheckoutLoading(true);
+                  const res = await startStripeCheckout('captain', 'monthly');
+                  setCheckoutLoading(false);
+                  if (res.error) {
+                    alert(res.error);
+                  }
+                }}
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-on-primary hover:opacity-90 disabled:opacity-50"
+              >
+                {checkoutLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
+                <span>Subscribe via Web (Stripe)</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowUpgrade(false)}
+                className="w-full rounded-xl border border-outline px-4 py-2 text-xs font-semibold text-on-surface hover:bg-surface-container"
+              >
+                {t('cancel') || 'Dismiss'}
+              </button>
+            </div>
           </div>
         </div>
       )}

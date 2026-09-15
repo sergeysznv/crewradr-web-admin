@@ -121,17 +121,37 @@ function updateMarkerContent(
   el.replaceChildren(...Array.from(newEl.childNodes));
 }
 
+export interface GeofenceZone {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  radiusM: number;
+  category?: string;
+  emoji?: string;
+}
+
 interface LiveMapProps {
   positions: LivePosition[];
   selectedUserId: string | null;
   onSelect: (p: LivePosition | null) => void;
   onError?: (error: Error) => void;
+  zones?: GeofenceZone[];
+  showZones?: boolean;
 }
 
-export default function LiveMap({ positions, selectedUserId, onSelect, onError }: LiveMapProps) {
+export default function LiveMap({
+  positions,
+  selectedUserId,
+  onSelect,
+  onError,
+  zones = [],
+  showZones = true,
+}: LiveMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<Map<string, google.maps.marker.AdvancedMarkerElement>>(new Map());
+  const circlesRef = useRef<Map<string, { circle: google.maps.Circle; marker?: google.maps.Marker }>>(new Map());
   const didFitRef = useRef(false);
   const pendingMarkersRef = useRef<LivePosition[]>([]);
   const loadErrorRef = useRef(false);
@@ -227,6 +247,65 @@ export default function LiveMap({ positions, selectedUserId, onSelect, onError }
     }
   }
 
+  function syncZones(map: google.maps.Map, zoneList: GeofenceZone[], show: boolean) {
+    const existing = circlesRef.current;
+    if (!show) {
+      for (const item of existing.values()) {
+        item.circle.setMap(null);
+        item.marker?.setMap(null);
+      }
+      existing.clear();
+      return;
+    }
+
+    const currentIds = new Set(zoneList.map((z) => z.id));
+    for (const [id, item] of existing) {
+      if (!currentIds.has(id)) {
+        item.circle.setMap(null);
+        item.marker?.setMap(null);
+        existing.delete(id);
+      }
+    }
+
+    for (const z of zoneList) {
+      if (z.latitude == null || z.longitude == null) continue;
+      if (existing.has(z.id)) continue;
+
+      const circle = new google.maps.Circle({
+        map,
+        center: { lat: z.latitude, lng: z.longitude },
+        radius: z.radiusM || 75,
+        fillColor: '#10b981',
+        fillOpacity: 0.12,
+        strokeColor: '#059669',
+        strokeOpacity: 0.7,
+        strokeWeight: 1.5,
+      });
+
+      const marker = new google.maps.Marker({
+        map,
+        position: { lat: z.latitude, lng: z.longitude },
+        title: `${z.emoji ?? '📍'} ${z.name} (${z.radiusM}m)`,
+        label: {
+          text: `${z.emoji ?? '📍'} ${z.name}`,
+          color: '#064e3b',
+          fontSize: '11px',
+          fontWeight: 'bold',
+        },
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 4,
+          fillColor: '#10b981',
+          fillOpacity: 1,
+          strokeColor: '#ffffff',
+          strokeWeight: 1.5,
+        },
+      });
+
+      existing.set(z.id, { circle, marker });
+    }
+  }
+
   // Init map
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -288,6 +367,13 @@ export default function LiveMap({ positions, selectedUserId, onSelect, onError }
     syncMarkers(map, positions);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [positions, selectedUserId]);
+
+  // Sync geofence zones
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    syncZones(map, zones, showZones);
+  }, [zones, showZones]);
 
   // Zoom to all on deselect
   const prevSelectedRef = useRef<string | null>(null);
