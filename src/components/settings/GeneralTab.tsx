@@ -23,6 +23,7 @@ interface TierOption {
   name: string;
   monthlyPrice: string;
   yearlyPrice: string;
+  yearlyEffective: string;
   description: string;
   badge?: string;
   features: string[];
@@ -33,7 +34,8 @@ const TIERS: TierOption[] = [
     id: 'first_mate',
     name: 'First Mate',
     monthlyPrice: '$4.99/mo',
-    yearlyPrice: '$53.99/yr',
+    yearlyPrice: '$49.99/yr',
+    yearlyEffective: '$4.17/mo · Save 17%',
     description: 'Perfect for small teams and families',
     features: [
       'Up to 20 crew members',
@@ -46,8 +48,9 @@ const TIERS: TierOption[] = [
   {
     id: 'captain',
     name: 'Captain',
-    monthlyPrice: '$9.99/mo',
-    yearlyPrice: '$107.99/yr',
+    monthlyPrice: '$14.99/mo',
+    yearlyPrice: '$149.99/yr',
+    yearlyEffective: '$12.50/mo · Save 17%',
     description: 'For professional crews and active fleets',
     badge: 'Most Popular',
     features: [
@@ -62,8 +65,9 @@ const TIERS: TierOption[] = [
   {
     id: 'admiral',
     name: 'Admiral',
-    monthlyPrice: '$19.99/mo',
-    yearlyPrice: '$215.99/yr',
+    monthlyPrice: '$29.99/mo',
+    yearlyPrice: '$299.99/yr',
+    yearlyEffective: '$25.00/mo · Save 17%',
     description: 'Complete compliance & enterprise fleet tools',
     badge: 'Enterprise',
     features: [
@@ -271,8 +275,8 @@ export function GeneralTab({
               }`}
             >
               <span>Yearly</span>
-              <span className="rounded bg-emerald-500/20 px-1 py-0.2 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
-                Save 10%
+              <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
+                Save 17% (2 mos free)
               </span>
             </button>
           </div>
@@ -313,10 +317,13 @@ export function GeneralTab({
                   <div className="flex items-center justify-between">
                     <h4 className="text-sm font-bold text-on-surface">{tItem.name}</h4>
                   </div>
-                  <div className="mt-2 flex items-baseline gap-1">
+                  <div className="mt-2 flex flex-col">
                     <span className="text-2xl font-extrabold text-on-surface">{price}</span>
+                    <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5">
+                      {billingPeriod === 'yearly' ? tItem.yearlyEffective : 'Billed monthly'}
+                    </span>
                   </div>
-                  <p className="mt-1 text-xs text-on-surface-variant">{tItem.description}</p>
+                  <p className="mt-1.5 text-xs text-on-surface-variant">{tItem.description}</p>
 
                   <ul className="mt-4 space-y-2 border-t border-outline/40 pt-3">
                     {tItem.features.map((feat) => (

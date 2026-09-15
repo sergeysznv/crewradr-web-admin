@@ -95,6 +95,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [loadError, setLoadError] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [modalPeriod, setModalPeriod] = useState<'monthly' | 'yearly'>('monthly');
+  const [modalTier, setModalTier] = useState<'captain' | 'admiral'>('captain');
 
   const palette = useBranding(activeCrewId, userTier);
   const { idleWarning, staySignedIn, handleSignOut } = useSessionTimeout();
@@ -427,27 +429,79 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
             <p className="text-sm text-on-surface-variant mb-4">{t('webUpgradeDescription')}</p>
 
+            {/* Cadence toggle */}
+            <div className="flex items-center justify-center mb-4">
+              <div className="inline-flex items-center rounded-lg border border-outline bg-surface-container p-1 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setModalPeriod('monthly')}
+                  className={`rounded-md px-3 py-1 font-semibold transition-colors ${
+                    modalPeriod === 'monthly' ? 'bg-primary text-on-primary shadow-sm' : 'text-on-surface-variant'
+                  }`}
+                >
+                  Monthly
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setModalPeriod('yearly')}
+                  className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1 font-semibold transition-colors ${
+                    modalPeriod === 'yearly' ? 'bg-primary text-on-primary shadow-sm' : 'text-on-surface-variant'
+                  }`}
+                >
+                  <span>Yearly</span>
+                  <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
+                    Save 17% (2 mos free)
+                  </span>
+                </button>
+              </div>
+            </div>
+
             <div className="space-y-3 mb-4">
-              <div className="rounded-xl border border-outline p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ backgroundColor: tierColor('captain'), color: tierOnColor('captain') }}>{t('webTierCaptain')}</span>
-                  <span className="text-xs font-semibold text-on-surface">{t('webUpgradeTierFree')}</span>
+              {/* Captain Tier Card */}
+              <div
+                onClick={() => setModalTier('captain')}
+                className={`cursor-pointer rounded-xl border p-4 transition-all ${
+                  modalTier === 'captain'
+                    ? 'border-primary bg-primary-container/20 ring-1 ring-primary'
+                    : 'border-outline hover:border-outline-variant'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ backgroundColor: tierColor('captain'), color: tierOnColor('captain') }}>{t('webTierCaptain')}</span>
+                    <span className="text-xs font-semibold text-on-surface">
+                      {modalPeriod === 'monthly' ? '$14.99/mo' : '$149.99/yr ($12.50/mo)'}
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-bold text-primary">Most Popular</span>
                 </div>
                 <ul className="space-y-1.5 text-xs text-on-surface-variant">
-                  <li className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5 text-primary" /> {t('webUpgradeCaptainFeature1')}</li>
-                  <li className="flex items-center gap-1.5"><Settings className="h-3.5 w-3.5 text-primary" /> {t('webUpgradeCaptainFeature2')}</li>
+                  <li className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5 text-primary" /> Up to 50 members & 15s live tracking</li>
+                  <li className="flex items-center gap-1.5"><Settings className="h-3.5 w-3.5 text-primary" /> Fleet policy, unlimited geofences & 90d history</li>
                 </ul>
               </div>
-              <div className="rounded-xl border border-[var(--brand-accent,#D4A017)]/30 bg-surface-container p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ backgroundColor: tierColor('admiral'), color: tierOnColor('admiral') }}>{t('webTierAdmiral')}</span>
-                  <span className="text-xs font-semibold text-on-surface">{t('webUpgradeTierPaid')}</span>
+
+              {/* Admiral Tier Card */}
+              <div
+                onClick={() => setModalTier('admiral')}
+                className={`cursor-pointer rounded-xl border p-4 transition-all ${
+                  modalTier === 'admiral'
+                    ? 'border-primary bg-primary-container/20 ring-1 ring-primary'
+                    : 'border-outline hover:border-outline-variant'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ backgroundColor: tierColor('admiral'), color: tierOnColor('admiral') }}>{t('webTierAdmiral')}</span>
+                    <span className="text-xs font-semibold text-on-surface">
+                      {modalPeriod === 'monthly' ? '$29.99/mo' : '$299.99/yr ($25.00/mo)'}
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-bold text-[var(--brand-accent,#D4A017)]">Enterprise</span>
                 </div>
                 <ul className="space-y-1.5 text-xs text-on-surface-variant">
-                  <li className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-[var(--brand-accent,#D4A017)]" /> {t('webUpgradeAdmiralFeature1')}</li>
-                  <li className="flex items-center gap-1.5"><FileText className="h-3.5 w-3.5 text-[var(--brand-accent,#D4A017)]" /> {t('webUpgradeAdmiralFeature2')}</li>
-                  <li className="flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5 text-[var(--brand-accent,#D4A017)]" /> {t('webUpgradeAdmiralFeature3')}</li>
-                  <li className="flex items-center gap-1.5"><Link className="h-3.5 w-3.5 text-[var(--brand-accent,#D4A017)]" /> {t('webUpgradeAdmiralFeature4')}</li>
+                  <li className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-[var(--brand-accent,#D4A017)]" /> Up to 250 members & 365d history</li>
+                  <li className="flex items-center gap-1.5"><FileText className="h-3.5 w-3.5 text-[var(--brand-accent,#D4A017)]" /> Full compliance reports & SMS crash dispatch</li>
                 </ul>
               </div>
             </div>
@@ -459,7 +513,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 disabled={checkoutLoading}
                 onClick={async () => {
                   setCheckoutLoading(true);
-                  const res = await startStripeCheckout('captain', 'monthly');
+                  const res = await startStripeCheckout(modalTier, modalPeriod);
                   setCheckoutLoading(false);
                   if (res.error) {
                     alert(res.error);
@@ -468,7 +522,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 className="w-full flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-on-primary hover:opacity-90 disabled:opacity-50"
               >
                 {checkoutLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
-                <span>Subscribe via Web (Stripe)</span>
+                <span>Subscribe to {modalTier === 'captain' ? 'Captain' : 'Admiral'} (Stripe)</span>
               </button>
               <button
                 type="button"
