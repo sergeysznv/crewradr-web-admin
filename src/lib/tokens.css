@@ -48,15 +48,15 @@
   --color-on-secondary: #2B302C;
   --color-secondary-container: #F9F6F2;
   --color-on-secondary-container: #2B302C;
-  --color-surface: #FFFFFF;
-  --color-surface-container: #F3F0E9;
-  --color-surface-container-low: #FAF8F5;
-  --color-surface-container-high: #EBE7DC;
-  --color-surface-container-highest: #E0DACE;
-  --color-on-surface: #2B302C;
-  --color-on-surface-variant: #888888;
-  --color-outline: rgba(43, 48, 44, 0.12);
-  --color-outline-variant: rgba(43, 48, 44, 0.08);
+  --color-surface: #FDFCFA;
+  --color-surface-container: #F6F4EE;
+  --color-surface-container-low: #FAF8F3;
+  --color-surface-container-high: #EFECE5;
+  --color-surface-container-highest: #E7E3DC;
+  --color-on-surface: #262017;
+  --color-on-surface-variant: #5C635F;
+  --color-outline: rgba(142, 165, 149, 0.25);
+  --color-outline-variant: rgba(142, 165, 149, 0.12);
   --color-error: #C93E3C;
   --color-on-error: #FFFFFF;
   --color-error-container: #FCF1F1;
@@ -69,8 +69,10 @@
   --color-on-success: #FFFFFF;
   --color-success-container: #E9EEEA;
   --color-on-success-container: #3E5C49;
+  --color-clay-blush: #D6A89B;
+  --color-serene-sky: #9BB2BC;
   --color-on-brand: #1F2A25;
-  --color-scaffold: #F3F0E9;
+  --color-scaffold: #F6F4EE;
 
   /* Typography */
   --font-heading: 'PT Sans Caption', sans-serif;
@@ -99,21 +101,21 @@
 [data-theme="dark"] {
   --color-primary: #7FA093;
   --color-on-primary: #16201B;
-  --color-primary-container: #2F3C3F;
+  --color-primary-container: #26362F;
   --color-on-primary-container: #E3E8E4;
-  --color-secondary: #C1B7A2;
-  --color-on-secondary: #2B302C;
-  --color-secondary-container: #373E3F;
-  --color-on-secondary-container: #E3E8E4;
-  --color-surface: #242F35;
-  --color-surface-container: #1E222D;
-  --color-surface-container-low: #1A2028;
-  --color-surface-container-high: #353C4B;
-  --color-surface-container-highest: #3F4859;
-  --color-on-surface: #E3E8E4;
-  --color-on-surface-variant: #8A95A5;
-  --color-outline: rgba(227, 232, 228, 0.10);
-  --color-outline-variant: rgba(227, 232, 228, 0.06);
+  --color-secondary: #DDCFB5;
+  --color-on-secondary: #1E1A14;
+  --color-secondary-container: #3D362C;
+  --color-on-secondary-container: #EDE3D5;
+  --color-surface: #262929;
+  --color-surface-container: #262929;
+  --color-surface-container-low: #202323;
+  --color-surface-container-high: #2E3232;
+  --color-surface-container-highest: #373B3B;
+  --color-on-surface: #F0F3F1;
+  --color-on-surface-variant: #B4BCB8;
+  --color-outline: rgba(220, 225, 222, 0.12);
+  --color-outline-variant: rgba(220, 225, 222, 0.06);
   --color-error: #D6352E;
   --color-on-error: #FFFFFF;
   --color-error-container: #343136;
@@ -126,6 +128,8 @@
   --color-on-success: #0B2A1D;
   --color-success-container: #264341;
   --color-on-success-container: #C9EBD9;
+  --color-clay-blush: #D4A69B;
+  --color-serene-sky: #98B3BF;
   --color-on-brand: #1F2A25;
-  --color-scaffold: #1A2327;
+  --color-scaffold: #1E2121;
 }
