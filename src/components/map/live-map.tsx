@@ -131,13 +131,14 @@ export interface GeofenceZone {
   emoji?: string;
 }
 
-interface LiveMapProps {
+export interface LiveMapProps {
   positions: LivePosition[];
   selectedUserId: string | null;
   onSelect: (p: LivePosition | null) => void;
   onError?: (error: Error) => void;
   zones?: GeofenceZone[];
   showZones?: boolean;
+  showRadar?: boolean;
 }
 
 export default function LiveMap({
@@ -147,9 +148,11 @@ export default function LiveMap({
   onError,
   zones = [],
   showZones = true,
+  showRadar = false,
 }: LiveMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
+  const radarLayerRef = useRef<google.maps.ImageMapType | null>(null);
   const markersRef = useRef<Map<string, google.maps.marker.AdvancedMarkerElement>>(new Map());
   const circlesRef = useRef<Map<string, { circle: google.maps.Circle; marker?: google.maps.Marker }>>(new Map());
   const didFitRef = useRef(false);
@@ -388,5 +391,85 @@ export default function LiveMap({
     }
   }, [selectedUserId]);
 
-  return <div ref={containerRef} style={{ width: '100%', height: '100%' }} />;
+  // Sync weather radar layer (RainViewer)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    let cancelled = false;
+
+    if (!showRadar) {
+      if (radarLayerRef.current) {
+        const overlays = map.overlayMapTypes;
+        for (let i = overlays.getLength() - 1; i >= 0; i--) {
+          if (overlays.getAt(i) === radarLayerRef.current) {
+            overlays.removeAt(i);
+          }
+        }
+        radarLayerRef.current = null;
+      }
+      return;
+    }
+
+    fetch('https://api.rainviewer.com/public/weather-maps.json')
+      .then((res) => res.json())
+      .then((data) => {
+        if (cancelled || !mapRef.current) return;
+        const past = data?.radar?.past;
+        if (!past || past.length === 0) return;
+        const latestFrame = past[past.length - 1];
+        const path = latestFrame?.path;
+        if (!path) return;
+
+        if (radarLayerRef.current) {
+          const overlays = map.overlayMapTypes;
+          for (let i = overlays.getLength() - 1; i >= 0; i--) {
+            if (overlays.getAt(i) === radarLayerRef.current) {
+              overlays.removeAt(i);
+            }
+          }
+        }
+
+        const radarMapType = new google.maps.ImageMapType({
+          getTileUrl: (coord, zoom) =>
+            `https://tilecache.rainviewer.com${path}/256/${zoom}/${coord.x}/${coord.y}/2/1_1.png`,
+          tileSize: new google.maps.Size(256, 256),
+          opacity: 0.65,
+          name: 'RainViewer',
+        });
+
+        radarLayerRef.current = radarMapType;
+        map.overlayMapTypes.push(radarMapType);
+      })
+      .catch((err) => {
+        console.warn('LiveMap: RainViewer fetch failed', err);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [showRadar]);
+
+  return (
+    <div className="relative h-full w-full">
+      <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
+      {showRadar && (
+        <div className="pointer-events-none absolute bottom-3 right-3 z-[1100] flex flex-col gap-1.5 rounded-xl border border-outline/50 bg-surface/90 p-2.5 shadow-sm backdrop-blur-md">
+          <div className="flex items-center justify-between gap-4 text-[10px] font-bold uppercase tracking-wider text-primary">
+            <span>Precipitation Radar</span>
+            <span className="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+              Live
+            </span>
+          </div>
+          <div className="h-2 w-48 rounded-full bg-gradient-to-r from-[#00E676] via-[#FFEA00] via-[#FF9100] via-[#FF1744] to-[#D500F9]" />
+          <div className="flex justify-between text-[9px] font-semibold text-on-surface-variant">
+            <span>Light</span>
+            <span>Moderate</span>
+            <span>Heavy</span>
+            <span>Hail</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }

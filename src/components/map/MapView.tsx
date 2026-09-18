@@ -10,7 +10,7 @@ import { getLivePositions } from '@/lib/rpc';
 import { formatRelativeTime, tierRank } from '@/lib/utils';
 import { useMeasurementSystem } from '@/hooks/useMeasurementSystem';
 import { formatSpeedMps } from '@/lib/units';
-import { MapPin, X, AlertTriangle, Loader2, Lock, ShieldCheck } from 'lucide-react';
+import { MapPin, X, AlertTriangle, Loader2, Lock, ShieldCheck, CloudRain } from 'lucide-react';
 import type { LivePosition } from '@/types/rpc';
 import type { GeofenceZone } from '@/components/map/live-map';
 
@@ -59,6 +59,7 @@ export function MapView() {
 
   const isPaidTier = tierRank(tier) >= 1;
   const [showZones, setShowZones] = useState(true);
+  const [showRadar, setShowRadar] = useState(false);
 
   const positionsQuery = useQuery({
     queryKey: ['livePositions', crewId],
@@ -261,6 +262,19 @@ export function MapView() {
           <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
           <span>Safe Landings ({zones.length})</span>
         </button>
+        <button
+          type="button"
+          onClick={() => setShowRadar((v) => !v)}
+          className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors ${
+            showRadar
+              ? 'border-sky-500/30 bg-sky-50 text-sky-800 dark:bg-sky-950/40 dark:text-sky-300'
+              : 'border-outline text-on-surface-variant hover:bg-surface-container'
+          }`}
+          title="Live Precipitation Radar (First Mate+)"
+        >
+          <CloudRain className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
+          <span>Weather Radar</span>
+        </button>
         {lastUpdated > 0 && (
           <span className="ml-auto text-xs text-on-surface-variant">
             {t('webMapUpdated', { time: formatRelativeTime(new Date(lastUpdated).toISOString(), t) })}
@@ -277,6 +291,7 @@ export function MapView() {
             onError={(err) => setMapLoadError(err.message)}
             zones={zones}
             showZones={showZones}
+            showRadar={showRadar}
           />
           {mapLoadError && (
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-xl border border-outline bg-surface-container" role="alert">
