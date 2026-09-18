@@ -50,6 +50,9 @@ export function TripTimeline({ trip }: { trip: TripDetail }) {
           stops={trip.stops}
           alerts={trip.alerts}
           isLive={trip.isLive}
+          speedSamples={trip.speedSamples}
+          maxSpeedMs={trip.maxSpeedMs}
+          avgSpeedMs={trip.avgSpeedMs}
         />
       </div>
 

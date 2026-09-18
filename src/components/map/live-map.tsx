@@ -129,6 +129,24 @@ export interface GeofenceZone {
   radiusM: number;
   category?: string;
   emoji?: string;
+  weatherAlertsEnabled?: boolean;
+}
+
+export interface NwsHazardAlert {
+  id: string;
+  event: string;
+  severity: string;
+  headline: string;
+  description: string;
+  instruction: string;
+  expires: string;
+  color: string;
+}
+
+export interface DraftZoneState {
+  latitude: number;
+  longitude: number;
+  radiusM: number;
 }
 
 export interface LiveMapProps {
@@ -139,6 +157,37 @@ export interface LiveMapProps {
   zones?: GeofenceZone[];
   showZones?: boolean;
   showRadar?: boolean;
+  showHazards?: boolean;
+  onHazardSelect?: (hazard: NwsHazardAlert | null) => void;
+  onHazardCountChange?: (count: number) => void;
+  isPlacingZone?: boolean;
+  draftZone?: DraftZoneState | null;
+  onMapClick?: (coords: { lat: number; lng: number }) => void;
+  onZoneSelect?: (zone: GeofenceZone | null) => void;
+  onDraftMove?: (lat: number, lng: number) => void;
+}
+
+function getNwsColor(event: string): { stroke: string; fill: string } {
+  const e = event.toLowerCase();
+  if (e.includes('tornado')) {
+    return { stroke: '#b91c1c', fill: '#ef4444' };
+  }
+  if (e.includes('thunderstorm') || e.includes('hail')) {
+    return { stroke: '#d97706', fill: '#f59e0b' };
+  }
+  if (e.includes('flood')) {
+    return { stroke: '#0891b2', fill: '#06b6d4' };
+  }
+  if (e.includes('marine') || e.includes('gale') || e.includes('wind')) {
+    return { stroke: '#7e22ce', fill: '#a855f7' };
+  }
+  if (e.includes('winter') || e.includes('blizzard') || e.includes('snow') || e.includes('ice')) {
+    return { stroke: '#2563eb', fill: '#3b82f6' };
+  }
+  if (e.includes('fire') || e.includes('red flag')) {
+    return { stroke: '#ea580c', fill: '#f97316' };
+  }
+  return { stroke: '#dc2626', fill: '#ef4444' };
 }
 
 export default function LiveMap({
@@ -149,10 +198,24 @@ export default function LiveMap({
   zones = [],
   showZones = true,
   showRadar = false,
+  showHazards = true,
+  onHazardSelect,
+  onHazardCountChange,
+  isPlacingZone = false,
+  draftZone = null,
+  onMapClick,
+  onZoneSelect,
+  onDraftMove,
 }: LiveMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const radarLayerRef = useRef<google.maps.ImageMapType | null>(null);
+  const nwsDataRef = useRef<google.maps.Data | null>(null);
+  const draftCircleRef = useRef<google.maps.Circle | null>(null);
+  const draftMarkerRef = useRef<google.maps.Marker | null>(null);
+  const isPlacingRef = useRef(isPlacingZone);
+  isPlacingRef.current = isPlacingZone;
+
   const markersRef = useRef<Map<string, google.maps.marker.AdvancedMarkerElement>>(new Map());
   const circlesRef = useRef<Map<string, { circle: google.maps.Circle; marker?: google.maps.Marker }>>(new Map());
   const didFitRef = useRef(false);
@@ -305,6 +368,10 @@ export default function LiveMap({
         },
       });
 
+      const clickHandler = () => onZoneSelect?.(z);
+      circle.addListener('click', clickHandler);
+      marker.addListener('click', clickHandler);
+
       existing.set(z.id, { circle, marker });
     }
   }
@@ -335,7 +402,15 @@ export default function LiveMap({
         gestureHandling: 'greedy',
       });
 
-      map.addListener('click', () => onSelect(null));
+      map.addListener('click', (e: google.maps.MapMouseEvent) => {
+        if (isPlacingRef.current && e.latLng) {
+          onMapClick?.({ lat: e.latLng.lat(), lng: e.latLng.lng() });
+        } else {
+          onSelect(null);
+          onHazardSelect?.(null);
+          onZoneSelect?.(null);
+        }
+      });
       mapRef.current = map;
 
       if (pendingMarkersRef.current.length > 0) {
@@ -357,8 +432,82 @@ export default function LiveMap({
     const map = mapRef.current;
     if (!map) return;
     google.maps.event.clearListeners(map, 'click');
-    map.addListener('click', () => onSelect(null));
-  }, [onSelect]);
+    map.addListener('click', (e: google.maps.MapMouseEvent) => {
+      if (isPlacingRef.current && e.latLng) {
+        onMapClick?.({ lat: e.latLng.lat(), lng: e.latLng.lng() });
+      } else {
+        onSelect(null);
+        onHazardSelect?.(null);
+        onZoneSelect?.(null);
+      }
+    });
+  }, [onSelect, onHazardSelect, onZoneSelect, onMapClick]);
+
+  // Sync cursor in placing mode
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    map.setOptions({ draggableCursor: isPlacingZone ? 'crosshair' : null });
+  }, [isPlacingZone]);
+
+  // Sync draft zone pin & radius
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    if (!draftZone) {
+      if (draftCircleRef.current) {
+        draftCircleRef.current.setMap(null);
+        draftCircleRef.current = null;
+      }
+      if (draftMarkerRef.current) {
+        draftMarkerRef.current.setMap(null);
+        draftMarkerRef.current = null;
+      }
+      return;
+    }
+
+    const pos = { lat: draftZone.latitude, lng: draftZone.longitude };
+    if (!draftCircleRef.current) {
+      draftCircleRef.current = new google.maps.Circle({
+        map,
+        center: pos,
+        radius: draftZone.radiusM,
+        fillColor: '#3b82f6',
+        fillOpacity: 0.22,
+        strokeColor: '#2563eb',
+        strokeOpacity: 0.9,
+        strokeWeight: 2,
+        zIndex: 20,
+      });
+
+      draftMarkerRef.current = new google.maps.Marker({
+        map,
+        position: pos,
+        draggable: true,
+        title: 'Drag to adjust Safe Landing center',
+        zIndex: 25,
+        icon: {
+          path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+          scale: 6,
+          fillColor: '#2563eb',
+          fillOpacity: 1,
+          strokeColor: '#ffffff',
+          strokeWeight: 2,
+        },
+      });
+
+      draftMarkerRef.current.addListener('dragend', (e: google.maps.MapMouseEvent) => {
+        if (e.latLng) {
+          onDraftMove?.(e.latLng.lat(), e.latLng.lng());
+        }
+      });
+    } else {
+      draftCircleRef.current.setCenter(pos);
+      draftCircleRef.current.setRadius(draftZone.radiusM);
+      draftMarkerRef.current?.setPosition(pos);
+    }
+  }, [draftZone, onDraftMove]);
 
   // Sync markers
   useEffect(() => {
@@ -448,6 +597,89 @@ export default function LiveMap({
       cancelled = true;
     };
   }, [showRadar]);
+
+  // Sync NWS Severe Weather Hazard Polygons
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    if (!showHazards) {
+      if (nwsDataRef.current) {
+        nwsDataRef.current.setMap(null);
+        nwsDataRef.current = null;
+      }
+      return;
+    }
+
+    let cancelled = false;
+
+    fetch('https://api.weather.gov/alerts/active?status=actual&message_type=alert&severity=Extreme,Severe', {
+      headers: { 'User-Agent': 'CrewRadr/1.0 (support@crewradr.app)' },
+    })
+      .then((res) => res.json())
+      .then((geojson) => {
+        if (cancelled || !mapRef.current) return;
+
+        if (nwsDataRef.current) {
+          nwsDataRef.current.setMap(null);
+          nwsDataRef.current = null;
+        }
+
+        const validFeatures = (geojson?.features || []).filter(
+          (f: any) => f.geometry && (f.geometry.type === 'Polygon' || f.geometry.type === 'MultiPolygon')
+        );
+
+        onHazardCountChange?.(validFeatures.length);
+
+        if (validFeatures.length === 0) return;
+
+        const dataLayer = new google.maps.Data();
+        dataLayer.addGeoJson({
+          type: 'FeatureCollection',
+          features: validFeatures,
+        });
+
+        dataLayer.setStyle((feature) => {
+          const event = String(feature.getProperty('event') || '');
+          const colors = getNwsColor(event);
+          return {
+            fillColor: colors.fill,
+            fillOpacity: 0.22,
+            strokeColor: colors.stroke,
+            strokeWeight: 2,
+            strokeOpacity: 0.85,
+            zIndex: 10,
+          };
+        });
+
+        dataLayer.addListener('click', (event: google.maps.Data.MouseEvent) => {
+          const feature = event.feature;
+          const eventName = String(feature.getProperty('event') || 'Weather Warning');
+          const colors = getNwsColor(eventName);
+          const hazard: NwsHazardAlert = {
+            id: String(feature.getId() || feature.getProperty('id') || Math.random().toString()),
+            event: eventName,
+            severity: String(feature.getProperty('severity') || 'Severe'),
+            headline: String(feature.getProperty('headline') || eventName),
+            description: String(feature.getProperty('description') || ''),
+            instruction: String(feature.getProperty('instruction') || ''),
+            expires: String(feature.getProperty('expires') || ''),
+            color: colors.fill,
+          };
+          onHazardSelect?.(hazard);
+        });
+
+        dataLayer.setMap(map);
+        nwsDataRef.current = dataLayer;
+      })
+      .catch((err) => {
+        console.warn('LiveMap: NWS alerts fetch failed', err);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [showHazards, onHazardCountChange, onHazardSelect]);
 
   return (
     <div className="relative h-full w-full">

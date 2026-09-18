@@ -6,13 +6,25 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useT } from '@/hooks/use-translations';
 import { useCrew } from '@/hooks/useCrew';
 import { useSupabase } from '@/hooks/useSupabase';
+import { useSnackbar } from '@/components/shared/Snackbar';
 import { getLivePositions } from '@/lib/rpc';
 import { formatRelativeTime, tierRank } from '@/lib/utils';
 import { useMeasurementSystem } from '@/hooks/useMeasurementSystem';
 import { formatSpeedMps } from '@/lib/units';
-import { MapPin, X, AlertTriangle, Loader2, Lock, ShieldCheck, CloudRain } from 'lucide-react';
-import type { LivePosition } from '@/types/rpc';
-import type { GeofenceZone } from '@/components/map/live-map';
+import {
+  MapPin,
+  X,
+  AlertTriangle,
+  Loader2,
+  Lock,
+  ShieldCheck,
+  CloudRain,
+  Plus,
+  Trash2,
+  Check,
+} from 'lucide-react';
+import type { LivePosition, AccountProfile } from '@/types/rpc';
+import type { GeofenceZone, NwsHazardAlert, DraftZoneState } from '@/components/map/live-map';
 
 const LiveMap = nextDynamic(() => import('@/components/map/live-map'), {
   ssr: false,
@@ -56,10 +68,27 @@ export function MapView() {
   const { system } = useMeasurementSystem();
   const supabase = useSupabase();
   const queryClient = useQueryClient();
+  const { showSuccess, showError } = useSnackbar();
 
   const isPaidTier = tierRank(tier) >= 1;
   const [showZones, setShowZones] = useState(true);
   const [showRadar, setShowRadar] = useState(false);
+  const [showHazards, setShowHazards] = useState(true);
+  const [hazardCount, setHazardCount] = useState(0);
+  const [selectedHazard, setSelectedHazard] = useState<NwsHazardAlert | null>(null);
+
+  // Safe Landings Geofence CRUD state
+  const [isPlacingZone, setIsPlacingZone] = useState(false);
+  const [selectedZone, setSelectedZone] = useState<GeofenceZone | null>(null);
+  const [draftZone, setDraftZone] = useState<DraftZoneState | null>(null);
+  const [zoneEditorOpen, setZoneEditorOpen] = useState(false);
+  const [zoneEditorMode, setZoneEditorMode] = useState<'create' | 'edit'>('create');
+  const [formName, setFormName] = useState('');
+  const [formCategory, setFormCategory] = useState('custom');
+  const [formEmoji, setFormEmoji] = useState('📍');
+  const [formRadius, setFormRadius] = useState(100);
+  const [formWeatherAlerts, setFormWeatherAlerts] = useState(true);
+  const [isSubmittingZone, setIsSubmittingZone] = useState(false);
 
   const positionsQuery = useQuery({
     queryKey: ['livePositions', crewId],
@@ -73,7 +102,7 @@ export function MapView() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('saved_places')
-        .select('id, name, latitude, longitude, radius_m, category, emoji')
+        .select('id, name, latitude, longitude, radius_m, category, emoji, weather_alerts_enabled')
         .order('name');
       if (error) return [];
       return (data ?? []).map((z: any) => ({
@@ -84,6 +113,7 @@ export function MapView() {
         radiusM: Number(z.radius_m ?? 75),
         category: z.category ? String(z.category) : undefined,
         emoji: z.emoji ? String(z.emoji) : undefined,
+        weatherAlertsEnabled: Boolean(z.weather_alerts_enabled ?? true),
       })) as GeofenceZone[];
     },
     enabled: !!crewId && isPaidTier,
@@ -242,26 +272,165 @@ export function MapView() {
     positionsQuery.dataUpdatedAt > 0 &&
     positionsQuery.dataUpdatedAt - new Date(selected.created_at).getTime() > STALE_AFTER_MS;
 
+  // Geofence & Hazard Handlers
+  const startPlacingZone = () => {
+    setSelected(null);
+    setSelectedHazard(null);
+    setSelectedZone(null);
+    setZoneEditorOpen(false);
+    setIsPlacingZone(true);
+    showSuccess('Click anywhere on the map to set Safe Landing location.');
+  };
+
+  const handleMapClick = (coords: { lat: number; lng: number }) => {
+    setIsPlacingZone(false);
+    setDraftZone({
+      latitude: coords.lat,
+      longitude: coords.lng,
+      radiusM: 100,
+    });
+    setFormName(`Safe Landing ${zones.length + 1}`);
+    setFormCategory('custom');
+    setFormEmoji('📍');
+    setFormRadius(100);
+    setFormWeatherAlerts(true);
+    setZoneEditorMode('create');
+    setSelectedZone(null);
+    setZoneEditorOpen(true);
+  };
+
+  const handleZoneSelect = (zone: GeofenceZone | null) => {
+    if (!zone) {
+      setSelectedZone(null);
+      return;
+    }
+    setSelectedZone(zone);
+    setDraftZone({
+      latitude: zone.latitude,
+      longitude: zone.longitude,
+      radiusM: zone.radiusM,
+    });
+    setFormName(zone.name);
+    setFormCategory(zone.category || 'custom');
+    setFormEmoji(zone.emoji || '📍');
+    setFormRadius(zone.radiusM);
+    setFormWeatherAlerts(zone.weatherAlertsEnabled ?? true);
+    setZoneEditorMode('edit');
+    setZoneEditorOpen(true);
+  };
+
+  const cancelZoneEditor = () => {
+    setZoneEditorOpen(false);
+    setDraftZone(null);
+    setSelectedZone(null);
+    setIsPlacingZone(false);
+  };
+
+  const handleSaveZone = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!draftZone) return;
+    setIsSubmittingZone(true);
+
+    try {
+      if (zoneEditorMode === 'create') {
+        const { data: profile } = await supabase.rpc('get_web_account_profile').single<AccountProfile>();
+        const userId = profile?.profile?.user_id;
+        if (!userId) throw new Error('User account profile not found');
+
+        const { error } = await supabase.from('saved_places').insert({
+          user_id: userId,
+          name: formName.trim() || 'Safe Landing',
+          category: formCategory,
+          emoji: formEmoji,
+          latitude: draftZone.latitude,
+          longitude: draftZone.longitude,
+          radius_m: formRadius,
+          weather_alerts_enabled: formWeatherAlerts,
+        });
+        if (error) throw error;
+        showSuccess('Safe Landing created successfully');
+      } else {
+        if (!selectedZone) return;
+        const { error } = await supabase.from('saved_places').update({
+          name: formName.trim() || 'Safe Landing',
+          category: formCategory,
+          emoji: formEmoji,
+          latitude: draftZone.latitude,
+          longitude: draftZone.longitude,
+          radius_m: formRadius,
+          weather_alerts_enabled: formWeatherAlerts,
+          updated_at: new Date().toISOString(),
+        }).eq('id', selectedZone.id);
+        if (error) throw error;
+        showSuccess('Safe Landing updated successfully');
+      }
+
+      await queryClient.invalidateQueries({ queryKey: ['savedPlaces', crewId] });
+      cancelZoneEditor();
+    } catch (err: unknown) {
+      showError(err instanceof Error ? err.message : 'Failed to save Safe Landing');
+    } finally {
+      setIsSubmittingZone(false);
+    }
+  };
+
+  const handleDeleteZone = async () => {
+    if (!selectedZone) return;
+    if (!window.confirm(`Delete "${selectedZone.name}" Safe Landing?`)) return;
+
+    setIsSubmittingZone(true);
+    try {
+      const { error } = await supabase.from('saved_places').delete().eq('id', selectedZone.id);
+      if (error) throw error;
+      showSuccess('Safe Landing removed');
+      await queryClient.invalidateQueries({ queryKey: ['savedPlaces', crewId] });
+      cancelZoneEditor();
+    } catch (err: unknown) {
+      showError(err instanceof Error ? err.message : 'Failed to delete Safe Landing');
+    } finally {
+      setIsSubmittingZone(false);
+    }
+  };
+
   return (
     <div className="flex h-full flex-col animate-fade-in">
-      <header className="flex flex-wrap items-center gap-3 pb-2">
+      <header className="flex flex-wrap items-center gap-2.5 pb-2">
         <h1 className="text-2xl font-bold text-on-surface">{t('webMapTitle')}</h1>
         <span className="rounded-full bg-primary-container px-2.5 py-0.5 text-xs font-semibold text-on-primary-container">
           {t('webMapMembersTracked', { count: positions.length })}
         </span>
-        <button
-          type="button"
-          onClick={() => setShowZones((v) => !v)}
-          className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors ${
-            showZones
-              ? 'border-emerald-500/30 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300'
-              : 'border-outline text-on-surface-variant hover:bg-surface-container'
-          }`}
-          title={zones.length === 0 ? 'No Safe Landings configured for this crew' : `${zones.length} Safe Landings`}
-        >
-          <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-          <span>Safe Landings ({zones.length})</span>
-        </button>
+
+        {/* Safe Landings toggle & add button */}
+        <div className="inline-flex items-center rounded-full border border-outline bg-surface p-0.5">
+          <button
+            type="button"
+            onClick={() => setShowZones((v) => !v)}
+            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors ${
+              showZones
+                ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300'
+                : 'text-on-surface-variant hover:bg-surface-container'
+            }`}
+            title={zones.length === 0 ? 'No Safe Landings configured' : `${zones.length} Safe Landings`}
+          >
+            <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span>Safe Landings ({zones.length})</span>
+          </button>
+          <button
+            type="button"
+            onClick={startPlacingZone}
+            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold transition-colors ${
+              isPlacingZone
+                ? 'bg-primary text-on-primary'
+                : 'text-primary hover:bg-primary/10'
+            }`}
+            title="Create a new Safe Landing geofence on the map"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            <span>{isPlacingZone ? 'Placing...' : 'Add'}</span>
+          </button>
+        </div>
+
+        {/* Weather radar toggle */}
         <button
           type="button"
           onClick={() => setShowRadar((v) => !v)}
@@ -275,6 +444,27 @@ export function MapView() {
           <CloudRain className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
           <span>Weather Radar</span>
         </button>
+
+        {/* Severe Weather Hazards toggle */}
+        <button
+          type="button"
+          onClick={() => setShowHazards((v) => !v)}
+          className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors ${
+            showHazards
+              ? 'border-amber-500/30 bg-amber-50 text-amber-900 dark:bg-amber-950/40 dark:text-amber-300'
+              : 'border-outline text-on-surface-variant hover:bg-surface-container'
+          }`}
+          title="Active National Weather Service severe weather polygon warnings"
+        >
+          <AlertTriangle className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+          <span>Severe Hazards</span>
+          {hazardCount > 0 && (
+            <span className="rounded-full bg-amber-500/20 px-1.5 py-0.2 text-[10px] font-bold text-amber-700 dark:text-amber-300">
+              {hazardCount}
+            </span>
+          )}
+        </button>
+
         {lastUpdated > 0 && (
           <span className="ml-auto text-xs text-on-surface-variant">
             {t('webMapUpdated', { time: formatRelativeTime(new Date(lastUpdated).toISOString(), t) })}
@@ -287,12 +477,50 @@ export function MapView() {
           <LiveMap
             positions={positions}
             selectedUserId={selected?.user_id ?? null}
-            onSelect={setSelected}
+            onSelect={(pos) => {
+              setSelected(pos);
+              if (pos) {
+                setSelectedHazard(null);
+                setSelectedZone(null);
+              }
+            }}
             onError={(err) => setMapLoadError(err.message)}
             zones={zones}
             showZones={showZones}
             showRadar={showRadar}
+            showHazards={showHazards}
+            onHazardCountChange={setHazardCount}
+            onHazardSelect={(h) => {
+              setSelectedHazard(h);
+              if (h) {
+                setSelected(null);
+                setSelectedZone(null);
+              }
+            }}
+            isPlacingZone={isPlacingZone}
+            draftZone={draftZone}
+            onMapClick={handleMapClick}
+            onZoneSelect={handleZoneSelect}
+            onDraftMove={(lat, lng) => {
+              setDraftZone((prev) => prev ? { ...prev, latitude: lat, longitude: lng } : null);
+            }}
           />
+
+          {/* Placing zone banner */}
+          {isPlacingZone && (
+            <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[1100] flex items-center gap-3 rounded-full border border-primary/40 bg-surface/95 px-4 py-2 shadow-md backdrop-blur-md animate-fade-in">
+              <MapPin className="h-4 w-4 text-primary animate-bounce" />
+              <span className="text-xs font-medium text-on-surface">Click anywhere on the map to set the Safe Landing location</span>
+              <button
+                type="button"
+                onClick={() => setIsPlacingZone(false)}
+                className="rounded-full bg-surface-container px-2 py-0.5 text-[11px] font-semibold text-on-surface-variant hover:bg-surface-variant"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+
           {mapLoadError && (
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-xl border border-outline bg-surface-container" role="alert">
               <div className="text-center">
@@ -318,6 +546,7 @@ export function MapView() {
           )}
         </div>
 
+        {/* Selected Member info card */}
         {selected && (
           <aside className="absolute bottom-3 left-3 z-[1100] w-72 rounded-xl border border-outline bg-surface p-4 shadow-sm">
             <button
@@ -382,6 +611,161 @@ export function MapView() {
                 <dd className="text-xs text-error">{t('webMapNoRecentFix')}</dd>
               )}
             </dl>
+          </aside>
+        )}
+
+        {/* Selected NWS Severe Weather Warning Card */}
+        {selectedHazard && (
+          <aside className="absolute top-3 right-3 z-[1100] max-w-sm rounded-xl border border-amber-500/40 bg-surface/95 p-4 shadow-lg backdrop-blur-md animate-fade-in">
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span
+                  className="h-3 w-3 rounded-full shrink-0"
+                  style={{ backgroundColor: selectedHazard.color }}
+                />
+                <h3 className="text-sm font-bold text-on-surface">{selectedHazard.event}</h3>
+              </div>
+              <button
+                onClick={() => setSelectedHazard(null)}
+                className="rounded p-1 text-on-surface-variant hover:bg-surface-container"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="mt-2 text-xs font-semibold text-amber-700 dark:text-amber-300">
+              Severity: {selectedHazard.severity}
+              {selectedHazard.expires && ` · Expires ${new Date(selectedHazard.expires).toLocaleTimeString()}`}
+            </div>
+            <p className="mt-1.5 text-xs text-on-surface font-semibold">{selectedHazard.headline}</p>
+            {selectedHazard.instruction && (
+              <div className="mt-2 rounded-lg bg-surface-container p-2 text-[11px] text-on-surface-variant max-h-36 overflow-y-auto">
+                <p className="font-semibold text-on-surface">Recommended Action:</p>
+                <p className="mt-0.5 leading-relaxed">{selectedHazard.instruction}</p>
+              </div>
+            )}
+          </aside>
+        )}
+
+        {/* Safe Landing Editor Drawer */}
+        {zoneEditorOpen && draftZone && (
+          <aside className="absolute bottom-3 right-3 z-[1100] w-80 rounded-xl border border-outline bg-surface p-4 shadow-xl animate-fade-in">
+            <div className="flex items-center justify-between pb-2 border-b border-outline/40">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                <h3 className="text-sm font-bold text-on-surface">
+                  {zoneEditorMode === 'create' ? 'New Safe Landing' : 'Edit Safe Landing'}
+                </h3>
+              </div>
+              <button
+                onClick={cancelZoneEditor}
+                className="rounded p-1 text-on-surface-variant hover:bg-surface-container"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveZone} className="mt-3 space-y-3 text-xs">
+              <div>
+                <label className="font-semibold text-on-surface block mb-1">Name</label>
+                <input
+                  type="text"
+                  value={formName}
+                  onChange={(e) => setFormName(e.target.value)}
+                  placeholder="e.g. Home Base, Marina Dock, School"
+                  required
+                  className="w-full rounded-lg border border-outline bg-surface-container px-2.5 py-1.5 text-xs text-on-surface focus:border-primary focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="font-semibold text-on-surface block mb-1">Emoji & Category</label>
+                <div className="flex gap-1 overflow-x-auto py-1">
+                  {['🏠', '🏢', '⚓', '🏕️', '🏫', '🏥', '🏪', '📍'].map((em) => (
+                    <button
+                      key={em}
+                      type="button"
+                      onClick={() => setFormEmoji(em)}
+                      className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md border text-sm transition-transform ${
+                        formEmoji === em ? 'border-primary bg-primary/20 scale-110' : 'border-outline/40 hover:bg-surface-container'
+                      }`}
+                    >
+                      {em}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <div className="flex justify-between font-semibold text-on-surface mb-1">
+                  <span>Radius</span>
+                  <span className="text-primary font-mono">{formRadius} m</span>
+                </div>
+                <input
+                  type="range"
+                  min="50"
+                  max="1000"
+                  step="25"
+                  value={formRadius}
+                  onChange={(e) => {
+                    const r = Number(e.target.value);
+                    setFormRadius(r);
+                    setDraftZone((prev) => prev ? { ...prev, radiusM: r } : null);
+                  }}
+                  className="w-full accent-primary cursor-pointer"
+                />
+                <div className="flex justify-between text-[10px] text-on-surface-variant">
+                  <span>50m (Home)</span>
+                  <span>500m (Campus)</span>
+                  <span>1000m (Bay)</span>
+                </div>
+              </div>
+
+              <label className="flex items-center gap-2 cursor-pointer pt-1">
+                <input
+                  type="checkbox"
+                  checked={formWeatherAlerts}
+                  onChange={(e) => setFormWeatherAlerts(e.target.checked)}
+                  className="rounded border-outline accent-primary h-3.5 w-3.5"
+                />
+                <span className="text-on-surface text-[11px]">Monitor for Severe Weather Warnings</span>
+              </label>
+
+              <div className="flex items-center gap-2 pt-2 border-t border-outline/40">
+                {zoneEditorMode === 'edit' && (
+                  <button
+                    type="button"
+                    onClick={handleDeleteZone}
+                    disabled={isSubmittingZone}
+                    className="flex items-center gap-1 rounded-lg border border-error/40 px-2.5 py-1.5 text-xs font-semibold text-error hover:bg-error/10 disabled:opacity-50"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    <span>Delete</span>
+                  </button>
+                )}
+                <div className="ml-auto flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={cancelZoneEditor}
+                    disabled={isSubmittingZone}
+                    className="rounded-lg border border-outline px-3 py-1.5 text-xs font-semibold text-on-surface-variant hover:bg-surface-container disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmittingZone}
+                    className="flex items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-on-primary hover:bg-primary/90 disabled:opacity-50"
+                  >
+                    {isSubmittingZone ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Check className="h-3.5 w-3.5" />
+                    )}
+                    <span>{zoneEditorMode === 'create' ? 'Save Landing' : 'Update'}</span>
+                  </button>
+                </div>
+              </div>
+            </form>
           </aside>
         )}
       </div>
