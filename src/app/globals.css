@@ -24,12 +24,12 @@ body {
  * CrewRadr tokens: light scaffold + primary seed.
  */
 :root {
-  --brand-surface: #F3F0E9;
+  --brand-surface: #F6F4EE;
   --brand-seed: #8EA595;
-  --brand-accent: #D4A017;
+  --brand-accent: #DDCFB5;
 }
 [data-theme="dark"] {
-  --brand-surface: #1A2327;
+  --brand-surface: #1E2121;
   --brand-seed: #8EA595;
-  --brand-accent: #D4A017;
+  --brand-accent: #DDCFB5;
 }

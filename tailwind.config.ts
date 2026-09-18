@@ -35,6 +35,8 @@ const config: Config = {
         "warning-container": "var(--color-warning-container)",
         success: "var(--color-success)",
         "success-container": "var(--color-success-container)",
+        "clay-blush": "var(--color-clay-blush)",
+        "serene-sky": "var(--color-serene-sky)",
       },
       borderRadius: {
         sm: "8px",
