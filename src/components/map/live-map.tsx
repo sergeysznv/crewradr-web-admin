@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Loader } from '@googlemaps/js-api-loader';
 import type { LivePosition } from '@/types/rpc';
 
@@ -209,12 +209,13 @@ export default function LiveMap({
 }: LiveMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
-  const radarLayerRef = useRef<google.maps.ImageMapType | null>(null);
+  const radarLayerRef = useRef<google.maps.MapType | null>(null);
   const nwsDataRef = useRef<google.maps.Data | null>(null);
   const draftCircleRef = useRef<google.maps.Circle | null>(null);
   const draftMarkerRef = useRef<google.maps.Marker | null>(null);
   const isPlacingRef = useRef(isPlacingZone);
   isPlacingRef.current = isPlacingZone;
+  const [mapZoom, setMapZoom] = useState<number>(4);
 
   const markersRef = useRef<Map<string, google.maps.marker.AdvancedMarkerElement>>(new Map());
   const circlesRef = useRef<Map<string, { circle: google.maps.Circle; marker?: google.maps.Marker }>>(new Map());
@@ -402,6 +403,10 @@ export default function LiveMap({
         gestureHandling: 'greedy',
       });
 
+      map.addListener('zoom_changed', () => {
+        setMapZoom(map.getZoom() ?? 4);
+      });
+
       map.addListener('click', (e: google.maps.MapMouseEvent) => {
         if (isPlacingRef.current && e.latLng) {
           onMapClick?.({ lat: e.latLng.lat(), lng: e.latLng.lng() });
@@ -578,13 +583,115 @@ export default function LiveMap({
           }
         }
 
-        const radarMapType = new google.maps.ImageMapType({
-          getTileUrl: (coord, zoom) =>
-            `https://tilecache.rainviewer.com${path}/256/${zoom}/${coord.x}/${coord.y}/2/1_1.png`,
+        const MAX_NATIVE_ZOOM = 7;
+        const imageCache = new Map<string, HTMLImageElement>();
+        const pendingLoads = new Map<string, Promise<HTMLImageElement | null>>();
+
+        function fetchParentTile(url: string): Promise<HTMLImageElement | null> {
+          if (imageCache.has(url)) {
+            return Promise.resolve(imageCache.get(url)!);
+          }
+          if (pendingLoads.has(url)) {
+            return pendingLoads.get(url)!;
+          }
+
+          const promise = new Promise<HTMLImageElement | null>((resolve) => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+              if (imageCache.size > 256) {
+                imageCache.clear();
+              }
+              imageCache.set(url, img);
+              pendingLoads.delete(url);
+              resolve(img);
+            };
+            img.onerror = () => {
+              pendingLoads.delete(url);
+              resolve(null);
+            };
+            img.src = url;
+          });
+
+          pendingLoads.set(url, promise);
+          return promise;
+        }
+
+        const radarMapType: google.maps.MapType = {
           tileSize: new google.maps.Size(256, 256),
-          opacity: 0.65,
+          maxZoom: 20,
+          minZoom: 0,
           name: 'RainViewer',
-        });
+          alt: 'RainViewer Precipitation Radar',
+          projection: null,
+          radius: 0,
+          getTile: (coord: google.maps.Point, zoom: number, ownerDocument: Document): HTMLElement => {
+            const numTiles = 1 << zoom;
+            const normX = ((coord.x % numTiles) + numTiles) % numTiles;
+            const y = coord.y;
+
+            if (y < 0 || y >= numTiles) {
+              return ownerDocument.createElement('div');
+            }
+
+            if (zoom <= MAX_NATIVE_ZOOM) {
+              const img = ownerDocument.createElement('img');
+              img.width = 256;
+              img.height = 256;
+              img.style.width = '256px';
+              img.style.height = '256px';
+              img.style.opacity = '0.65';
+              img.style.pointerEvents = 'none';
+              img.src = `https://tilecache.rainviewer.com${path}/256/${zoom}/${normX}/${y}/2/1_1.png`;
+              img.onerror = () => {
+                img.style.display = 'none';
+              };
+              return img;
+            }
+
+            // High zoom levels (8..20): RainViewer API natively caps at zoom 7.
+            // Dynamically scale and interpolate the corresponding zoom-7 parent tile region onto a canvas.
+            const canvas = ownerDocument.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 256;
+            canvas.style.width = '256px';
+            canvas.style.height = '256px';
+            canvas.style.opacity = '0.65';
+            canvas.style.pointerEvents = 'none';
+
+            const diff = zoom - MAX_NATIVE_ZOOM;
+            const scale = 1 << diff;
+            const parentX = Math.floor(normX / scale);
+            const parentY = Math.floor(y / scale);
+            const parentNumTiles = 1 << MAX_NATIVE_ZOOM;
+
+            if (parentY < 0 || parentY >= parentNumTiles) {
+              return canvas;
+            }
+
+            const subX = normX - parentX * scale;
+            const subY = y - parentY * scale;
+            const subW = 256 / scale;
+            const subH = 256 / scale;
+            const srcX = subX * subW;
+            const srcY = subY * subH;
+
+            const parentUrl = `https://tilecache.rainviewer.com${path}/256/${MAX_NATIVE_ZOOM}/${parentX}/${parentY}/2/1_1.png`;
+
+            fetchParentTile(parentUrl).then((parentImg) => {
+              if (!parentImg) return;
+              const ctx = canvas.getContext('2d');
+              if (!ctx) return;
+              ctx.imageSmoothingEnabled = true;
+              ctx.drawImage(parentImg, srcX, srcY, subW, subH, 0, 0, 256, 256);
+            });
+
+            return canvas;
+          },
+          releaseTile: () => {
+            // no-op
+          },
+        };
 
         radarLayerRef.current = radarMapType;
         map.overlayMapTypes.push(radarMapType);
@@ -690,7 +797,7 @@ export default function LiveMap({
             <span>Precipitation Radar</span>
             <span className="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
-              Live
+              {mapZoom > 7 ? 'Live • Enhanced HD' : 'Live'}
             </span>
           </div>
           <div className="h-2 w-48 rounded-full bg-gradient-to-r from-[#00E676] via-[#FFEA00] via-[#FF9100] via-[#FF1744] to-[#D500F9]" />
