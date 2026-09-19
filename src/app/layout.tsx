@@ -8,6 +8,7 @@ import '@/app/globals.css';
 export const metadata: Metadata = {
   title: 'CrewRadr Admin',
   description: 'Fleet management dashboard',
+  manifest: '/manifest.json',
   icons: {
     icon: '/logo-32.png',
     apple: '/logo-96.png',

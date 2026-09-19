@@ -1,0 +1,22 @@
+{
+  "name": "CrewRadr Admin Portal",
+  "short_name": "CrewRadr Admin",
+  "description": "Real-time fleet operations, live telemetry, and safety management console.",
+  "start_url": "/map",
+  "display": "standalone",
+  "background_color": "#1A2327",
+  "theme_color": "#8EA595",
+  "icons": [
+    {
+      "src": "/logo-96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
