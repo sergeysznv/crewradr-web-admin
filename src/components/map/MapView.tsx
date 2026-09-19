@@ -22,9 +22,13 @@ import {
   Plus,
   Trash2,
   Check,
+  Unlock,
 } from 'lucide-react';
 import type { LivePosition, AccountProfile } from '@/types/rpc';
 import type { GeofenceZone, NwsHazardAlert, DraftZoneState } from '@/components/map/live-map';
+import { useCrewKey } from '@/hooks/useCrewKey';
+import { decryptPayload } from '@/lib/crypto';
+import { ZeroKnowledgeUnlockModal } from '@/components/shared/ZeroKnowledgeUnlockModal';
 
 const LiveMap = nextDynamic(() => import('@/components/map/live-map'), {
   ssr: false,
@@ -89,6 +93,9 @@ export function MapView() {
   const [formRadius, setFormRadius] = useState(100);
   const [formWeatherAlerts, setFormWeatherAlerts] = useState(true);
   const [isSubmittingZone, setIsSubmittingZone] = useState(false);
+  const { crewKey, hasCrewKey } = useCrewKey();
+  const [zkModalOpen, setZkModalOpen] = useState(false);
+  const [positions, setPositions] = useState<LivePosition[]>([]);
 
   const positionsQuery = useQuery({
     queryKey: ['livePositions', crewId],
@@ -122,8 +129,39 @@ export function MapView() {
   const [selected, setSelected] = useState<LivePosition | null>(null);
   const [mapLoadError, setMapLoadError] = useState<string | null>(null);
 
-  const positions = positionsQuery.data ?? [];
   const zones = zonesQuery.data ?? [];
+
+  useEffect(() => {
+    let active = true;
+    async function resolveZeroKnowledge() {
+      const raw = positionsQuery.data ?? [];
+      if (!crewKey) {
+        setPositions(raw);
+        return;
+      }
+      const updated = await Promise.all(
+        raw.map(async (p) => {
+          if (p.encrypted_payload) {
+            const dec = await decryptPayload(p.encrypted_payload, crewKey);
+            if (dec) {
+              return {
+                ...p,
+                latitude: dec.latitude,
+                longitude: dec.longitude,
+                speed_ms: dec.speed ?? p.speed_ms,
+              };
+            }
+          }
+          return p;
+        })
+      );
+      if (active) setPositions(updated);
+    }
+    resolveZeroKnowledge();
+    return () => {
+      active = false;
+    };
+  }, [positionsQuery.data, crewKey]);
 
   // Realtime — instant marker upsert + 5s RPC reconcile (ported from production).
   useEffect(() => {
@@ -142,50 +180,67 @@ export function MapView() {
         { event: 'INSERT', schema: 'public', table: 'location_logs', filter: `crew_id=eq.${crewId}` },
         (payload) => {
           const rec = (payload as { new?: Record<string, unknown> }).new;
-          if (rec && typeof rec.user_id === 'string' && typeof rec.latitude === 'number' && typeof rec.longitude === 'number') {
-            const userId = rec.user_id;
-            const lat = rec.latitude;
-            const lng = rec.longitude;
-            const createdAt = String(rec.created_at ?? new Date().toISOString());
-            const eventType = typeof rec.event_type === 'string' ? rec.event_type : null;
-            const speedMs = typeof rec.speed_ms === 'number' ? rec.speed_ms : null;
-            queryClient.setQueryData<LivePosition[]>(['livePositions', crewId], (prev) => {
-              const list = prev ?? [];
-              const exists = list.some((p) => p.user_id === userId);
-              if (exists) {
-                return list.map((p) =>
-                  p.user_id === userId
-                    ? {
-                        ...p,
-                        latitude: lat,
-                        longitude: lng,
-                        created_at: createdAt,
-                        speed_ms: speedMs ?? p.speed_ms,
-                        is_stale: false,
-                        last_seen_at: createdAt,
-                      }
-                    : p,
-                );
+          if (rec && typeof rec.user_id === 'string') {
+            (async () => {
+              let lat = typeof rec.latitude === 'number' ? rec.latitude : null;
+              let lng = typeof rec.longitude === 'number' ? rec.longitude : null;
+              let speedMs = typeof rec.speed_ms === 'number' ? rec.speed_ms : null;
+              const encrypted = typeof rec.encrypted_payload === 'string' ? rec.encrypted_payload : null;
+
+              if (encrypted && crewKey) {
+                const dec = await decryptPayload(encrypted, crewKey);
+                if (dec) {
+                  lat = dec.latitude;
+                  lng = dec.longitude;
+                  speedMs = dec.speed ?? speedMs;
+                }
               }
-              return [
-                ...list,
-                {
-                  user_id: userId,
-                  latitude: lat,
-                  longitude: lng,
-                  created_at: createdAt,
-                  speed_ms: speedMs,
-                  is_stale: false,
-                  last_seen_at: createdAt,
-                  display_name: 'Crew Member',
-                  role: 'member',
-                  profile_emoji: null,
-                  avatar_url: null,
-                  event_type: eventType,
-                },
-              ];
-            });
-            scheduleReconcile();
+
+              if (lat === null || lng === null) return;
+
+              const userId = String(rec.user_id);
+              const createdAt = String(rec.created_at ?? new Date().toISOString());
+              const eventType = typeof rec.event_type === 'string' ? rec.event_type : null;
+              queryClient.setQueryData<LivePosition[]>(['livePositions', crewId], (prev) => {
+                const list = prev ?? [];
+                const exists = list.some((p) => p.user_id === userId);
+                if (exists) {
+                  return list.map((p) =>
+                    p.user_id === userId
+                      ? {
+                          ...p,
+                          latitude: lat,
+                          longitude: lng,
+                          created_at: createdAt,
+                          speed_ms: speedMs ?? p.speed_ms,
+                          is_stale: false,
+                          last_seen_at: createdAt,
+                          encrypted_payload: encrypted ?? p.encrypted_payload,
+                        }
+                      : p,
+                  );
+                }
+                return [
+                  ...list,
+                  {
+                    user_id: userId,
+                    latitude: lat,
+                    longitude: lng,
+                    created_at: createdAt,
+                    speed_ms: speedMs,
+                    is_stale: false,
+                    last_seen_at: createdAt,
+                    display_name: 'Crew Member',
+                    role: 'member',
+                    profile_emoji: null,
+                    avatar_url: null,
+                    event_type: eventType,
+                    encrypted_payload: encrypted,
+                  },
+                ];
+              });
+              scheduleReconcile();
+            })();
           }
         },
       )
@@ -463,6 +518,25 @@ export function MapView() {
               {hazardCount}
             </span>
           )}
+        </button>
+
+        {/* Zero-Knowledge Telemetry Status & Unlock */}
+        <button
+          type="button"
+          onClick={() => setZkModalOpen(true)}
+          className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors ${
+            hasCrewKey
+              ? 'border-green-500/30 bg-green-50 text-green-800 dark:bg-green-950/40 dark:text-green-300'
+              : 'border-amber-500/30 bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300'
+          }`}
+          title="Zero-Knowledge Client Decryption Status"
+        >
+          {hasCrewKey ? (
+            <Unlock className="h-3.5 w-3.5 text-green-600 dark:text-green-400" />
+          ) : (
+            <Lock className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+          )}
+          <span>{hasCrewKey ? 'Zero-Knowledge Active' : 'Unlock E2EE Telemetry'}</span>
         </button>
 
         {lastUpdated > 0 && (
@@ -769,6 +843,11 @@ export function MapView() {
           </aside>
         )}
       </div>
+
+      <ZeroKnowledgeUnlockModal
+        isOpen={zkModalOpen}
+        onClose={() => setZkModalOpen(false)}
+      />
     </div>
   );
 }

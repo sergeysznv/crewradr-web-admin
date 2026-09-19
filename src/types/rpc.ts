@@ -104,6 +104,7 @@ export interface LivePosition {
   created_at: string | null;
   is_stale: boolean;
   last_seen_at: string | null;
+  encrypted_payload?: string | null;
 }
 
 export interface ProvisioningLink {
