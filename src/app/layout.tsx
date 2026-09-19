@@ -1,13 +1,22 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { AppProviders } from '@/components/AppProviders';
 
 
 import { TierProvider } from '@/hooks/useTier';
 import '@/app/globals.css';
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#F6F4EE' },
+    { media: '(prefers-color-scheme: dark)', color: '#1E2121' },
+  ],
+  width: 'device-width',
+  initialScale: 1,
+};
+
 export const metadata: Metadata = {
   title: 'CrewRadr Admin',
-  description: 'Fleet management dashboard',
+  description: 'Real-time fleet operations, live telemetry, and safety management console.',
   manifest: '/manifest.json',
   icons: {
     icon: '/logo-32.png',
