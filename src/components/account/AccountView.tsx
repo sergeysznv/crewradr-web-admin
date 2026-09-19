@@ -12,6 +12,7 @@ import { MeasurementToggle } from '@/components/settings/MeasurementToggle';
 import { FontScalePicker } from '@/components/settings/FontScalePicker';
 import { tierLabel, tierColor } from '@/lib/utils';
 import { Globe, Users, Loader2, Check, LogOut, Home, Lock } from 'lucide-react';
+import { CountryFlag } from '@/components/shared/CountryFlag';
 
 export function AccountView() {
   const { t } = useT();
@@ -182,13 +183,14 @@ export function AccountView() {
           <Globe className="h-5 w-5 text-primary" />
           <h2 className="font-semibold text-on-surface">{t('webAccountLanguage')}</h2>
         </div>
-        <div>
+        <div className="flex items-center gap-2.5">
+          <CountryFlag code={locale} className="w-5 h-3.5 rounded-xs border border-outline/40 shadow-xs shrink-0" />
           <label htmlFor="language-preference" className="sr-only">{t('webAccountLanguage')}</label>
           <select
             id="language-preference"
             value={locale}
             onChange={(e) => changeLanguage(e.target.value)}
-            className="w-full sm:w-64 rounded-xl border border-outline bg-surface px-3 py-2 text-sm text-on-surface"
+            className="w-full sm:w-64 rounded-xl border border-outline bg-surface px-3 py-2 text-sm text-on-surface cursor-pointer"
           >
             {LANGUAGES.map((l) => (
               <option key={l.code} value={l.code}>{l.flag} {l.label}</option>

@@ -2,6 +2,7 @@
 
 import { useLocale, LANGUAGES } from '@/hooks/use-translations';
 import { supabase } from '@/lib/supabase/client';
+import { CountryFlag } from './CountryFlag';
 
 interface LanguageSelectProps {
   className?: string;
@@ -32,17 +33,20 @@ export function LanguageSelect({ className, onLanguageChange }: LanguageSelectPr
   }
 
   return (
-    <select
-      value={locale}
-      onChange={(e) => handleChange(e.target.value)}
-      aria-label="Language selection"
-      className={className ?? "h-9 rounded-xl border border-zinc-200 bg-white px-2.5 text-xs font-semibold text-zinc-800 transition-colors hover:border-zinc-400 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 cursor-pointer"}
-    >
-      {LANGUAGES.map((l) => (
-        <option key={l.code} value={l.code} className="text-zinc-900 dark:text-zinc-100 dark:bg-zinc-800">
-          {l.flag} {l.label}
-        </option>
-      ))}
-    </select>
+    <div className="relative inline-flex items-center gap-1.5">
+      <CountryFlag code={locale} className="w-5 h-3.5 rounded-xs border border-zinc-300/60 dark:border-zinc-700/60 shadow-xs shrink-0" />
+      <select
+        value={locale}
+        onChange={(e) => handleChange(e.target.value)}
+        aria-label="Language selection"
+        className={className ?? "h-9 rounded-xl border border-zinc-200 bg-white px-2.5 text-xs font-semibold text-zinc-800 transition-colors hover:border-zinc-400 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 cursor-pointer"}
+      >
+        {LANGUAGES.map((l) => (
+          <option key={l.code} value={l.code} className="text-zinc-900 dark:text-zinc-100 dark:bg-zinc-800">
+            {l.flag} {l.label}
+          </option>
+        ))}
+      </select>
+    </div>
   );
 }
