@@ -154,11 +154,11 @@ export default function LoginPage() {
         {step === 'login' && (
           <div className="rounded-xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
             <form onSubmit={handleLogin}>
-              <label className="mb-1 block text-sm font-medium text-zinc-900 dark:text-zinc-100">{t('webLoginEmail')}</label>
+              <label htmlFor="email" className="mb-1 block text-sm font-medium text-zinc-900 dark:text-zinc-100">{t('webLoginEmail')}</label>
               <input id="email" name="email" type="email" value={email} onChange={e => setEmail(e.target.value)}
                 className="mb-4 w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500"
                 placeholder={t('webLoginEmailPlaceholder')} autoComplete="email" autoFocus />
-              <label className="mb-1 block text-sm font-medium text-zinc-900 dark:text-zinc-100">{t('webLoginPassword')}</label>
+              <label htmlFor="password" className="mb-1 block text-sm font-medium text-zinc-900 dark:text-zinc-100">{t('webLoginPassword')}</label>
               <input id="password" name="password" type="password" value={password} onChange={e => setPassword(e.target.value)}
                 className="mb-6 w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-500"
                 autoComplete="current-password" />
