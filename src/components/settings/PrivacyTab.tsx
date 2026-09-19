@@ -146,30 +146,14 @@ export function PrivacyTab() {
       const hdr: Record<string, string> = {};
       if (s?.access_token) hdr['Authorization'] = `Bearer ${s.access_token}`;
       
-      // Call the Edge Function first to enforce all business logic / governance rules.
-      // This will return 409 status code if captain blocked or crew approval is required.
-      const { data, error: fnError } = await supabase.functions.invoke('delete_account', {
+      // Call the Edge Function to permanently and immediately delete user data.
+      const { error: fnError } = await supabase.functions.invoke('delete_account', {
         body: { email: user.email },
         headers: hdr,
       });
 
       if (fnError) {
-        let errMsg = t('webSettingsDeleteAccountFailed');
-        try {
-          const body = typeof fnError.message === 'string' ? JSON.parse(fnError.message) : fnError;
-          if (body.code === 'CAPTAIN_BLOCKED') {
-            errMsg = t('webSettingsDeleteAccountCaptainBlocked');
-          } else if (body.code === 'CREW_APPROVAL_REQUIRED') {
-            errMsg = t('webSettingsDeleteAccountApprovalRequired');
-          }
-        } catch {
-          if (fnError.message?.includes('CAPTAIN_BLOCKED')) {
-            errMsg = t('webSettingsDeleteAccountCaptainBlocked');
-          } else if (fnError.message?.includes('CREW_APPROVAL_REQUIRED')) {
-            errMsg = t('webSettingsDeleteAccountApprovalRequired');
-          }
-        }
-        showError(errMsg);
+        showError(fnError.message || t('webSettingsDeleteAccountFailed'));
         setDeleting(false);
         setShowDelete(false);
         return;
@@ -183,13 +167,7 @@ export function PrivacyTab() {
       router.push('/');
     } catch (e: any) {
       console.error('Delete account failed:', e);
-      let errMsg = t('webSettingsDeleteAccountFailed');
-      if (e.message?.includes('CAPTAIN_BLOCKED')) {
-        errMsg = t('webSettingsDeleteAccountCaptainBlocked');
-      } else if (e.message?.includes('CREW_APPROVAL_REQUIRED')) {
-        errMsg = t('webSettingsDeleteAccountApprovalRequired');
-      }
-      showError(errMsg);
+      showError(e?.message || t('webSettingsDeleteAccountFailed'));
       setDeleting(false);
       setShowDelete(false);
     }
