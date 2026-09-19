@@ -8,6 +8,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useVersionCheck } from '@/hooks/use-version-check';
 import { supabase } from '@/lib/supabase/client';
 import { Shield, Loader2, ArrowLeft } from 'lucide-react';
+import { LanguageSelect } from '@/components/shared/LanguageSelect';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -113,15 +114,18 @@ export default function LoginPage() {
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center p-6 bg-[var(--brand-surface)] dark:bg-[var(--brand-surface)]">
-      {/* Theme toggle */}
-      <button
-        onClick={toggleTheme}
-        className="fixed end-5 top-5 flex h-10 w-10 items-center justify-center rounded-xl border text-lg transition-colors hover:border-[var(--brand-seed)]"
-        style={{ borderColor: 'color-mix(in srgb, var(--brand-seed) 20%, transparent)' }}
-        aria-label={t('webShellToggleTheme')}
-      >
-        {resolved === 'dark' ? '\u{1F319}' : '\u{2600}\u{FE0F}'}
-      </button>
+      {/* Theme & Language toggles */}
+      <div className="fixed end-5 top-5 z-10 flex items-center gap-2">
+        <LanguageSelect />
+        <button
+          onClick={toggleTheme}
+          className="flex h-10 w-10 items-center justify-center rounded-xl border text-lg transition-colors hover:border-[var(--brand-seed)]"
+          style={{ borderColor: 'color-mix(in srgb, var(--brand-seed) 20%, transparent)' }}
+          aria-label={t('webShellToggleTheme')}
+        >
+          {resolved === 'dark' ? '\u{1F319}' : '\u{2600}\u{FE0F}'}
+        </button>
+      </div>
 
       <div className="relative w-full max-w-md">
         {/* Logo */}

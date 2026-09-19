@@ -2,7 +2,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useT, useLocale } from '@/hooks/use-translations';
+import { useT, useLocale, LANGUAGES } from '@/hooks/use-translations';
 import { useAuth } from '@/hooks/use-auth';
 import { useAccountProfile } from '@/hooks/queries/useAccountProfile';
 import { useSupabase } from '@/hooks/useSupabase';
@@ -12,15 +12,6 @@ import { MeasurementToggle } from '@/components/settings/MeasurementToggle';
 import { FontScalePicker } from '@/components/settings/FontScalePicker';
 import { tierLabel, tierColor } from '@/lib/utils';
 import { Globe, Users, Loader2, Check, LogOut, Home, Lock } from 'lucide-react';
-
-const LANGUAGES = [
-  { code: 'en', label: 'English', flag: '🇺🇸' },
-  { code: 'es', label: 'Español', flag: '🇪🇸' },
-  { code: 'fr', label: 'Français', flag: '🇫🇷' },
-  { code: 'ar', label: 'العربية', flag: '🇸🇦' },
-  { code: 'zh', label: '中文', flag: '🇨🇳' },
-  { code: 'ru', label: 'Русский', flag: '🇷🇺' },
-];
 
 export function AccountView() {
   const { t } = useT();

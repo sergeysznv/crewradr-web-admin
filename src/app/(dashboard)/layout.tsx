@@ -18,6 +18,7 @@ import { OfflineBanner } from '@/components/shared/OfflineBanner';
 import { DowngradeBanner } from '@/components/tier/DowngradeBanner';
 import { LockoutBanner } from '@/components/tier/LockoutBanner';
 import { MultiCrewSwitcher } from '@/components/shared/MultiCrewSwitcher';
+import { LanguageSelect } from '@/components/shared/LanguageSelect';
 import { useTabFocus } from '@/hooks/useTabFocus';
 import { supabase } from '@/lib/supabase/client';
 import { tierOnColor } from '@/lib/tier';
@@ -241,7 +242,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         ) : (
           <span className="text-sm font-bold truncate">{activeCrew?.crew_name ?? t('webAdminTitle')}</span>
         )}
-        <div className="ms-auto flex items-center gap-1">
+        <div className="ms-auto flex items-center gap-1.5">
+          <LanguageSelect />
           <button onClick={toggleTheme} className="flex h-8 w-8 items-center justify-center rounded-lg text-sm" title={resolved === 'dark' ? t('webShellLightMode') : t('webShellDarkMode')}>
             {resolved === 'dark' ? '\u{2600}\u{FE0F}' : '\u{1F319}'}
           </button>
@@ -397,7 +399,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </span>
               )
             )}
-            <div className="ms-auto flex items-center gap-1">
+            <div className="ms-auto flex items-center gap-1.5">
+              <LanguageSelect />
               <button onClick={toggleTheme}
                 className="flex h-8 w-8 items-center justify-center rounded-lg text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800"
                 title={resolved === 'dark' ? t('webShellLightMode') : t('webShellDarkMode')}>

@@ -16,6 +16,21 @@ const messagesMap: Record<string, () => Promise<{ default: Messages }>> = {
 
 const SUPPORTED = new Set(Object.keys(messagesMap));
 
+export interface LanguageOption {
+  code: string;
+  label: string;
+  flag: string;
+}
+
+export const LANGUAGES: LanguageOption[] = [
+  { code: 'en', label: 'English', flag: '🇺🇸' },
+  { code: 'es', label: 'Español', flag: '🇪🇸' },
+  { code: 'fr', label: 'Français', flag: '🇫🇷' },
+  { code: 'ar', label: 'العربية', flag: '🇸🇦' },
+  { code: 'zh', label: '中文', flag: '🇨🇳' },
+  { code: 'ru', label: 'Русский', flag: '🇷🇺' },
+];
+
 let cachedLocale = 'en';
 // Seed with English so t() never renders raw keys before a locale loads.
 let cachedMessages: Messages | null = enMessages;
