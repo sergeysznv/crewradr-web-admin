@@ -564,144 +564,153 @@ export default function LiveMap({
       return;
     }
 
-    fetch('https://api.rainviewer.com/public/weather-maps.json')
-      .then((res) => res.json())
-      .then((data) => {
-        if (cancelled || !mapRef.current) return;
-        const past = data?.radar?.past;
-        if (!past || past.length === 0) return;
-        const latestFrame = past[past.length - 1];
-        const path = latestFrame?.path;
-        if (!path) return;
+    const loadRadar = () => {
+      fetch('https://api.rainviewer.com/public/weather-maps.json')
+        .then((res) => {
+          if (!res.ok) throw new Error(`RainViewer HTTP ${res.status}`);
+          return res.json();
+        })
+        .then((data) => {
+          if (cancelled || !mapRef.current) return;
+          const past = data?.radar?.past;
+          if (!past || past.length === 0) return;
+          const latestFrame = past[past.length - 1];
+          const path = latestFrame?.path;
+          if (!path) return;
 
-        if (radarLayerRef.current) {
-          const overlays = map.overlayMapTypes;
-          for (let i = overlays.getLength() - 1; i >= 0; i--) {
-            if (overlays.getAt(i) === radarLayerRef.current) {
-              overlays.removeAt(i);
-            }
-          }
-        }
-
-        const MAX_NATIVE_ZOOM = 7;
-        const imageCache = new Map<string, HTMLImageElement>();
-        const pendingLoads = new Map<string, Promise<HTMLImageElement | null>>();
-
-        function fetchParentTile(url: string): Promise<HTMLImageElement | null> {
-          if (imageCache.has(url)) {
-            return Promise.resolve(imageCache.get(url)!);
-          }
-          if (pendingLoads.has(url)) {
-            return pendingLoads.get(url)!;
-          }
-
-          const promise = new Promise<HTMLImageElement | null>((resolve) => {
-            const img = new Image();
-            img.crossOrigin = 'anonymous';
-            img.onload = () => {
-              if (imageCache.size > 256) {
-                imageCache.clear();
+          if (radarLayerRef.current) {
+            const overlays = map.overlayMapTypes;
+            for (let i = overlays.getLength() - 1; i >= 0; i--) {
+              if (overlays.getAt(i) === radarLayerRef.current) {
+                overlays.removeAt(i);
               }
-              imageCache.set(url, img);
-              pendingLoads.delete(url);
-              resolve(img);
-            };
-            img.onerror = () => {
-              pendingLoads.delete(url);
-              resolve(null);
-            };
-            img.src = url;
-          });
+            }
+          }
 
-          pendingLoads.set(url, promise);
-          return promise;
-        }
+          const MAX_NATIVE_ZOOM = 7;
+          const imageCache = new Map<string, HTMLImageElement>();
+          const pendingLoads = new Map<string, Promise<HTMLImageElement | null>>();
 
-        const radarMapType: google.maps.MapType = {
-          tileSize: new google.maps.Size(256, 256),
-          maxZoom: 20,
-          minZoom: 0,
-          name: 'RainViewer',
-          alt: 'RainViewer Precipitation Radar',
-          projection: null,
-          radius: 0,
-          getTile: (coord: google.maps.Point, zoom: number, ownerDocument: Document): HTMLElement => {
-            const numTiles = 1 << zoom;
-            const normX = ((coord.x % numTiles) + numTiles) % numTiles;
-            const y = coord.y;
-
-            if (y < 0 || y >= numTiles) {
-              return ownerDocument.createElement('div');
+          function fetchParentTile(url: string): Promise<HTMLImageElement | null> {
+            if (imageCache.has(url)) {
+              return Promise.resolve(imageCache.get(url)!);
+            }
+            if (pendingLoads.has(url)) {
+              return pendingLoads.get(url)!;
             }
 
-            if (zoom <= MAX_NATIVE_ZOOM) {
-              const img = ownerDocument.createElement('img');
-              img.width = 256;
-              img.height = 256;
-              img.style.width = '256px';
-              img.style.height = '256px';
-              img.style.opacity = '0.65';
-              img.style.pointerEvents = 'none';
-              img.src = `https://tilecache.rainviewer.com${path}/256/${zoom}/${normX}/${y}/2/1_1.png`;
-              img.onerror = () => {
-                img.style.display = 'none';
+            const promise = new Promise<HTMLImageElement | null>((resolve) => {
+              const img = new Image();
+              img.crossOrigin = 'anonymous';
+              img.onload = () => {
+                if (imageCache.size > 256) {
+                  imageCache.clear();
+                }
+                imageCache.set(url, img);
+                pendingLoads.delete(url);
+                resolve(img);
               };
-              return img;
-            }
-
-            // High zoom levels (8..20): RainViewer API natively caps at zoom 7.
-            // Dynamically scale and interpolate the corresponding zoom-7 parent tile region onto a canvas.
-            const canvas = ownerDocument.createElement('canvas');
-            canvas.width = 256;
-            canvas.height = 256;
-            canvas.style.width = '256px';
-            canvas.style.height = '256px';
-            canvas.style.opacity = '0.65';
-            canvas.style.pointerEvents = 'none';
-
-            const diff = zoom - MAX_NATIVE_ZOOM;
-            const scale = 1 << diff;
-            const parentX = Math.floor(normX / scale);
-            const parentY = Math.floor(y / scale);
-            const parentNumTiles = 1 << MAX_NATIVE_ZOOM;
-
-            if (parentY < 0 || parentY >= parentNumTiles) {
-              return canvas;
-            }
-
-            const subX = normX - parentX * scale;
-            const subY = y - parentY * scale;
-            const subW = 256 / scale;
-            const subH = 256 / scale;
-            const srcX = subX * subW;
-            const srcY = subY * subH;
-
-            const parentUrl = `https://tilecache.rainviewer.com${path}/256/${MAX_NATIVE_ZOOM}/${parentX}/${parentY}/2/1_1.png`;
-
-            fetchParentTile(parentUrl).then((parentImg) => {
-              if (!parentImg) return;
-              const ctx = canvas.getContext('2d');
-              if (!ctx) return;
-              ctx.imageSmoothingEnabled = true;
-              ctx.drawImage(parentImg, srcX, srcY, subW, subH, 0, 0, 256, 256);
+              img.onerror = () => {
+                pendingLoads.delete(url);
+                resolve(null);
+              };
+              img.src = url;
             });
 
-            return canvas;
-          },
-          releaseTile: () => {
-            // no-op
-          },
-        };
+            pendingLoads.set(url, promise);
+            return promise;
+          }
 
-        radarLayerRef.current = radarMapType;
-        map.overlayMapTypes.push(radarMapType);
-      })
-      .catch((err) => {
-        console.warn('LiveMap: RainViewer fetch failed', err);
-      });
+          const radarMapType: google.maps.MapType = {
+            tileSize: new google.maps.Size(256, 256),
+            maxZoom: 20,
+            minZoom: 0,
+            name: 'RainViewer',
+            alt: 'RainViewer Precipitation Radar',
+            projection: null,
+            radius: 0,
+            getTile: (coord: google.maps.Point, zoom: number, ownerDocument: Document): HTMLElement => {
+              const numTiles = 1 << zoom;
+              const normX = ((coord.x % numTiles) + numTiles) % numTiles;
+              const y = coord.y;
+
+              if (y < 0 || y >= numTiles) {
+                return ownerDocument.createElement('div');
+              }
+
+              if (zoom <= MAX_NATIVE_ZOOM) {
+                const img = ownerDocument.createElement('img');
+                img.width = 256;
+                img.height = 256;
+                img.style.width = '256px';
+                img.style.height = '256px';
+                img.style.opacity = '0.65';
+                img.style.pointerEvents = 'none';
+                img.src = `https://tilecache.rainviewer.com${path}/256/${zoom}/${normX}/${y}/2/1_1.png`;
+                img.onerror = () => {
+                  img.style.display = 'none';
+                };
+                return img;
+              }
+
+              // High zoom levels (8..20): RainViewer API natively caps at zoom 7.
+              // Dynamically scale and interpolate the corresponding zoom-7 parent tile region onto a canvas.
+              const canvas = ownerDocument.createElement('canvas');
+              canvas.width = 256;
+              canvas.height = 256;
+              canvas.style.width = '256px';
+              canvas.style.height = '256px';
+              canvas.style.opacity = '0.65';
+              canvas.style.pointerEvents = 'none';
+
+              const diff = zoom - MAX_NATIVE_ZOOM;
+              const scale = 1 << diff;
+              const parentX = Math.floor(normX / scale);
+              const parentY = Math.floor(y / scale);
+              const parentNumTiles = 1 << MAX_NATIVE_ZOOM;
+
+              if (parentY < 0 || parentY >= parentNumTiles) {
+                return canvas;
+              }
+
+              const subX = normX - parentX * scale;
+              const subY = y - parentY * scale;
+              const subW = 256 / scale;
+              const subH = 256 / scale;
+              const srcX = subX * subW;
+              const srcY = subY * subH;
+
+              const parentUrl = `https://tilecache.rainviewer.com${path}/256/${MAX_NATIVE_ZOOM}/${parentX}/${parentY}/2/1_1.png`;
+
+              fetchParentTile(parentUrl).then((parentImg) => {
+                if (!parentImg) return;
+                const ctx = canvas.getContext('2d');
+                if (!ctx) return;
+                ctx.imageSmoothingEnabled = true;
+                ctx.drawImage(parentImg, srcX, srcY, subW, subH, 0, 0, 256, 256);
+              });
+
+              return canvas;
+            },
+            releaseTile: () => {
+              // no-op
+            },
+          };
+
+          radarLayerRef.current = radarMapType;
+          map.overlayMapTypes.push(radarMapType);
+        })
+        .catch((err) => {
+          console.warn('LiveMap: RainViewer fetch failed', err);
+        });
+    };
+
+    loadRadar();
+    const radarInterval = setInterval(loadRadar, 5 * 60 * 1000);
 
     return () => {
       cancelled = true;
+      clearInterval(radarInterval);
     };
   }, [showRadar]);
 
@@ -720,71 +729,80 @@ export default function LiveMap({
 
     let cancelled = false;
 
-    fetch('https://api.weather.gov/alerts/active?status=actual&message_type=alert&severity=Extreme,Severe', {
-      headers: { 'User-Agent': 'CrewRadr/1.0 (support@crewradr.app)' },
-    })
-      .then((res) => res.json())
-      .then((geojson) => {
-        if (cancelled || !mapRef.current) return;
-
-        if (nwsDataRef.current) {
-          nwsDataRef.current.setMap(null);
-          nwsDataRef.current = null;
-        }
-
-        const validFeatures = (geojson?.features || []).filter(
-          (f: any) => f.geometry && (f.geometry.type === 'Polygon' || f.geometry.type === 'MultiPolygon')
-        );
-
-        onHazardCountChange?.(validFeatures.length);
-
-        if (validFeatures.length === 0) return;
-
-        const dataLayer = new google.maps.Data();
-        dataLayer.addGeoJson({
-          type: 'FeatureCollection',
-          features: validFeatures,
-        });
-
-        dataLayer.setStyle((feature) => {
-          const event = String(feature.getProperty('event') || '');
-          const colors = getNwsColor(event);
-          return {
-            fillColor: colors.fill,
-            fillOpacity: 0.22,
-            strokeColor: colors.stroke,
-            strokeWeight: 2,
-            strokeOpacity: 0.85,
-            zIndex: 10,
-          };
-        });
-
-        dataLayer.addListener('click', (event: google.maps.Data.MouseEvent) => {
-          const feature = event.feature;
-          const eventName = String(feature.getProperty('event') || 'Weather Warning');
-          const colors = getNwsColor(eventName);
-          const hazard: NwsHazardAlert = {
-            id: String(feature.getId() || feature.getProperty('id') || Math.random().toString()),
-            event: eventName,
-            severity: String(feature.getProperty('severity') || 'Severe'),
-            headline: String(feature.getProperty('headline') || eventName),
-            description: String(feature.getProperty('description') || ''),
-            instruction: String(feature.getProperty('instruction') || ''),
-            expires: String(feature.getProperty('expires') || ''),
-            color: colors.fill,
-          };
-          onHazardSelect?.(hazard);
-        });
-
-        dataLayer.setMap(map);
-        nwsDataRef.current = dataLayer;
+    const loadHazards = () => {
+      fetch('https://api.weather.gov/alerts/active?status=actual&message_type=alert&severity=Extreme,Severe', {
+        headers: { 'User-Agent': 'CrewRadr/1.0 (support@crewradr.app)' },
       })
-      .catch((err) => {
-        console.warn('LiveMap: NWS alerts fetch failed', err);
-      });
+        .then((res) => {
+          if (!res.ok) throw new Error(`NWS HTTP ${res.status}`);
+          return res.json();
+        })
+        .then((geojson) => {
+          if (cancelled || !mapRef.current) return;
+
+          if (nwsDataRef.current) {
+            nwsDataRef.current.setMap(null);
+            nwsDataRef.current = null;
+          }
+
+          const validFeatures = (geojson?.features || []).filter(
+            (f: any) => f.geometry && (f.geometry.type === 'Polygon' || f.geometry.type === 'MultiPolygon')
+          );
+
+          onHazardCountChange?.(validFeatures.length);
+
+          if (validFeatures.length === 0) return;
+
+          const dataLayer = new google.maps.Data();
+          dataLayer.addGeoJson({
+            type: 'FeatureCollection',
+            features: validFeatures,
+          });
+
+          dataLayer.setStyle((feature) => {
+            const event = String(feature.getProperty('event') || '');
+            const colors = getNwsColor(event);
+            return {
+              fillColor: colors.fill,
+              fillOpacity: 0.22,
+              strokeColor: colors.stroke,
+              strokeWeight: 2,
+              strokeOpacity: 0.85,
+              zIndex: 10,
+            };
+          });
+
+          dataLayer.addListener('click', (event: google.maps.Data.MouseEvent) => {
+            const feature = event.feature;
+            const eventName = String(feature.getProperty('event') || 'Weather Warning');
+            const colors = getNwsColor(eventName);
+            const hazard: NwsHazardAlert = {
+              id: String(feature.getId() || feature.getProperty('id') || Math.random().toString()),
+              event: eventName,
+              severity: String(feature.getProperty('severity') || 'Severe'),
+              headline: String(feature.getProperty('headline') || eventName),
+              description: String(feature.getProperty('description') || ''),
+              instruction: String(feature.getProperty('instruction') || ''),
+              expires: String(feature.getProperty('expires') || ''),
+              color: colors.fill,
+            };
+            onHazardSelect?.(hazard);
+          });
+
+          dataLayer.setMap(map);
+          nwsDataRef.current = dataLayer;
+        })
+        .catch((err) => {
+          console.warn('LiveMap: NWS alerts fetch failed', err);
+        });
+    };
+
+    loadHazards();
+    const hazardInterval = setInterval(loadHazards, 3 * 60 * 1000);
 
     return () => {
       cancelled = true;
+      clearInterval(hazardInterval);
     };
   }, [showHazards, onHazardCountChange, onHazardSelect]);
 
