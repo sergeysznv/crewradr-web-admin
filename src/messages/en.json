@@ -1149,5 +1149,14 @@
 	"webReportsIrsMileageDesc": "Certified business mileage log calculated at IRS rates ($0.67/mi) converted to your local currency.",
 	"webReportsEcoAuditLabel": "Eco-Driving & SmartWay Fleet ROI Audit",
 	"webReportsEcoAuditDesc": "Detailed audit of idle fuel waste, carbon footprint, and driver eco score.",
-	"webMeshRelayBadge": "BLE Mesh Relay - Dead Zone"
+	"webMeshRelayBadge": "BLE Mesh Relay - Dead Zone",
+	"webJurisdiction": "Operating Jurisdiction",
+	"webJurisdictionAuto": "Auto (Currency & Region)",
+	"webJurisdictionUs": "United States (DOT / OSHA / IRS)",
+	"webJurisdictionIntl": "International / Global (GDPR / Local)",
+	"webReportsIntlMileageLabel": "Business Mileage Tax Deduction Log",
+	"webReportsIntlMileageDesc": "Standard business mileage log calculated in local currency for commercial tax deduction audits.",
+	"webComplianceUsOnlyNotice": "U.S. DOT & FMCSA regulations apply only to fleets operating within the United States. Switch operating jurisdiction to United States to enable DOT ELD & DVIR.",
+	"webFleetEcoTip": "Eco-Fleet Tip:",
+	"webFleetSmartWayTip": "SmartWay Tip:"
 }

@@ -1149,5 +1149,14 @@
 	"webReportsIrsMileageDesc": "Официальный журнал делового пробега по ставке IRS ($0.67/миля) с пересчетом в вашу валюту.",
 	"webReportsEcoAuditLabel": "Аудит эко-вождения и окупаемости SmartWay",
 	"webReportsEcoAuditDesc": "Детальный аудит перерасхода топлива на холостом ходу, углеродного следа и эко-баллов водителей.",
-	"webMeshRelayBadge": "BLE Mesh ретранслятор - Мертвая зона"
+	"webMeshRelayBadge": "BLE Mesh ретранслятор - Мертвая зона",
+	"webJurisdiction": "Юрисдикция регулирования",
+	"webJurisdictionAuto": "Автоматически (валюта и регион)",
+	"webJurisdictionUs": "США (DOT / OSHA / IRS)",
+	"webJurisdictionIntl": "Международная / Глобальная (GDPR / местная)",
+	"webReportsIntlMileageLabel": "Журнал налогового вычета делового пробега",
+	"webReportsIntlMileageDesc": "Официальный журнал служебного пробега в местной валюте для налогового учета и аудита.",
+	"webComplianceUsOnlyNotice": "Требования US DOT и FMCSA применяются только для автопарков в США. Выберите юрисдикцию США для активации DOT ELD и DVIR.",
+	"webFleetEcoTip": "Совет по эко-вождению:",
+	"webFleetSmartWayTip": "Совет SmartWay:"
 }

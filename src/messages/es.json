@@ -1149,5 +1149,14 @@
 	"webReportsIrsMileageDesc": "Registro fiscal de millaje calculado a tarifas del IRS ($0.67/mi) en su moneda local.",
 	"webReportsEcoAuditLabel": "Auditoría de Conducción Ecológica y ROI SmartWay",
 	"webReportsEcoAuditDesc": "Auditoría detallada de combustible desperdiciado en ralentí, huella de carbono y puntaje ecológico.",
-	"webMeshRelayBadge": "Relevo Mesh BLE - Zona sin Cobertura"
+	"webMeshRelayBadge": "Relevo Mesh BLE - Zona sin Cobertura",
+	"webJurisdiction": "Jurisdicción Operativa",
+	"webJurisdictionAuto": "Automático (Moneda y Región)",
+	"webJurisdictionUs": "Estados Unidos (DOT / OSHA / IRS)",
+	"webJurisdictionIntl": "Internacional / Global (GDPR / Local)",
+	"webReportsIntlMileageLabel": "Registro de Deducción de Kilometraje Comercial",
+	"webReportsIntlMileageDesc": "Registro fiscal de kilometraje comercial calculado en moneda local para auditorías tributarias.",
+	"webComplianceUsOnlyNotice": "Las regulaciones de DOT y FMCSA aplican exclusivamente a flotas en EE. UU. Cambie la jurisdicción a Estados Unidos para habilitar DOT ELD y DVIR.",
+	"webFleetEcoTip": "Consejo de Flota Eco:",
+	"webFleetSmartWayTip": "Consejo SmartWay:"
 }

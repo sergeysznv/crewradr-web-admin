@@ -1149,5 +1149,14 @@
 	"webReportsIrsMileageDesc": "سجل ضريبي معتمد للأميال التجارية بسعر 0.67 دولار/ميل ومحول لعملتك المحلية.",
 	"webReportsEcoAuditLabel": "تدقيق القيادة البيئية وعائد الاستثمار SmartWay",
 	"webReportsEcoAuditDesc": "تدقيق تفصيلي لهدر الوقود أثناء التباطؤ، والبصمة الكربونية، ودرجات القيادة البيئية.",
-	"webMeshRelayBadge": "تتابع شبكي BLE - منطقة منعدمة التغطية"
+	"webMeshRelayBadge": "تتابع شبكي BLE - منطقة منعدمة التغطية",
+	"webJurisdiction": "الاختصاص التشغيلي",
+	"webJurisdictionAuto": "تلقائي (حسب العملة والمنطقة)",
+	"webJurisdictionUs": "الولايات المتحدة (DOT / OSHA / IRS)",
+	"webJurisdictionIntl": "دولي / عالمي (GDPR / محلي)",
+	"webReportsIntlMileageLabel": "سجل خصم المسافة الضريبي للأعمال",
+	"webReportsIntlMileageDesc": "سجل المسافات للأعمال التجارية بالعملة المحلية لأغراض التدقيق الضريبي.",
+	"webComplianceUsOnlyNotice": "لوائح DOT و FMCSA تنطبق فقط على الأساطيل داخل الولايات المتحدة. اختر اختصاص الولايات المتحدة لتفعيل لوائح DOT ELD.",
+	"webFleetEcoTip": "نصيحة القيادة البيئية:",
+	"webFleetSmartWayTip": "نصيحة SmartWay:"
 }

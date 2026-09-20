@@ -6,6 +6,7 @@ import { useMeasurementSystem } from '@/hooks/useMeasurementSystem';
 import { useCurrencyContext } from '@/components/settings/CurrencyProvider';
 import { useFleetEcoRoi } from '@/hooks/queries/useFleetEcoRoi';
 import { formatCarbonKg, formatFuelVolumeGallons } from '@/lib/units';
+import { useJurisdiction } from '@/lib/jurisdiction';
 import { Leaf, DollarSign, Clock, Cloud, Sparkles } from 'lucide-react';
 import { Skeleton } from '@/components/shared/Skeleton';
 import { CurrencySelect } from '@/components/shared/CurrencySelect';
@@ -18,6 +19,7 @@ export function FleetRoiCard({ days = 30 }: FleetRoiCardProps) {
   const { crewId } = useCrew();
   const { t } = useT();
   const { system } = useMeasurementSystem();
+  const { isUS } = useJurisdiction();
   const { formatMoney, currencyConfig } = useCurrencyContext();
   const { data, isLoading } = useFleetEcoRoi(crewId, days);
 
@@ -103,7 +105,9 @@ export function FleetRoiCard({ days = 30 }: FleetRoiCardProps) {
           <div className="space-y-0.5">
             <p className="text-xs font-medium text-on-surface-variant">{t('webFleetCarbonFootprint')}</p>
             <p className="text-base font-bold text-on-surface">{carbonStr}</p>
-            <p className="text-[10px] text-on-surface-variant">EPA standard factor</p>
+            <p className="text-[10px] text-on-surface-variant">
+              {isUS ? 'EPA standard factor' : 'Standard emissions factor'}
+            </p>
           </div>
         </div>
       </div>
@@ -111,7 +115,10 @@ export function FleetRoiCard({ days = 30 }: FleetRoiCardProps) {
       <div className="mt-3 flex items-center gap-2 rounded-xl bg-surface-container/60 p-2.5 text-xs text-on-surface-variant">
         <Sparkles className="h-4 w-4 shrink-0 text-[var(--brand-accent,#D4A017)]" />
         <span>
-          <strong>SmartWay Tip:</strong> Shutting down fleet engines when parked for more than 3 minutes reduces starter wear, cylinder carbon build-up, and saves approx. 0.60 gal/hr in commercial fuel expenses.
+          <strong>{isUS ? (t('webFleetSmartWayTip') || 'SmartWay Tip:') : (t('webFleetEcoTip') || 'Eco-Fleet Tip:')}</strong>{' '}
+          {system === 'imperial'
+            ? 'Shutting down fleet engines when parked for more than 3 minutes reduces starter wear, cylinder carbon build-up, and saves approx. 0.60 gal/hr in commercial fuel expenses.'
+            : 'Shutting down fleet engines when parked for more than 3 minutes reduces starter wear, cylinder carbon build-up, and saves approx. 2.27 L/hr in commercial fuel expenses.'}
         </span>
       </div>
     </div>

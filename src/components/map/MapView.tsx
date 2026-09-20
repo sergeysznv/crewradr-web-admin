@@ -31,6 +31,7 @@ import { decryptPayload } from '@/lib/crypto';
 import { ZeroKnowledgeUnlockModal } from '@/components/shared/ZeroKnowledgeUnlockModal';
 import { extractMeshAttribution } from '@/lib/meshAttribution';
 import { MeshRelayBadge } from '@/components/shared/MeshRelayBadge';
+import { useJurisdiction } from '@/lib/jurisdiction';
 
 const LiveMap = nextDynamic(() => import('@/components/map/live-map'), {
   ssr: false,
@@ -72,6 +73,7 @@ export function MapView() {
   const { t } = useT();
   const { crewId, tier } = useCrew();
   const { system } = useMeasurementSystem();
+  const { isUS } = useJurisdiction();
   const supabase = useSupabase();
   const queryClient = useQueryClient();
   const { showSuccess, showError } = useSnackbar();
@@ -502,25 +504,27 @@ export function MapView() {
           <span>Weather Radar</span>
         </button>
 
-        {/* Severe Weather Hazards toggle */}
-        <button
-          type="button"
-          onClick={() => setShowHazards((v) => !v)}
-          className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors ${
-            showHazards
-              ? 'border-amber-500/30 bg-amber-50 text-amber-900 dark:bg-amber-950/40 dark:text-amber-300'
-              : 'border-outline text-on-surface-variant hover:bg-surface-container'
-          }`}
-          title="Active National Weather Service severe weather polygon warnings"
-        >
-          <AlertTriangle className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
-          <span>Severe Hazards</span>
-          {hazardCount > 0 && (
-            <span className="rounded-full bg-amber-500/20 px-1.5 py-0.2 text-[10px] font-bold text-amber-700 dark:text-amber-300">
-              {hazardCount}
-            </span>
-          )}
-        </button>
+        {/* Severe Weather Hazards toggle (NWS NOAA — US Only) */}
+        {isUS && (
+          <button
+            type="button"
+            onClick={() => setShowHazards((v) => !v)}
+            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors ${
+              showHazards
+                ? 'border-amber-500/30 bg-amber-50 text-amber-900 dark:bg-amber-950/40 dark:text-amber-300'
+                : 'border-outline text-on-surface-variant hover:bg-surface-container'
+            }`}
+            title="Active National Weather Service severe weather polygon warnings (US Only)"
+          >
+            <AlertTriangle className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+            <span>Severe Hazards</span>
+            {hazardCount > 0 && (
+              <span className="rounded-full bg-amber-500/20 px-1.5 py-0.2 text-[10px] font-bold text-amber-700 dark:text-amber-300">
+                {hazardCount}
+              </span>
+            )}
+          </button>
+        )}
 
         {/* Zero-Knowledge Telemetry Status & Unlock */}
         <button
@@ -564,7 +568,7 @@ export function MapView() {
             zones={zones}
             showZones={showZones}
             showRadar={showRadar}
-            showHazards={showHazards}
+            showHazards={isUS && showHazards}
             onHazardCountChange={setHazardCount}
             onHazardSelect={(h) => {
               setSelectedHazard(h);

@@ -1,12 +1,13 @@
 // src/components/reports/ExportPresets.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useT } from '@/hooks/use-translations';
 import { useTier } from '@/hooks/useTier';
 import { useSupabase } from '@/hooks/useSupabase';
 import { useCurrency } from '@/hooks/useCurrency';
 import { useMeasurementSystem } from '@/hooks/useMeasurementSystem';
+import { useJurisdiction } from '@/lib/jurisdiction';
 import { convertFromUsd } from '@/lib/currency';
 import { getWebTripList } from '@/lib/rpc';
 import { tierHistoryDays } from '@/lib/tier';
@@ -138,10 +139,24 @@ export function ExportPresets() {
   const supabase = useSupabase();
   const { currency } = useCurrency();
   const { system } = useMeasurementSystem();
+  const { isUS } = useJurisdiction();
   const [exporting, setExporting] = useState<string | null>(null);
   const [notice, setNotice] = useState<{ kind: 'success' | 'error'; text: string; href?: string; downloadUrl?: string; fileName?: string } | null>(null);
   const [emailTo, setEmailTo] = useState('');
   const [emailing, setEmailing] = useState(false);
+
+  const fleetOptions = useMemo<ExportOption[]>(() => [
+    { id: 'fleet_trips_csv', labelKey: 'webReportsFleetTripsLabel', descriptionKey: 'webReportsFleetTripsDesc', format: 'csv' },
+    { id: 'fleet_alerts_csv', labelKey: 'webReportsFleetAlertsLabel', descriptionKey: 'webReportsFleetAlertsDesc', format: 'csv' },
+    {
+      id: 'fleet_irs_mileage_csv',
+      labelKey: isUS ? 'webReportsIrsMileageLabel' : 'webReportsIntlMileageLabel',
+      descriptionKey: isUS ? 'webReportsIrsMileageDesc' : 'webReportsIntlMileageDesc',
+      format: 'csv',
+    },
+    { id: 'fleet_eco_roi_csv', labelKey: 'webReportsEcoAuditLabel', descriptionKey: 'webReportsEcoAuditDesc', format: 'csv' },
+    { id: 'fleet_activity_pdf', labelKey: 'webReportsActivityPdfLabel', descriptionKey: 'webReportsActivityPdfDesc', format: 'pdf' },
+  ], [isUS]);
 
   const crewId = settings?.crewId ?? '';
   const days = settings?.historyDays ?? tierHistoryDays(tier);
@@ -182,13 +197,20 @@ export function ExportPresets() {
     runExport(option, async () => {
       if (!crewId) throw new Error(t('webReportsExportFailed'));
 
-      // Option: IRS Standard Mileage Deduction Log
+      // Option: IRS or International Standard Mileage Deduction Log
       if (option.id === 'fleet_irs_mileage_csv') {
         const trips = await getWebTripList(supabase, crewId, days);
         const isImp = system === 'imperial';
         const distUnit = isImp ? 'Miles' : 'Kilometers';
-        const irsRateUsdPerMile = 0.67; // Official IRS standard business mileage rate
+        const irsRateUsdPerMile = 0.67; // Official standard business mileage rate
         const rateConverted = convertFromUsd(irsRateUsdPerMile, currency);
+
+        const rateHeader = isUS
+          ? `IRS Standard Rate per Mile (${currency})`
+          : `Tax Mileage Rate (${currency})`;
+        const purposeLabel = isUS
+          ? '"Fleet Operations / Business Transportation (IRS IRC § 162)"'
+          : '"Fleet Operations / Business Transportation"';
 
         const headers = [
           'Date',
@@ -198,7 +220,7 @@ export function ExportPresets() {
           'End Time',
           'Business Purpose',
           `Distance (${distUnit})`,
-          `IRS Standard Rate per Mile (${currency})`,
+          rateHeader,
           `Tax Deduction Amount (${currency})`,
         ];
 
@@ -221,7 +243,7 @@ export function ExportPresets() {
             `"${(tr.member_name || 'Member').replace(/"/g, '""')}"`,
             `"${tr.started_at || ''}"`,
             `"${tr.ended_at || 'In Progress'}"`,
-            '"Fleet Operations / Business Transportation"',
+            purposeLabel,
             distDisplay.toFixed(2),
             rateConverted.toFixed(3),
             deductionDisplay.toFixed(2),
@@ -243,7 +265,9 @@ export function ExportPresets() {
         ].join(','));
 
         const csvContent = [headers.join(','), ...rows].join('\n');
-        const filename = `irs-mileage-deduction-log-${new Date().toISOString().slice(0, 10)}.csv`;
+        const filename = isUS
+          ? `irs-mileage-deduction-log-${new Date().toISOString().slice(0, 10)}.csv`
+          : `business-mileage-tax-log-${new Date().toISOString().slice(0, 10)}.csv`;
         downloadFile(csvContent, filename, 'text/csv;charset=utf-8;');
         setNotice({
           kind: 'success',
@@ -435,7 +459,7 @@ export function ExportPresets() {
               <p className="mt-1 text-xs text-on-surface-variant">{t('webReportsFleetDesc', { days })}</p>
             </div>
             <div className="grid grid-cols-1 gap-sz-md sm:grid-cols-3">
-              {FLEET_EXPORT_OPTIONS.map((opt) => (
+              {fleetOptions.map((opt) => (
                 <ExportCard
                   key={opt.id}
                   option={opt}

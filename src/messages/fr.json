@@ -1149,5 +1149,14 @@
 	"webReportsIrsMileageDesc": "Journal fiscal certifié au tarif IRS (0,67 $/mi) converti dans votre devise locale.",
 	"webReportsEcoAuditLabel": "Audit d'Éco-conduite et ROI SmartWay",
 	"webReportsEcoAuditDesc": "Audit détaillé du carburant gaspillé au ralenti, empreinte carbone et score éco du conducteur.",
-	"webMeshRelayBadge": "Relais Mesh BLE - Zone Hors Réseau"
+	"webMeshRelayBadge": "Relais Mesh BLE - Zone Hors Réseau",
+	"webJurisdiction": "Juridiction Opérationnelle",
+	"webJurisdictionAuto": "Automatique (Devise & Région)",
+	"webJurisdictionUs": "États-Unis (DOT / OSHA / IRS)",
+	"webJurisdictionIntl": "International / Global (RGPD / Local)",
+	"webReportsIntlMileageLabel": "Journal de Déduction Fiscale Kilométrique",
+	"webReportsIntlMileageDesc": "Journal des indemnités kilométriques professionnelles calculé en devise locale pour les contrôles fiscaux.",
+	"webComplianceUsOnlyNotice": "Les réglementations US DOT et FMCSA ne s'appliquent qu'aux flottes opérant aux États-Unis. Sélectionnez la juridiction États-Unis pour activer DOT ELD & DVIR.",
+	"webFleetEcoTip": "Conseil Éco-Flotte :",
+	"webFleetSmartWayTip": "Conseil SmartWay :"
 }

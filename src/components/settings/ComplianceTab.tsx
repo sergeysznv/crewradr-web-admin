@@ -6,11 +6,13 @@ import { useT } from '@/hooks/use-translations';
 import { useCrew } from '@/hooks/useCrew';
 import { useComplianceSettings, useSaveComplianceSettings } from '@/hooks/queries/useComplianceSettings';
 import { useSnackbar } from '@/components/shared/Snackbar';
+import { useJurisdiction } from '@/lib/jurisdiction';
 
 export function ComplianceTab() {
   const { t } = useT();
   const { crewId, role } = useCrew();
   const { showSuccess, showError } = useSnackbar();
+  const { isUS, preference, setPreference } = useJurisdiction();
 
   const { data: settings, isLoading } = useComplianceSettings(crewId);
   const saveMutation = useSaveComplianceSettings(crewId);
@@ -105,6 +107,55 @@ export function ComplianceTab() {
         <p className="mt-1 text-xs text-on-surface-variant">{t('webSettingsComplianceDesc')}</p>
       </div>
 
+      {/* Operating Jurisdiction Selector */}
+      <div className="rounded-xl border border-outline bg-surface p-4 space-y-2">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h3 className="text-xs font-bold text-on-surface uppercase tracking-wide">
+              {t('webJurisdiction')}
+            </h3>
+            <p className="text-xs text-on-surface-variant">
+              Configure regulatory compliance scope according to your fleet's operating region.
+            </p>
+          </div>
+          <div className="inline-flex rounded-lg border border-outline bg-surface-container p-1 text-xs">
+            <button
+              type="button"
+              onClick={() => setPreference('auto')}
+              className={`rounded-md px-2.5 py-1 font-medium transition-colors ${
+                preference === 'auto'
+                  ? 'bg-surface font-semibold text-primary shadow-xs'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+            >
+              {t('webJurisdictionAuto')}
+            </button>
+            <button
+              type="button"
+              onClick={() => setPreference('US')}
+              className={`rounded-md px-2.5 py-1 font-medium transition-colors ${
+                preference === 'US'
+                  ? 'bg-surface font-semibold text-primary shadow-xs'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+            >
+              {t('webJurisdictionUs')}
+            </button>
+            <button
+              type="button"
+              onClick={() => setPreference('INTL')}
+              className={`rounded-md px-2.5 py-1 font-medium transition-colors ${
+                preference === 'INTL'
+                  ? 'bg-surface font-semibold text-primary shadow-xs'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+            >
+              {t('webJurisdictionIntl')}
+            </button>
+          </div>
+        </div>
+      </div>
+
       {/* Duty-Cycle Masking Group */}
       <div className="border border-outline rounded-lg p-4 space-y-4">
         <div>
@@ -178,85 +229,105 @@ export function ComplianceTab() {
         </div>
       </div>
 
-      {/* DOT/OSHA Group */}
-      <div className="border border-outline rounded-lg p-4 space-y-4">
-        <div>
-          <h3 className="text-xs font-bold text-on-surface tracking-wide uppercase">
-            {t('complianceDotOshaMaster') || 'DOT/OSHA Compliance'}
-          </h3>
-          <p className="mt-1 text-xs text-on-surface-variant">
-            {t('complianceDotOshaDesc') || 'Enable FMCSA-compliant HOS tracking, vehicle inspections, and drug testing for regulated drivers.'}
-          </p>
+      {/* DOT/OSHA Group (US Federal Only) */}
+      {isUS ? (
+        <div className="border border-outline rounded-lg p-4 space-y-4">
+          <div>
+            <h3 className="text-xs font-bold text-on-surface tracking-wide uppercase">
+              {t('complianceDotOshaMaster') || 'DOT/OSHA Compliance (United States)'}
+            </h3>
+            <p className="mt-1 text-xs text-on-surface-variant">
+              {t('complianceDotOshaDesc') || 'Enable FMCSA-compliant HOS tracking, vehicle inspections, and drug testing for regulated drivers.'}
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={dotOshaMode}
+                onChange={(e) => setDotOshaMode(e.target.checked)}
+                className="mt-0.5 rounded border-outline text-primary focus:ring-primary/30"
+              />
+              <div>
+                <span className="text-xs font-semibold text-on-surface">
+                  {t('enableDotOshaMode') || 'Enable DOT/OSHA Compliance Mode'}
+                </span>
+                <p className="text-[10px] text-on-surface-variant">
+                  {t('enableDotOshaModeDesc') || 'Master toggle for FMCSA and OSHA compliance workflows.'}
+                </p>
+              </div>
+            </label>
+
+            {dotOshaMode && (
+              <div className="pl-6 space-y-3 pt-2 border-t border-outline-variant">
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={dotEld}
+                    onChange={(e) => setDotEld(e.target.checked)}
+                    className="mt-0.5 rounded border-outline text-primary focus:ring-primary/30"
+                  />
+                  <div>
+                    <span className="text-xs font-semibold text-on-surface">
+                      {t('complianceDotEld') || 'ELD / Hours of Service'}
+                    </span>
+                    <p className="text-[10px] text-on-surface-variant">{t('dotEldDesc')}</p>
+                  </div>
+                </label>
+
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={dotDvir}
+                    onChange={(e) => setDotDvir(e.target.checked)}
+                    className="mt-0.5 rounded border-outline text-primary focus:ring-primary/30"
+                  />
+                  <div>
+                    <span className="text-xs font-semibold text-on-surface">
+                      {t('complianceDotDvir') || 'Vehicle Inspections (DVIR)'}
+                    </span>
+                    <p className="text-[10px] text-on-surface-variant">{t('dotDvirDesc')}</p>
+                  </div>
+                </label>
+
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={dotDrugTesting}
+                    onChange={(e) => setDotDrugTesting(e.target.checked)}
+                    className="mt-0.5 rounded border-outline text-primary focus:ring-primary/30"
+                  />
+                  <div>
+                    <span className="text-xs font-semibold text-on-surface">
+                      {t('complianceDotDrugTesting') || 'Drug & Alcohol Testing'}
+                    </span>
+                    <p className="text-[10px] text-on-surface-variant">{t('dotDrugTestingDesc')}</p>
+                  </div>
+                </label>
+              </div>
+            )}
+          </div>
         </div>
-
-        <div className="space-y-3">
-          <label className="flex items-start gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={dotOshaMode}
-              onChange={(e) => setDotOshaMode(e.target.checked)}
-              className="mt-0.5 rounded border-outline text-primary focus:ring-primary/30"
-            />
-            <div>
-              <span className="text-xs font-semibold text-on-surface">
-                {t('enableDotOshaMode') || 'Enable DOT/OSHA Compliance Mode'}
-              </span>
-              <p className="text-[10px] text-on-surface-variant">
-                {t('enableDotOshaModeDesc') || 'Master toggle for FMCSA and OSHA compliance workflows.'}
-              </p>
-            </div>
-          </label>
-
-          {dotOshaMode && (
-            <div className="pl-6 space-y-3 pt-2 border-t border-outline-variant">
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={dotEld}
-                  onChange={(e) => setDotEld(e.target.checked)}
-                  className="mt-0.5 rounded border-outline text-primary focus:ring-primary/30"
-                />
-                <div>
-                  <span className="text-xs font-semibold text-on-surface">
-                    {t('complianceDotEld') || 'ELD / Hours of Service'}
-                  </span>
-                  <p className="text-[10px] text-on-surface-variant">{t('dotEldDesc')}</p>
-                </div>
-              </label>
-
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={dotDvir}
-                  onChange={(e) => setDotDvir(e.target.checked)}
-                  className="mt-0.5 rounded border-outline text-primary focus:ring-primary/30"
-                />
-                <div>
-                  <span className="text-xs font-semibold text-on-surface">
-                    {t('complianceDotDvir') || 'Vehicle Inspections (DVIR)'}
-                  </span>
-                  <p className="text-[10px] text-on-surface-variant">{t('dotDvirDesc')}</p>
-                </div>
-              </label>
-
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={dotDrugTesting}
-                  onChange={(e) => setDotDrugTesting(e.target.checked)}
-                  className="mt-0.5 rounded border-outline text-primary focus:ring-primary/30"
-                />
-                <div>
-                  <span className="text-xs font-semibold text-on-surface">
-                    {t('complianceDotDrugTesting') || 'Drug & Alcohol Testing'}
-                  </span>
-                  <p className="text-[10px] text-on-surface-variant">{t('dotDrugTestingDesc')}</p>
-                </div>
-              </label>
-            </div>
-          )}
+      ) : (
+        <div className="rounded-lg border border-dashed border-outline-variant bg-surface-container/40 p-4 flex flex-wrap items-center justify-between gap-4">
+          <div className="max-w-xl">
+            <h3 className="text-xs font-bold text-on-surface uppercase tracking-wide">
+              {t('complianceDotOshaMaster') || 'DOT/OSHA Compliance (United States)'}
+            </h3>
+            <p className="mt-1 text-xs text-on-surface-variant">
+              {t('webComplianceUsOnlyNotice')}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setPreference('US')}
+            className="shrink-0 rounded-lg border border-outline bg-surface px-3 py-1.5 text-xs font-semibold text-primary hover:bg-surface-container transition-colors"
+          >
+            Enable US DOT Mode
+          </button>
         </div>
-      </div>
+      )}
 
       {/* GDPR/Privacy Group */}
       <div className="border border-outline rounded-lg p-4 space-y-4">

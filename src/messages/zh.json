@@ -1149,5 +1149,14 @@
 	"webReportsIrsMileageDesc": "按官方IRS税率（$0.67/英里）计算并以本地货币换算的认证商业里程税费抵扣日志。",
 	"webReportsEcoAuditLabel": "绿色节能驾驶与SmartWay车队ROI审计",
 	"webReportsEcoAuditDesc": "怠速燃油浪费、碳足迹及驾驶员环保评分详细审计导出。",
-	"webMeshRelayBadge": "BLE Mesh离线中继 - 无信号盲区"
+	"webMeshRelayBadge": "BLE Mesh离线中继 - 无信号盲区",
+	"webJurisdiction": "运营法规管辖区",
+	"webJurisdictionAuto": "自动识别（根据货币与区域）",
+	"webJurisdictionUs": "美国联邦（DOT / OSHA / IRS）",
+	"webJurisdictionIntl": "国际 / 全球（GDPR / 本地合规）",
+	"webReportsIntlMileageLabel": "商务里程税费抵扣审计日志",
+	"webReportsIntlMileageDesc": "按本地货币与公制里程计算的商业运输税收抵扣标准审计日志。",
+	"webComplianceUsOnlyNotice": "美国DOT与FMCSA车队法规仅适用于在美国境内运营的车辆。切换至美国管辖区以启用DOT ELD和DVIR检查。",
+	"webFleetEcoTip": "车队节能建议：",
+	"webFleetSmartWayTip": "SmartWay节能贴士："
 }
