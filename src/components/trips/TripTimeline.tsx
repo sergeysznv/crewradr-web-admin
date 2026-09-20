@@ -5,28 +5,56 @@ import { useState } from 'react';
 import { useT } from '@/hooks/use-translations';
 import { SpeedGraph } from './SpeedGraph';
 import { TripRouteMap } from './TripRouteMap';
+import { CrashBlackboxModal } from './CrashBlackboxModal';
 import { formatSpeedMps } from '@/lib/units';
 import { useMeasurementSystem } from '@/hooks/useMeasurementSystem';
 import type { TripDetail } from '@/types/tier';
+import { ShieldAlert } from 'lucide-react';
 
 export function TripTimeline({ trip }: { trip: TripDetail }) {
   const { t } = useT();
   const [selectedStop, setSelectedStop] = useState<number | null>(null);
+  const [isBlackboxOpen, setIsBlackboxOpen] = useState(false);
+  const [blackboxTimestamp, setBlackboxTimestamp] = useState<string | undefined>(undefined);
   const { system } = useMeasurementSystem();
+
+  const hasCrashAlert = trip.alerts.some((a) =>
+    /crash|collision|impact|shock/i.test(a.type),
+  );
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <h2 className="text-lg font-bold text-on-surface">
-          {t('webTripsMemberTripTitle', { name: trip.memberName || t('webTripsMember') })}
-        </h2>
-        {trip.isLive && (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-success-container px-2.5 py-0.5 text-xs font-bold text-on-success-container">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-success" />
-            {t('webTripsLive')}
-          </span>
-        )}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <h2 className="text-lg font-bold text-on-surface">
+            {t('webTripsMemberTripTitle', { name: trip.memberName || t('webTripsMember') })}
+          </h2>
+          {trip.isLive && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-success-container px-2.5 py-0.5 text-xs font-bold text-on-success-container">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-success" />
+              {t('webTripsLive')}
+            </span>
+          )}
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            const crashAlert = trip.alerts.find((a) =>
+              /crash|collision|impact|shock/i.test(a.type),
+            );
+            setBlackboxTimestamp(crashAlert?.timestamp);
+            setIsBlackboxOpen(true);
+          }}
+          className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-all shadow-xs ${
+            hasCrashAlert
+              ? 'bg-error text-on-error hover:bg-error/90 animate-pulse'
+              : 'border border-outline bg-surface text-on-surface hover:bg-surface-container'
+          }`}
+        >
+          <ShieldAlert className="h-4 w-4" />
+          <span>{t('crashBlackboxInspect')}</span>
+        </button>
       </div>
 
       {/* Time range */}
@@ -106,18 +134,51 @@ export function TripTimeline({ trip }: { trip: TripDetail }) {
         <div>
           <h3 className="mb-2 text-base font-semibold text-on-surface">{t('webTripsAlerts')}</h3>
           <div className="space-y-2">
-            {trip.alerts.map((alert, i) => (
-              <div key={i} className="rounded-xl border border-error/20 bg-error-container p-sz-lg">
-                <span className="text-sm font-semibold text-error">{alert.type}</span>
-                <p className="mt-0.5 text-sm text-on-surface-variant">{alert.description}</p>
-                <p className="mt-1 text-xs text-on-surface-variant">
-                  {new Date(alert.timestamp).toLocaleTimeString()}
-                </p>
-              </div>
-            ))}
+            {trip.alerts.map((alert, i) => {
+              const isCrash = /crash|collision|impact|shock/i.test(alert.type);
+              return (
+                <div
+                  key={i}
+                  className={`rounded-xl border p-sz-lg ${
+                    isCrash
+                      ? 'border-error bg-error/10 shadow-xs'
+                      : 'border-error/20 bg-error-container'
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-sm font-semibold text-error">{alert.type}</span>
+                    {isCrash && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setBlackboxTimestamp(alert.timestamp);
+                          setIsBlackboxOpen(true);
+                        }}
+                        className="inline-flex items-center gap-1 rounded-md bg-error px-2.5 py-1 text-xs font-bold text-on-error hover:bg-error/90 transition-colors"
+                      >
+                        <ShieldAlert className="h-3.5 w-3.5" />
+                        <span>{t('crashBlackboxInspect')}</span>
+                      </button>
+                    )}
+                  </div>
+                  <p className="mt-0.5 text-sm text-on-surface-variant">{alert.description}</p>
+                  <p className="mt-1 text-xs text-on-surface-variant">
+                    {new Date(alert.timestamp).toLocaleTimeString()}
+                  </p>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
+
+      {/* Crash Reconstruction Blackbox Forensic Modal */}
+      <CrashBlackboxModal
+        trip={trip}
+        alertTimestamp={blackboxTimestamp}
+        isOpen={isBlackboxOpen}
+        onClose={() => setIsBlackboxOpen(false)}
+      />
     </div>
   );
 }

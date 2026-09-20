@@ -97,6 +97,8 @@ export function formatSpeedMph(mph: number, system: MeasurementSystem): string {
   return `${val} ${unit}`;
 }
 
+export const formatSpeedFromMph = formatSpeedMph;
+
 /**
  * Format carbon emissions given in kilograms of CO2 for display.
  */
