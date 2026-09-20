@@ -1144,5 +1144,10 @@
 	"crashBlackboxUpgradeFeature": "Exportación de PDF de caja negra de choque certificada",
 	"crashBlackboxLockedNotice": "La exportación en PDF con prueba criptográfica está reservada para First Mate o superior.",
 	"crashBlackboxInspect": "Inspeccionar caja negra de choque",
-	"crashBlackboxLegalDisclaimer": "Aviso legal: Este informe de telemática fue capturado mediante sensores IMU de hardware calibrados, vectores de rumbo GPS Doppler y estados de bloqueo de pantalla verificados en el dispositivo. Hashes criptográficos verifican la autenticidad del registro."
+	"crashBlackboxLegalDisclaimer": "Aviso legal: Este informe de telemática fue capturado mediante sensores IMU de hardware calibrados, vectores de rumbo GPS Doppler y estados de bloqueo de pantalla verificados en el dispositivo. Hashes criptográficos verifican la autenticidad del registro.",
+	"webReportsIrsMileageLabel": "Registro de Deducción de Millaje del IRS",
+	"webReportsIrsMileageDesc": "Registro fiscal de millaje calculado a tarifas del IRS ($0.67/mi) en su moneda local.",
+	"webReportsEcoAuditLabel": "Auditoría de Conducción Ecológica y ROI SmartWay",
+	"webReportsEcoAuditDesc": "Auditoría detallada de combustible desperdiciado en ralentí, huella de carbono y puntaje ecológico.",
+	"webMeshRelayBadge": "Relevo Mesh BLE - Zona sin Cobertura"
 }

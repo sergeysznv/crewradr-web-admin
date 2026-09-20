@@ -1144,5 +1144,10 @@
 	"crashBlackboxUpgradeFeature": "Certified Blackbox Crash PDF Export",
 	"crashBlackboxLockedNotice": "PDF export with cryptographic proof is reserved for First Mate and higher.",
 	"crashBlackboxInspect": "Inspect Crash Blackbox",
-	"crashBlackboxLegalDisclaimer": "Legal Disclaimer: This telematics report was captured via calibrated hardware IMU sensor streams, GPS Doppler course vectors, and device display lock states on-device. Cryptographic hashes verify record authenticity."
+	"crashBlackboxLegalDisclaimer": "Legal Disclaimer: This telematics report was captured via calibrated hardware IMU sensor streams, GPS Doppler course vectors, and device display lock states on-device. Cryptographic hashes verify record authenticity.",
+	"webReportsIrsMileageLabel": "IRS Standard Mileage Deduction Log",
+	"webReportsIrsMileageDesc": "Certified business mileage log calculated at IRS rates ($0.67/mi) converted to your local currency.",
+	"webReportsEcoAuditLabel": "Eco-Driving & SmartWay Fleet ROI Audit",
+	"webReportsEcoAuditDesc": "Detailed audit of idle fuel waste, carbon footprint, and driver eco score.",
+	"webMeshRelayBadge": "BLE Mesh Relay - Dead Zone"
 }

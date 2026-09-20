@@ -1144,5 +1144,10 @@
 	"crashBlackboxUpgradeFeature": "Export PDF certifié de boîte noire d'accident",
 	"crashBlackboxLockedNotice": "L'export PDF avec preuve cryptographique est réservé à First Mate et supérieur.",
 	"crashBlackboxInspect": "Inspecter la boîte noire d'accident",
-	"crashBlackboxLegalDisclaimer": "Mention légale : Ce rapport télématique a été enregistré via des capteurs IMU matériels calibrés, des vecteurs de cap GPS Doppler et l'état vérifié du verrouillage d'écran. Des empreintes cryptographiques attestent de l'authenticité."
+	"crashBlackboxLegalDisclaimer": "Mention légale : Ce rapport télématique a été enregistré via des capteurs IMU matériels calibrés, des vecteurs de cap GPS Doppler et l'état vérifié du verrouillage d'écran. Des empreintes cryptographiques attestent de l'authenticité.",
+	"webReportsIrsMileageLabel": "Journal de Déduction Kilométrique IRS",
+	"webReportsIrsMileageDesc": "Journal fiscal certifié au tarif IRS (0,67 $/mi) converti dans votre devise locale.",
+	"webReportsEcoAuditLabel": "Audit d'Éco-conduite et ROI SmartWay",
+	"webReportsEcoAuditDesc": "Audit détaillé du carburant gaspillé au ralenti, empreinte carbone et score éco du conducteur.",
+	"webMeshRelayBadge": "Relais Mesh BLE - Zone Hors Réseau"
 }

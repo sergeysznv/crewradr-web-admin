@@ -29,6 +29,8 @@ import type { GeofenceZone, NwsHazardAlert, DraftZoneState } from '@/components/
 import { useCrewKey } from '@/hooks/useCrewKey';
 import { decryptPayload } from '@/lib/crypto';
 import { ZeroKnowledgeUnlockModal } from '@/components/shared/ZeroKnowledgeUnlockModal';
+import { extractMeshAttribution } from '@/lib/meshAttribution';
+import { MeshRelayBadge } from '@/components/shared/MeshRelayBadge';
 
 const LiveMap = nextDynamic(() => import('@/components/map/live-map'), {
   ssr: false,
@@ -648,7 +650,7 @@ export function MapView() {
                 <p className="text-xs text-on-surface-variant">{selected.user_id.slice(0, 8)}</p>
               </div>
             </div>
-            <div className="mt-2.5 flex items-center gap-2">
+            <div className="mt-2.5 flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1 rounded-md bg-surface-container px-2 py-0.5 text-xs font-medium text-on-surface">
                 <span>{getMovementMode(selected.speed_ms, selected.event_type).emoji}</span>
                 <span>{getMovementMode(selected.speed_ms, selected.event_type).label}</span>
@@ -658,6 +660,12 @@ export function MapView() {
                   {formatSpeedMps(selected.speed_ms, system)}
                 </span>
               )}
+              {(() => {
+                const mesh = extractMeshAttribution(selected);
+                return mesh.isMeshRelayed ? (
+                  <MeshRelayBadge hopCount={mesh.hopCount} relayedBy={mesh.relayedBy} />
+                ) : null;
+              })()}
             </div>
             <dl className="mt-3 space-y-1 text-sm">
               <dt className="sr-only">{t('webMapLastSeen')}</dt>

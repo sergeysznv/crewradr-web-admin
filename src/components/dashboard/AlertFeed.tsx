@@ -7,6 +7,8 @@ import { useCrew } from '@/hooks/useCrew';
 import { useResolveSafetyAlert } from '@/hooks/queries/useMutations';
 import { CheckCircle2, ChevronDown, ChevronUp, AlertCircle, Info, ArrowUpRight } from 'lucide-react';
 import { useT } from '@/hooks/use-translations';
+import { extractMeshAttribution } from '@/lib/meshAttribution';
+import { MeshRelayBadge } from '@/components/shared/MeshRelayBadge';
 import type { FleetDashboard } from '@/types/rpc';
 
 const SEVERITY_MAP: Record<string, Severity> = {
@@ -62,6 +64,8 @@ function AlertFeedItem({ alert }: { alert: FleetDashboard['recent_alerts'][numbe
   const [expanded, setExpanded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
+  const meshInfo = extractMeshAttribution(alert);
+
   const resolveMutation = useResolveSafetyAlert(crewId!);
   const canResolve = role === 'captain' || role === 'co-captain' || role === 'cocaptain';
 
@@ -111,6 +115,15 @@ function AlertFeedItem({ alert }: { alert: FleetDashboard['recent_alerts'][numbe
           <p className="mt-1 text-xs text-on-surface-variant leading-snug">
             {alert.message}
           </p>
+        )}
+
+        {meshInfo.isMeshRelayed && (
+          <div className="mt-1.5">
+            <MeshRelayBadge
+              hopCount={meshInfo.hopCount}
+              relayedBy={meshInfo.relayedBy}
+            />
+          </div>
         )}
 
         {/* Resolution Status / Action row */}

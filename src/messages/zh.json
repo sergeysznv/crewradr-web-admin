@@ -1144,5 +1144,10 @@
 	"crashBlackboxUpgradeFeature": "认证事故黑匣子PDF导出",
 	"crashBlackboxLockedNotice": "具有密码学数字签名的PDF导出功能仅对First Mate及以上级别开放。",
 	"crashBlackboxInspect": "审查事故黑匣子",
-	"crashBlackboxLegalDisclaimer": "法律声明：本车联网遥测报告由已校准硬件IMU传感器、GPS多普勒航向矢量及设备屏幕锁定状态直接记录。SHA-256密码学哈希保证数据链证据完整性。"
+	"crashBlackboxLegalDisclaimer": "法律声明：本车联网遥测报告由已校准硬件IMU传感器、GPS多普勒航向矢量及设备屏幕锁定状态直接记录。SHA-256密码学哈希保证数据链证据完整性。",
+	"webReportsIrsMileageLabel": "IRS标准商业里程抵税审计日志",
+	"webReportsIrsMileageDesc": "按官方IRS税率（$0.67/英里）计算并以本地货币换算的认证商业里程税费抵扣日志。",
+	"webReportsEcoAuditLabel": "绿色节能驾驶与SmartWay车队ROI审计",
+	"webReportsEcoAuditDesc": "怠速燃油浪费、碳足迹及驾驶员环保评分详细审计导出。",
+	"webMeshRelayBadge": "BLE Mesh离线中继 - 无信号盲区"
 }

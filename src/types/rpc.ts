@@ -105,6 +105,11 @@ export interface LivePosition {
   is_stale: boolean;
   last_seen_at: string | null;
   encrypted_payload?: string | null;
+  is_mesh_relayed?: boolean;
+  mesh_hop_count?: number;
+  relayed_by?: string | null;
+  relay_timestamp?: string | null;
+  metadata?: Record<string, unknown> | null;
 }
 
 export interface ProvisioningLink {
