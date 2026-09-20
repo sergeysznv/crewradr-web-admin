@@ -14,6 +14,8 @@ import { IdleWarningOverlay, SignedOutOverlay } from '@/components/session-locke
 import { ShellErrorBoundary } from '@/components/shared/ErrorBoundary';
 import { FontScaleProvider } from '@/components/settings/FontScaleProvider';
 import { MeasurementProvider } from '@/components/settings/MeasurementProvider';
+import { CurrencyProvider } from '@/components/settings/CurrencyProvider';
+import { CurrencySelect } from '@/components/shared/CurrencySelect';
 import { OfflineBanner } from '@/components/shared/OfflineBanner';
 import { DowngradeBanner } from '@/components/tier/DowngradeBanner';
 import { LockoutBanner } from '@/components/tier/LockoutBanner';
@@ -244,6 +246,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         )}
         <div className="ms-auto flex items-center gap-1.5">
           <LanguageSelect />
+          <CurrencySelect />
           <button onClick={toggleTheme} className="flex h-8 w-8 items-center justify-center rounded-lg text-sm" title={resolved === 'dark' ? t('webShellLightMode') : t('webShellDarkMode')}>
             {resolved === 'dark' ? '\u{2600}\u{FE0F}' : '\u{1F319}'}
           </button>
@@ -401,6 +404,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             )}
             <div className="ms-auto flex items-center gap-1.5">
               <LanguageSelect />
+              <CurrencySelect />
               <button onClick={toggleTheme}
                 className="flex h-8 w-8 items-center justify-center rounded-lg text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800"
                 title={resolved === 'dark' ? t('webShellLightMode') : t('webShellDarkMode')}>
@@ -413,7 +417,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="p-sz-lg md:p-sz-xl max-w-[1400px] w-full">
               <FontScaleProvider>
                 <MeasurementProvider>
-                  <ShellErrorBoundary>{children}</ShellErrorBoundary>
+                  <CurrencyProvider>
+                    <ShellErrorBoundary>{children}</ShellErrorBoundary>
+                  </CurrencyProvider>
                 </MeasurementProvider>
               </FontScaleProvider>
             </div>

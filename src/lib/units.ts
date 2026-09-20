@@ -96,3 +96,26 @@ export function formatSpeedMph(mph: number, system: MeasurementSystem): string {
   const unit = speedUnit(system);
   return `${val} ${unit}`;
 }
+
+/**
+ * Format carbon emissions given in kilograms of CO2 for display.
+ */
+export function formatCarbonKg(kg: number, system: MeasurementSystem): string {
+  if (!isFinite(kg) || isNaN(kg)) return '--';
+  if (system === 'imperial') {
+    return `${(kg * 2.20462).toFixed(1)} lbs CO₂`;
+  }
+  return `${kg.toFixed(1)} kg CO₂`;
+}
+
+/**
+ * Format fuel volume given in gallons for display.
+ */
+export function formatFuelVolumeGallons(gallons: number, system: MeasurementSystem): string {
+  if (!isFinite(gallons) || isNaN(gallons)) return '--';
+  if (system === 'imperial') {
+    return `${gallons.toFixed(1)} gal`;
+  }
+  return `${(gallons * 3.78541).toFixed(1)} L`;
+}
+

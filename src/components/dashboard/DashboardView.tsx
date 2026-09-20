@@ -19,6 +19,8 @@ import { FilterChips } from '@/components/shared/FilterChips';
 import { TierGateGuard } from '@/components/tier/TierGateGuard';
 import { RoleGate } from '@/components/tier/RoleGate';
 import { AlertRuleBuilder } from '@/components/alerts/AlertRuleBuilder';
+import { FleetRoiCard } from '@/components/dashboard/FleetRoiCard';
+import { VehicleHealthCard } from '@/components/dashboard/VehicleHealthCard';
 
 type TimeRange = 1 | 7 | 15 | 30 | 60 | 90;
 
@@ -77,6 +79,16 @@ export function DashboardView() {
 
           {/* Key Metrics KPI Grid */}
           <KpiStrip data={dashboard.data} />
+
+          {/* Section: Fleet ROI & SmartWay Eco-Driving (Captain+) */}
+          <TierGateGuard minTier="captain" fallback={null}>
+            <FleetRoiCard days={days} />
+          </TierGateGuard>
+
+          {/* Section: Automotive AI & Vehicle Health (First Mate+) */}
+          <TierGateGuard minTier="firstMate" fallback={null}>
+            <VehicleHealthCard />
+          </TierGateGuard>
 
           {/* Section 1: Fleet Safety & Alerts */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-sz-lg">
