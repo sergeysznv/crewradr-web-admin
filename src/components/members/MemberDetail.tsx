@@ -16,13 +16,27 @@ import { Scorecard } from '@/components/members/Scorecard';
 import { RiskPredictionCard } from '@/components/ai/RiskPredictionCard';
 import { ETACard } from '@/components/ai/ETACard';
 import { useState } from 'react';
-import { Route, Clock, AlertTriangle } from 'lucide-react';
+import { Route, Clock, AlertTriangle, Bell, MapPin, Gauge, Timer, Battery } from 'lucide-react';
 
 interface MemberTrip {
   started_at: string;
   driving_seconds: number;
   distance_m: number;
 }
+
+interface MemberNotificationSettings {
+  geofence: boolean;
+  speed: boolean;
+  inactivity: boolean;
+  battery: boolean;
+}
+
+const DEFAULT_NOTIFS: MemberNotificationSettings = {
+  geofence: true,
+  speed: true,
+  inactivity: true,
+  battery: true,
+};
 
 export function MemberDetail({ member, onClose }: { member: CrewMember; onClose: () => void }) {
   const { t } = useT();
@@ -32,6 +46,27 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
   const updateRole = useUpdateMemberRole(crewId!);
   const removeMember = useRemoveMember(crewId!);
   const [showRemove, setShowRemove] = useState(false);
+
+  const storageKey = `crewradr_member_notifs_${crewId}_${member.user_id}`;
+  const [notifSettings, setNotifSettings] = useState<MemberNotificationSettings>(() => {
+    if (typeof window === 'undefined') return DEFAULT_NOTIFS;
+    try {
+      const stored = localStorage.getItem(storageKey);
+      return stored ? { ...DEFAULT_NOTIFS, ...JSON.parse(stored) } : DEFAULT_NOTIFS;
+    } catch {
+      return DEFAULT_NOTIFS;
+    }
+  });
+
+  const toggleNotif = (key: keyof MemberNotificationSettings) => {
+    setNotifSettings((prev) => {
+      const updated = { ...prev, [key]: !prev[key] };
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+  };
 
   // Recent trips for this member
   const tripsQuery = useQuery({
@@ -100,6 +135,112 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
 
       {/* Admiral tier: AI arrival prediction — self-gates via AICard */}
       <ETACard memberId={member.user_id} />
+
+      {/* First Mate+ tier: Per-member notification profile */}
+      <TierGateGuard
+        minTier="firstMate"
+        fallback={
+          <div className="rounded-xl border border-outline/50 bg-surface-container/30 p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Bell className="h-4 w-4 text-on-surface-variant/50" />
+                <h3 className="text-xs font-bold text-on-surface uppercase tracking-wider">
+                  Notification Profile
+                </h3>
+              </div>
+              <span className="rounded bg-sky-500/10 px-2 py-0.5 text-[10px] font-bold text-sky-700 dark:text-sky-400 border border-sky-500/20">
+                First Mate Tier
+              </span>
+            </div>
+            <p className="text-xs text-on-surface-variant">
+              Customize driver-specific alerts for geofencing, speed limits, and inactivity (First Mate+).
+            </p>
+          </div>
+        }
+      >
+        <div className="rounded-xl border border-outline bg-surface-container/30 p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Bell className="h-4 w-4 text-primary" />
+              <h3 className="text-xs font-bold text-on-surface uppercase tracking-wider">
+                Notification Profile
+              </h3>
+            </div>
+            <span className="text-[11px] font-medium text-on-surface-variant">
+              Custom Alerts
+            </span>
+          </div>
+          <p className="text-xs text-on-surface-variant">
+            Choose which alerts to receive for this member.
+          </p>
+
+          <div className="space-y-2.5 pt-1">
+            <label className="flex items-center justify-between cursor-pointer py-1 border-b border-outline/30">
+              <div className="flex items-center gap-2">
+                <MapPin className="h-3.5 w-3.5 text-primary" />
+                <div>
+                  <span className="text-xs font-semibold text-on-surface">Geofence Safe Landings</span>
+                  <p className="text-[10px] text-on-surface-variant">Arrival and departure alerts</p>
+                </div>
+              </div>
+              <input
+                type="checkbox"
+                checked={notifSettings.geofence}
+                onChange={() => toggleNotif('geofence')}
+                className="rounded border-outline text-primary accent-primary h-4 w-4"
+              />
+            </label>
+
+            <label className="flex items-center justify-between cursor-pointer py-1 border-b border-outline/30">
+              <div className="flex items-center gap-2">
+                <Gauge className="h-3.5 w-3.5 text-primary" />
+                <div>
+                  <span className="text-xs font-semibold text-on-surface">Speed Limit Alerts</span>
+                  <p className="text-[10px] text-on-surface-variant">Extreme speed and limit violations</p>
+                </div>
+              </div>
+              <input
+                type="checkbox"
+                checked={notifSettings.speed}
+                onChange={() => toggleNotif('speed')}
+                className="rounded border-outline text-primary accent-primary h-4 w-4"
+              />
+            </label>
+
+            <label className="flex items-center justify-between cursor-pointer py-1 border-b border-outline/30">
+              <div className="flex items-center gap-2">
+                <Timer className="h-3.5 w-3.5 text-primary" />
+                <div>
+                  <span className="text-xs font-semibold text-on-surface">Driver Inactivity Alerts</span>
+                  <p className="text-[10px] text-on-surface-variant">Excessive stationary duration</p>
+                </div>
+              </div>
+              <input
+                type="checkbox"
+                checked={notifSettings.inactivity}
+                onChange={() => toggleNotif('inactivity')}
+                className="rounded border-outline text-primary accent-primary h-4 w-4"
+              />
+            </label>
+
+            <label className="flex items-center justify-between cursor-pointer py-1">
+              <div className="flex items-center gap-2">
+                <Battery className="h-3.5 w-3.5 text-primary" />
+                <div>
+                  <span className="text-xs font-semibold text-on-surface">Low Battery Alerts</span>
+                  <p className="text-[10px] text-on-surface-variant">Alert when device battery drops below 15%</p>
+                </div>
+              </div>
+              <input
+                type="checkbox"
+                checked={notifSettings.battery}
+                onChange={() => toggleNotif('battery')}
+                className="rounded border-outline text-primary accent-primary h-4 w-4"
+              />
+            </label>
+          </div>
+        </div>
+      </TierGateGuard>
 
       {/* Recent trips */}
       <div>

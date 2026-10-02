@@ -9,6 +9,7 @@ import { CheckCircle2, ChevronDown, ChevronUp, AlertCircle, Info, ArrowUpRight }
 import { useT } from '@/hooks/use-translations';
 import { extractMeshAttribution } from '@/lib/meshAttribution';
 import { MeshRelayBadge } from '@/components/shared/MeshRelayBadge';
+import { useAuth } from '@/hooks/use-auth';
 import type { FleetDashboard } from '@/types/rpc';
 
 const SEVERITY_MAP: Record<string, Severity> = {
@@ -18,19 +19,39 @@ const SEVERITY_MAP: Record<string, Severity> = {
 
 export function AlertFeed({ alerts }: { alerts: FleetDashboard['recent_alerts'] }) {
   const { t } = useT();
+  const { role, isCommercial } = useCrew();
+  const { user } = useAuth();
+
+  const isCaptain = role === 'captain' || role === 'co-captain' || role === 'cocaptain';
+
+  // In commercial mode, non-captains (drivers/deckhands/first mates) only view their own alerts
+  const isScoped = isCommercial && !isCaptain;
+  const filteredAlerts = isScoped
+    ? alerts.filter((alert) => {
+        const targetId = alert.target_user_id || (alert as any).user_id;
+        return targetId ? targetId === user?.id : false;
+      })
+    : alerts;
 
   return (
     <div className="bg-surface border border-outline rounded-lg p-sz-lg">
-      <div className="font-heading font-bold text-sm text-on-surface mb-3">
-        {t('webFleetRecentAlerts')}
+      <div className="flex items-center justify-between mb-3">
+        <div className="font-heading font-bold text-sm text-on-surface">
+          {t('webFleetRecentAlerts')}
+        </div>
+        {isScoped && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary border border-primary/20">
+            Scoped: Personal Alerts
+          </span>
+        )}
       </div>
       <div className="flex flex-col gap-2 max-h-[400px] overflow-y-auto pr-1">
-        {alerts.length === 0 && (
+        {filteredAlerts.length === 0 && (
           <p className="text-sm text-on-surface-variant text-center py-sz-lg">
             {t('webFleetNoAlerts')}
           </p>
         )}
-        {alerts.map((alert) => (
+        {filteredAlerts.map((alert) => (
           <AlertFeedItem key={alert.id} alert={alert} />
         ))}
       </div>

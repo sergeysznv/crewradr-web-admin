@@ -24,6 +24,8 @@ export interface FleetDashboard {
     message: string;
     created_at: string;
     display_name: string | null;
+    target_user_id?: string | null;
+    user_id?: string | null;
     resolved: boolean;
     resolved_at: string | null;
     resolved_by: string | null;
