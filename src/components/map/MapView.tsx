@@ -19,6 +19,7 @@ import {
   Lock,
   ShieldCheck,
   CloudRain,
+  Cloud,
   Plus,
   Trash2,
   Check,
@@ -106,6 +107,7 @@ export function MapView() {
   const isCaptain = tierRank(tier) >= 2;
   const [showZones, setShowZones] = useState(true);
   const [showRadar, setShowRadar] = useState(false);
+  const [showSatellite, setShowSatellite] = useState(false);
   const [showHazards, setShowHazards] = useState(true);
   const [hazardCount, setHazardCount] = useState(0);
   const [selectedHazard, setSelectedHazard] = useState<NwsHazardAlert | null>(null);
@@ -635,6 +637,21 @@ export function MapView() {
           <span>Weather Radar</span>
         </button>
 
+        {/* Satellite Cloud Cover toggle */}
+        <button
+          type="button"
+          onClick={() => setShowSatellite((v) => !v)}
+          className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors ${
+            showSatellite
+              ? 'border-indigo-500/30 bg-indigo-50 text-indigo-800 dark:bg-indigo-950/40 dark:text-indigo-300'
+              : 'border-outline text-on-surface-variant hover:bg-surface-container'
+          }`}
+          title="Live Infrared Satellite Cloud Cover (First Mate+)"
+        >
+          <Cloud className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+          <span>Satellite Clouds</span>
+        </button>
+
         {/* Severe Weather Hazards toggle (NWS NOAA — US Only) */}
         {isUS && (
           <button
@@ -699,6 +716,7 @@ export function MapView() {
             zones={zones}
             showZones={showZones}
             showRadar={showRadar}
+            showSatellite={showSatellite}
             showHazards={isUS && showHazards}
             onHazardCountChange={setHazardCount}
             onHazardSelect={(h) => {
