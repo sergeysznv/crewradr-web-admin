@@ -130,6 +130,11 @@ export interface GeofenceZone {
   category?: string;
   emoji?: string;
   weatherAlertsEnabled?: boolean;
+  scheduleEnabled?: boolean;
+  scheduleStart?: string;
+  scheduleEnd?: string;
+  scheduleDays?: number[];
+  deletedAt?: string | null;
 }
 
 export interface NwsHazardAlert {
@@ -349,12 +354,16 @@ export default function LiveMap({
         strokeWeight: 1.5,
       });
 
+      const scheduleInfo = z.scheduleEnabled && z.scheduleStart && z.scheduleEnd
+        ? ` [${z.scheduleStart}–${z.scheduleEnd}]`
+        : '';
+
       const marker = new google.maps.Marker({
         map,
         position: { lat: z.latitude, lng: z.longitude },
-        title: `${z.emoji ?? '📍'} ${z.name} (${z.radiusM}m)`,
+        title: `${z.emoji ?? '📍'} ${z.name} (${z.radiusM}m)${scheduleInfo}`,
         label: {
-          text: `${z.emoji ?? '📍'} ${z.name}`,
+          text: `${z.emoji ?? '📍'} ${z.name}${scheduleInfo ? ' 🕒' : ''}`,
           color: '#064e3b',
           fontSize: '11px',
           fontWeight: 'bold',
