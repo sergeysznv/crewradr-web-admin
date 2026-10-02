@@ -3,8 +3,9 @@
 import { useState, useCallback, useRef } from 'react';
 import { useBulkImport } from '@/hooks/queries/useMutations';
 import { useCrew } from '@/hooks/useCrew';
+import { useTier } from '@/hooks/useTier';
 import { useT } from '@/hooks/use-translations';
-import { X, Upload, Download, FileText, AlertTriangle, CheckCircle } from 'lucide-react';
+import { X, Upload, Download, FileText, AlertTriangle, CheckCircle, Lock } from 'lucide-react';
 
 const CSV_TEMPLATE = 'email,role\ncrewmate@example.com,member\nfirst.mate@example.com,co-captain\ndriver@example.com,member\n';
 
@@ -71,6 +72,7 @@ function validateRows(rows: ParsedRow[], t: (key: string, params?: Record<string
 export function CsvImportModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { t } = useT();
   const { crewId } = useCrew();
+  const { isOverCapacity, isInLockout } = useTier();
   const importMutation = useBulkImport(crewId!);
   const [text, setText] = useState('');
   const [importDone, setImportDone] = useState(false);
@@ -112,7 +114,7 @@ export function CsvImportModal({ open, onClose }: { open: boolean; onClose: () =
   if (!open) return null;
 
   const handleImport = () => {
-    if (!preview || preview.length === 0) return;
+    if (!preview || preview.length === 0 || isOverCapacity || isInLockout) return;
     const members = preview.map(r => ({ email: r.email, role: r.role }));
     importMutation.mutate(members, {
       onSuccess: () => {
@@ -137,6 +139,20 @@ export function CsvImportModal({ open, onClose }: { open: boolean; onClose: () =
             <h2 className="font-heading font-extrabold text-lg text-on-surface">{t('webMembersImportDialogTitle')}</h2>
             <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-surface-container"><X size={18} /></button>
           </div>
+
+          {(isInLockout || isOverCapacity) && (
+            <div className="mb-sz-md rounded-xl border border-error/30 bg-error-container p-3 flex items-start gap-2.5">
+              <Lock size={16} className="text-on-error-container mt-0.5 shrink-0" />
+              <div>
+                <p className="text-xs font-bold text-on-error-container">
+                  {isInLockout ? t('webLockoutMessage') : t('webDowngradeExcessMembers')}
+                </p>
+                <p className="text-[11px] text-on-error-container opacity-85 mt-0.5">
+                  Cannot import additional members while the crew is at or over capacity. Please upgrade the crew tier or remove existing members.
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Drop zone */}
           <div
@@ -235,7 +251,7 @@ export function CsvImportModal({ open, onClose }: { open: boolean; onClose: () =
           <div className="flex gap-3 mt-sz-lg justify-end">
             <button onClick={onClose}
               className="px-4 py-2 rounded-xl border border-outline text-sm font-semibold text-on-surface-variant hover:bg-surface-container">{t('webMembersImportCancel')}</button>
-            <button onClick={handleImport} disabled={!preview || preview.length === 0 || importMutation.isPending}
+            <button onClick={handleImport} disabled={!preview || preview.length === 0 || importMutation.isPending || isOverCapacity || isInLockout}
               className="px-4 py-2 rounded-xl text-sm font-semibold text-on-primary bg-primary hover:opacity-90 disabled:opacity-50">
               {importMutation.isPending ? t('webMembersImportImporting') : importDone ? t('webAccountProfileSaved') : t('webMembersImportCsv')}
             </button>

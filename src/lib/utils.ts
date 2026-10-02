@@ -5,11 +5,14 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+import { normalizeTier } from '@/lib/tier';
+
 export function tierRank(tier: string): number {
-  switch (tier) {
+  const norm = normalizeTier(tier);
+  switch (norm) {
     case 'admiral': return 3;
     case 'captain': return 2;
-    case 'first_mate': return 1;
+    case 'firstMate': return 1;
     default: return 0;
   }
 }
@@ -18,19 +21,21 @@ export function tierLabel(
   tier: string,
   t: (key: string, params?: Record<string, string | number>) => string,
 ): string {
-  switch (tier) {
+  const norm = normalizeTier(tier);
+  switch (norm) {
     case 'admiral': return t('webTierAdmiral');
     case 'captain': return t('webTierCaptain');
-    case 'first_mate': return t('webTierFirstMate');
+    case 'firstMate': return t('webTierFirstMate');
     default: return t('webTierDeckhand');
   }
 }
 
 export function tierColor(tier: string): string {
-  switch (tier) {
+  const norm = normalizeTier(tier);
+  switch (norm) {
     case 'admiral': return '#7B2FBE';
     case 'captain': return '#D4A017';
-    case 'first_mate': return '#4A90D9';
+    case 'firstMate': return '#4A90D9';
     default: return '#6B7280';
   }
 }

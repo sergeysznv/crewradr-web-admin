@@ -2,27 +2,9 @@
 
 import { createContext, useContext, useEffect, useState, useCallback, useRef, type ReactNode } from 'react';
 import type { CrewTier, WebCrewSettings, TierContextValue } from '@/types/tier';
+import { normalizeTier } from '@/lib/tier';
 import { useCrew } from '@/hooks/useCrew';
 import { supabase } from '@/lib/supabase/client';
-
-/**
- * RPCs return snake_case tier values ('first_mate') while the rest of the
- * codebase uses camelCase CrewTier ('firstMate'). Normalize at the single
- * boundary where RPC data enters state so every consumer (DowngradeBanner,
- * tierHistoryDays, hasMinTier, ...) sees a valid CrewTier.
- */
-function normalizeTier(raw: string | null | undefined): CrewTier {
-  switch (raw) {
-    case 'first_mate':
-      return 'firstMate';
-    case 'deckhand':
-    case 'captain':
-    case 'admiral':
-      return raw;
-    default:
-      return 'deckhand';
-  }
-}
 
 const TierContext = createContext<TierContextValue>({
   tier: 'deckhand',
