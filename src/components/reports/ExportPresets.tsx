@@ -513,9 +513,8 @@ export function ExportPresets() {
                   try {
                     const { error } = await supabase.functions.invoke('send-email', {
                       body: {
+                        crew_id: crewId,
                         to: [emailTo],
-                        subject: `Fleet Export — ${notice.fileName ?? new Date().toISOString().slice(0, 10)}`,
-                        text: `Your fleet export is ready.`,
                         downloadUrl: notice.downloadUrl,
                         fileName: notice.fileName,
                         lang: locale,
