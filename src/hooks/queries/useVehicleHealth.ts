@@ -84,7 +84,9 @@ export function useVehicleHealth(crewId: string | null) {
         const meta = a.metadata as Record<string, unknown> | null;
         const code = (meta?.dtc_code as string) || (a.alert_type === 'battery_cranking_critical' ? 'BATT-CRANK' : 'P0300');
         const isCrank = a.alert_type === 'battery_cranking_critical' || meta?.cranking_voltage != null;
-        const severity = (a.severity as 'critical' | 'moderate' | 'minor' | 'advisory') || 'moderate';
+        // safety_alerts.severity is info | warning | critical; the card uses a 4-level scale.
+        const severity: VehicleDiagnosticFault['severity'] =
+          a.severity === 'critical' ? 'critical' : a.severity === 'info' ? 'advisory' : 'moderate';
 
         if (severity === 'critical') criticalCount++;
         if (isCrank) crankingSagCount++;
