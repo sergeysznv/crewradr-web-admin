@@ -10,12 +10,17 @@ export type StripePeriod = 'monthly' | 'yearly';
 export async function startStripeCheckout(
   tier: StripeTier,
   period: StripePeriod = 'monthly',
+  crewId: string | null = null,
 ): Promise<{ url?: string; error?: string }> {
   try {
     const { data: { session } } = await supabase.auth.getSession();
     const token = session?.access_token;
     if (!token) {
       return { error: 'Please sign in to proceed with checkout.' };
+    }
+
+    if (!crewId) {
+      return { error: 'Select a crew before subscribing.' };
     }
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -33,6 +38,7 @@ export async function startStripeCheckout(
       body: JSON.stringify({
         tier,
         period,
+        crew_id: crewId,
         success_url: `${origin}/settings?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${origin}/settings?checkout=cancel`,
       }),

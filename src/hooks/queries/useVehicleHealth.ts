@@ -18,6 +18,8 @@ export interface VehicleDiagnosticFault {
 export interface VehicleHealthSummary {
   totalScanned: number;
   cleanVehicles: number;
+  /** True once ANY vehicle-health alert (open or resolved) exists, i.e. the OBD pipeline is live for this crew. */
+  hasReports: boolean;
   faultsCount: number;
   criticalCount: number;
   crankingSagCount: number;
@@ -34,6 +36,7 @@ export function useVehicleHealth(crewId: string | null) {
         return {
           totalScanned: 0,
           cleanVehicles: 0,
+          hasReports: false,
           faultsCount: 0,
           criticalCount: 0,
           crankingSagCount: 0,
@@ -102,6 +105,7 @@ export function useVehicleHealth(crewId: string | null) {
       return {
         totalScanned,
         cleanVehicles: Math.max(0, totalScanned - faults.length),
+        hasReports: (alerts?.length ?? 0) > 0,
         faultsCount: faults.length,
         criticalCount,
         crankingSagCount,

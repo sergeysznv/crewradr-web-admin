@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useT } from '@/hooks/use-translations';
 import { useCrew } from '@/hooks/useCrew';
+import { useEffectiveTier } from '@/hooks/useTier';
 import { useAuditLogs } from '@/hooks/queries/useAuditLogs';
 import { useRealtimeInvalidation } from '@/hooks/useRealtimeRefresh';
 import { tierRank } from '@/lib/utils';
@@ -21,7 +22,8 @@ const PRESET_DAYS: Record<DatePreset, number | null> = {
 
 export function AuditLogView() {
   const { t } = useT();
-  const { crewId, tier, isCommercial } = useCrew();
+  const { isCommercial } = useCrew();
+  const tier = useEffectiveTier();
 
   // Tier gate — admiral only (tier >= 3) and Workplace Compliance Mode enabled
   if (tierRank(tier) < 3 || !isCommercial) {
@@ -35,6 +37,13 @@ export function AuditLogView() {
       </div>
     );
   }
+
+  return <AuditLogViewInner />;
+}
+
+function AuditLogViewInner() {
+  const { t } = useT();
+  const { crewId } = useCrew();
 
   const { data, isLoading, isError, refetch, setDateFrom, setDateTo, action, setAction, offset, setOffset, limit } = useAuditLogs(crewId);
   const [datePreset, setDatePreset] = useState<DatePreset>('30d');

@@ -5,6 +5,7 @@ import nextDynamic from 'next/dynamic';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useT } from '@/hooks/use-translations';
 import { useCrew } from '@/hooks/useCrew';
+import { useEffectiveTier } from '@/hooks/useTier';
 import { useSupabase } from '@/hooks/useSupabase';
 import { useSnackbar } from '@/components/shared/Snackbar';
 import { getLivePositions } from '@/lib/rpc';
@@ -71,7 +72,8 @@ function getMovementMode(speedMs: number | null | undefined, eventType?: string 
 
 export function MapView() {
   const { t } = useT();
-  const { crewId, tier } = useCrew();
+  const { crewId } = useCrew();
+  const tier = useEffectiveTier();
   const { system } = useMeasurementSystem();
   const { isUS } = useJurisdiction();
   const supabase = useSupabase();

@@ -6,6 +6,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useT } from '@/hooks/use-translations';
 import { useCrew } from '@/hooks/useCrew';
+import { useEffectiveTier } from '@/hooks/useTier';
 import { useAuth } from '@/hooks/use-auth';
 import { useSupabase } from '@/hooks/useSupabase';
 import { useSnackbar } from '@/components/shared/Snackbar';
@@ -16,7 +17,8 @@ import type { CrewMember } from '@/types/rpc';
 
 export function DangerZone() {
   const { t } = useT();
-  const { crewId, tier } = useCrew();
+  const { crewId } = useCrew();
+  const tier = useEffectiveTier();
   const { user } = useAuth();
   const supabase = useSupabase();
   const queryClient = useQueryClient();

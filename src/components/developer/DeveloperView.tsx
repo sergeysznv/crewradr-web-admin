@@ -14,6 +14,15 @@ import {
 
 type Tab = 'logs' | 'feedback' | 'telemetry' | 'trips' | 'locations';
 
+interface SupportGrant {
+  crew_id: string;
+  reason: string;
+  expires_at: string;
+}
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const isSupportTab = (tab: Tab) => tab === 'telemetry' || tab === 'trips' || tab === 'locations';
+
 export function DeveloperView() {
   const { t } = useT();
   const [isDev, setIsDev] = useState<boolean | null>(null);
@@ -31,6 +40,58 @@ export function DeveloperView() {
   const [showConfirmClear, setShowConfirmClear] = useState(false);
   const [selectedRow, setSelectedRow] = useState<any | null>(null);
 
+  // Audited support access (location / trip / telemetry data). Staff have NO
+  // standing read access to these tables; each crew needs a reasoned,
+  // time-boxed grant, every read is logged server-side, and the crew's
+  // captains can see it in their audit log.
+  const [grants, setGrants] = useState<SupportGrant[]>([]);
+  const [supportCrewId, setSupportCrewId] = useState('');
+  const [supportReason, setSupportReason] = useState('');
+  const [supportMinutes, setSupportMinutes] = useState(30);
+  const [supportBusy, setSupportBusy] = useState(false);
+  const [supportError, setSupportError] = useState<string | null>(null);
+  const crewKey = supportCrewId.trim().toLowerCase();
+  const activeGrant = isSupportTab(activeTab)
+    ? grants.find((g) => g.crew_id === crewKey) // expiry is enforced by the server on every read
+    : undefined;
+  const activeGrantExpiry = activeGrant?.expires_at ?? null;
+
+  async function refreshGrants() {
+    const { data: g } = await supabase.rpc('support_active_grants');
+    setGrants(Array.isArray(g) ? (g as SupportGrant[]) : []);
+  }
+
+  async function openSupportAccess() {
+    setSupportBusy(true);
+    setSupportError(null);
+    try {
+      if (!UUID_RE.test(crewKey)) throw new Error(t('webSupportInvalidCrew'));
+      const { error } = await supabase.rpc('support_open_access', {
+        p_crew: crewKey,
+        p_reason: supportReason.trim(),
+        p_minutes: supportMinutes,
+      });
+      if (error) throw error;
+      await refreshGrants();
+    } catch (e) {
+      setSupportError(e instanceof Error ? e.message : (e as { message?: string })?.message ?? 'Failed');
+    } finally {
+      setSupportBusy(false);
+    }
+  }
+
+  async function closeSupportAccess() {
+    setSupportBusy(true);
+    try {
+      await supabase.rpc('support_close_access', { p_crew: crewKey });
+      await refreshGrants();
+      setData([]);
+      setTotal(0);
+    } finally {
+      setSupportBusy(false);
+    }
+  }
+
   // Check dev status on load
   useEffect(() => {
     supabase.rpc('get_web_account_profile').then(({ data: profileData, error }) => {
@@ -38,6 +99,7 @@ export function DeveloperView() {
         setIsDev(false);
       } else {
         setIsDev(true);
+        refreshGrants();
       }
     });
   }, []);
@@ -50,6 +112,34 @@ export function DeveloperView() {
     async function fetchTab() {
       setLoading(true);
       try {
+        if (isSupportTab(activeTab)) {
+          if (!activeGrantExpiry) {
+            setData([]);
+            setTotal(0);
+            return;
+          }
+          const kind = activeTab === 'locations' ? 'locations' : activeTab === 'trips' ? 'trips' : 'telemetry';
+          const { data: res, error: rpcErr } = await supabase.rpc('support_read', {
+            p_crew: crewKey,
+            p_kind: kind,
+            p_user: UUID_RE.test(searchUser.trim()) ? searchUser.trim() : null,
+            p_search: kind === 'telemetry' && searchMessage ? searchMessage : null,
+            p_limit: limit,
+            p_offset: offset,
+          });
+          if (cancelled) return;
+          if (rpcErr) throw rpcErr;
+          if (res?.error === 'no_active_grant') {
+            await refreshGrants();
+            setData([]);
+            setTotal(0);
+            return;
+          }
+          setData(res?.rows ?? []);
+          setTotal(res?.total ?? 0);
+          return;
+        }
+
         let query;
         if (activeTab === 'logs') {
           query = supabase.from('app_logs').select('*', { count: 'exact' });
@@ -72,27 +162,8 @@ export function DeveloperView() {
             query = query.ilike('message', `%${searchMessage}%`);
           }
           query = query.order('created_at', { ascending: false });
-        } else if (activeTab === 'telemetry') {
-          query = supabase.from('crew_driving_events').select('*', { count: 'exact' });
-          if (searchUser) {
-            query = query.eq('user_id', searchUser);
-          }
-          if (searchMessage) {
-            query = query.ilike('event_type', `%${searchMessage}%`);
-          }
-          query = query.order('created_at', { ascending: false });
-        } else if (activeTab === 'trips') {
-          query = supabase.from('crew_trip_sessions').select('*', { count: 'exact' });
-          if (searchUser) {
-            query = query.eq('user_id', searchUser);
-          }
-          query = query.order('started_at', { ascending: false });
-        } else { // locations
-          query = supabase.from('location_logs').select('*', { count: 'exact' });
-          if (searchUser) {
-            query = query.eq('user_id', searchUser);
-          }
-          query = query.order('created_at', { ascending: false });
+        } else {
+          return;
         }
 
         const { data: rows, count, error } = await query
@@ -114,7 +185,7 @@ export function DeveloperView() {
     return () => {
       cancelled = true;
     };
-  }, [isDev, activeTab, offset, limit, searchMessage, searchUser, logLevel]);
+  }, [isDev, activeTab, offset, limit, searchMessage, searchUser, logLevel, activeGrantExpiry, crewKey]);
 
   // Reset pagination when switching tabs
   const handleTabChange = (tab: Tab) => {
@@ -492,6 +563,75 @@ export function DeveloperView() {
           })}
         </nav>
       </div>
+
+      {/* Audited support access (telemetry / trips / locations) */}
+      {isSupportTab(activeTab) && (
+        <div className="space-y-3 rounded-2xl border border-outline bg-white p-4 shadow-sm dark:bg-zinc-950">
+          <div className="flex items-start gap-3">
+            <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-warning" aria-hidden="true" />
+            <div>
+              <h2 className="text-sm font-bold text-on-surface">{t('webSupportTitle')}</h2>
+              <p className="text-xs text-on-surface-variant">{t('webSupportDesc')}</p>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-end gap-3">
+            <input
+              type="text"
+              value={supportCrewId}
+              onChange={(e) => { setSupportCrewId(e.target.value); setOffset(0); }}
+              placeholder={t('webSupportCrewId')}
+              aria-label={t('webSupportCrewId')}
+              className="w-[300px] rounded-xl border border-outline bg-transparent px-3 py-2 font-mono text-sm focus:outline-none focus:ring-1 focus:ring-[var(--brand-seed)]"
+            />
+            {activeGrant ? (
+              <>
+                <span className="text-xs font-semibold text-success">
+                  {t('webSupportActive', { time: new Date(activeGrant.expires_at).toLocaleTimeString() })}
+                </span>
+                <button
+                  type="button"
+                  disabled={supportBusy}
+                  onClick={closeSupportAccess}
+                  className="rounded-xl border border-outline px-3 py-2 text-sm font-semibold hover:bg-surface-container disabled:opacity-50"
+                >
+                  {t('webSupportClose')}
+                </button>
+              </>
+            ) : (
+              <>
+                <input
+                  type="text"
+                  value={supportReason}
+                  onChange={(e) => setSupportReason(e.target.value)}
+                  placeholder={t('webSupportReason')}
+                  aria-label={t('webSupportReason')}
+                  maxLength={500}
+                  className="min-w-[260px] flex-1 rounded-xl border border-outline bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[var(--brand-seed)]"
+                />
+                <select
+                  value={supportMinutes}
+                  onChange={(e) => setSupportMinutes(Number(e.target.value))}
+                  aria-label={t('webSupportDuration')}
+                  className="rounded-xl border border-outline bg-transparent px-3 py-2 text-sm"
+                >
+                  {[15, 30, 60, 120, 240].map((m) => (
+                    <option key={m} value={m}>{m} min</option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  disabled={supportBusy || supportReason.trim().length < 10 || !UUID_RE.test(crewKey)}
+                  onClick={openSupportAccess}
+                  className="rounded-xl bg-primary px-3 py-2 text-sm font-semibold text-on-primary hover:opacity-90 disabled:opacity-50"
+                >
+                  {t('webSupportOpen')}
+                </button>
+              </>
+            )}
+          </div>
+          {supportError && <p className="text-xs text-error" role="alert">{supportError}</p>}
+        </div>
+      )}
 
       {/* Filter and Action Bar */}
       <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-white dark:bg-zinc-950 border border-outline rounded-2xl shadow-sm">

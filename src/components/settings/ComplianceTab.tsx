@@ -115,7 +115,7 @@ export function ComplianceTab() {
               {t('webJurisdiction')}
             </h3>
             <p className="text-xs text-on-surface-variant">
-              Configure regulatory compliance scope according to your fleet's operating region.
+              Configure regulatory compliance scope according to your fleet&apos;s operating region.
             </p>
           </div>
           <div className="inline-flex rounded-lg border border-outline bg-surface-container p-1 text-xs">

@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useT } from '@/hooks/use-translations';
 import { useCrew } from '@/hooks/useCrew';
+import { useEffectiveTier } from '@/hooks/useTier';
 import { tierLabel, tierColor, tierRank } from '@/lib/utils';
 import { startStripeCheckout, type StripeTier, type StripePeriod } from '@/lib/stripe';
 import type { CrewSettings } from '@/types/rpc';
@@ -87,7 +88,8 @@ export function GeneralTab({
   subscription: CrewSettings['subscription'];
 }) {
   const { t } = useT();
-  const { crewName, tier } = useCrew();
+  const { crewId, crewName } = useCrew();
+  const tier = useEffectiveTier();
   const currentRank = tierRank(tier);
 
   const [checkoutStatus, setCheckoutStatus] = useState<'success' | 'cancel' | null>(null);
@@ -112,7 +114,7 @@ export function GeneralTab({
     setLoadingTier(tierId);
     setCheckoutError(null);
     try {
-      const res = await startStripeCheckout(tierId, billingPeriod);
+      const res = await startStripeCheckout(tierId, billingPeriod, crewId);
       if (res.error) {
         setCheckoutError(res.error);
       }

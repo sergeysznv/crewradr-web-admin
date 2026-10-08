@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useT } from '@/hooks/use-translations';
 import { useCrew } from '@/hooks/useCrew';
+import { useEffectiveTier } from '@/hooks/useTier';
 import { useCrewSettings } from '@/hooks/queries/useCrewSettings';
 import { useRealtimeInvalidation } from '@/hooks/useRealtimeRefresh';
 import { tierRank } from '@/lib/utils';
@@ -29,7 +30,8 @@ type Tab = typeof TABS[number]['value'];
 
 export function SettingsView() {
   const { t } = useT();
-  const { crewId, tier, isCommercial } = useCrew();
+  const { crewId, isCommercial } = useCrew();
+  const tier = useEffectiveTier();
 
   const { data: settings } = useCrewSettings(crewId);
   const [tab, setTab] = useState<Tab>('general');

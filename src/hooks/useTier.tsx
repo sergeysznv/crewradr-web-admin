@@ -11,7 +11,7 @@ import { supabase } from '@/lib/supabase/client';
  * boundary where RPC data enters state so every consumer (DowngradeBanner,
  * tierHistoryDays, hasMinTier, ...) sees a valid CrewTier.
  */
-function normalizeTier(raw: string | null | undefined): CrewTier {
+export function normalizeTier(raw: string | null | undefined): CrewTier {
   switch (raw) {
     case 'first_mate':
       return 'firstMate';
@@ -144,4 +144,18 @@ export function TierProvider({ children }: { children: ReactNode }) {
       {children}
     </TierContext.Provider>
   );
+}
+
+/**
+ * The ONE tier every view should gate on.
+ *
+ * Prefers the realtime-synced settings tier (useTier) and falls back to the
+ * tier carried by the account-profile crew list (normalised to camelCase) so
+ * nothing flashes to Deckhand while settings load. Replaces ad-hoc reads of
+ * `useCrew().tier`, which is snake_case, seeded once, and never refreshed.
+ */
+export function useEffectiveTier(): CrewTier {
+  const { tier: settingsTier, settings } = useTier();
+  const { tier: crewTier } = useCrew();
+  return settings ? settingsTier : normalizeTier(crewTier);
 }

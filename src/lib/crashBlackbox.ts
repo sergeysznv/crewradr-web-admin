@@ -88,7 +88,7 @@ export function reconstructCrashIncident(
     let gx = 0.05 * Math.sin(t * 0.4);
     let gy = 0.04 * Math.cos(t * 0.3);
     let gz = 1.0 + 0.05 * Math.sin(t * 0.8);
-    let unlocked = false;
+    const unlocked = false;
 
     if (t < -5) {
       // Normal cruising speed with slight road noise

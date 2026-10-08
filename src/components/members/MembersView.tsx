@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useT } from '@/hooks/use-translations';
 import { useCrew } from '@/hooks/useCrew';
+import { useEffectiveTier } from '@/hooks/useTier';
 import { useCrewMembers } from '@/hooks/queries/useCrewMembers';
 import { useRealtimeInvalidation } from '@/hooks/useRealtimeRefresh';
 import { useUpdateMemberRole } from '@/hooks/queries/useMutations';
@@ -29,7 +30,7 @@ type RoleFilter = 'all' | 'captain' | 'co-captain' | 'member';
 
 export function MembersView() {
   const { t } = useT();
-  const { crewId, tier, role } = useCrew();
+  const tier = useEffectiveTier();
 
   // Tier gate — firstMate+ can view the roster (tier >= 1); write
   // controls below are gated to captain+ via TierGateGuard.
@@ -44,6 +45,14 @@ export function MembersView() {
       </div>
     );
   }
+
+  return <MembersViewInner />;
+}
+
+function MembersViewInner() {
+  const { t } = useT();
+  const { crewId, role } = useCrew();
+  const tier = useEffectiveTier();
 
   const ROLE_FILTERS = [
     { value: 'all' as const, label: t('webMembersRoleAll') },

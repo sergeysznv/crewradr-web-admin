@@ -522,7 +522,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 disabled={checkoutLoading}
                 onClick={async () => {
                   setCheckoutLoading(true);
-                  const res = await startStripeCheckout(modalTier, modalPeriod);
+                  const res = await startStripeCheckout(modalTier, modalPeriod, activeCrewId);
                   setCheckoutLoading(false);
                   if (res.error) {
                     alert(res.error);

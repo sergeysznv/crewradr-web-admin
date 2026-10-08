@@ -6,11 +6,11 @@ import { useT, useLocale, LANGUAGES } from '@/hooks/use-translations';
 import { useAuth } from '@/hooks/use-auth';
 import { useAccountProfile } from '@/hooks/queries/useAccountProfile';
 import { useSupabase } from '@/hooks/useSupabase';
-import { useCrew } from '@/hooks/useCrew';
+import { useEffectiveTier } from '@/hooks/useTier';
 import { useSnackbar } from '@/components/shared/Snackbar';
 import { MeasurementToggle } from '@/components/settings/MeasurementToggle';
 import { FontScalePicker } from '@/components/settings/FontScalePicker';
-import { tierLabel, tierColor } from '@/lib/utils';
+import { tierLabel, tierColor, tierRank } from '@/lib/utils';
 import { Globe, Users, Loader2, Check, LogOut, Home, Lock } from 'lucide-react';
 import { CountryFlag } from '@/components/shared/CountryFlag';
 
@@ -19,7 +19,7 @@ export function AccountView() {
   const { locale, setLocale } = useLocale();
   const { signOut } = useAuth();
   const supabase = useSupabase();
-  const { tier } = useCrew();
+  const tier = useEffectiveTier();
   const queryClient = useQueryClient();
   const { showSuccess, showError } = useSnackbar();
   const account = useAccountProfile();
@@ -28,11 +28,7 @@ export function AccountView() {
   const crews = account.data?.crews ?? [];
 
   // Smart Home tier check: First Mate+ (first_mate, captain, admiral)
-  const isFirstMatePlus =
-    tier === 'first_mate' ||
-    tier === 'firstMate' ||
-    tier === 'captain' ||
-    tier === 'admiral';
+  const isFirstMatePlus = tierRank(tier) >= 1;
 
   // Seed locale from profile language_preference on first load.
   const seededRef = useRef(false);

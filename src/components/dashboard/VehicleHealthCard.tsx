@@ -50,9 +50,11 @@ export function VehicleHealthCard() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1 rounded-full bg-surface-container px-2.5 py-1 text-xs font-semibold text-on-surface-variant">
-            {data?.cleanVehicles ?? 0} Clean Scans
-          </span>
+          {data?.hasReports ? (
+            <span className="inline-flex items-center gap-1 rounded-full bg-surface-container px-2.5 py-1 text-xs font-semibold text-on-surface-variant">
+              {data.cleanVehicles} Clean Scans
+            </span>
+          ) : null}
           {data?.crankingSagCount ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2.5 py-1 text-xs font-semibold text-amber-700 dark:text-amber-400">
               <BatteryCharging className="h-3.5 w-3.5" /> {data.crankingSagCount} Battery Sags
@@ -67,12 +69,18 @@ export function VehicleHealthCard() {
       </div>
 
       <div className="mt-3">
-        {!hasIssues ? (
+        {!hasIssues && !data?.hasReports ? (
+          // No vehicle has ever reported diagnostics: say so instead of
+          // claiming a clean bill of health we have no data for.
+          <div className="flex items-center gap-3 rounded-xl bg-surface-container p-3.5 text-on-surface-variant">
+            <Wrench className="h-5 w-5 shrink-0" />
+            <p className="text-xs">{t('webVehicleHealthNoData')}</p>
+          </div>
+        ) : !hasIssues ? (
           <div className="flex items-center gap-3 rounded-xl bg-emerald-500/10 p-3.5 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300">
             <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
             <div className="text-xs">
               <p className="font-semibold">{t('webVehicleHealthClean')}</p>
-              <p className="opacity-80 mt-0.5">Continuous OBD-II diagnostics indicate all powertrain, emissions, and 12V starter circuits are operating within factory tolerances.</p>
             </div>
           </div>
         ) : (

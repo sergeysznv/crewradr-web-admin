@@ -10,6 +10,7 @@ function csvEscape(v: unknown): string {
   return `"${s}"`;
 }
 import { useCrew } from '@/hooks/useCrew';
+import { useEffectiveTier } from '@/hooks/useTier';
 import { useSupabase } from '@/hooks/useSupabase';
 import { useMeasurementSystem } from '@/hooks/useMeasurementSystem';
 import { formatDistanceMeters } from '@/lib/units';
@@ -59,7 +60,8 @@ interface TripSession {
 export function ComplianceView() {
   const { t } = useT();
   const { system } = useMeasurementSystem();
-  const { crewId, tier, isCommercial } = useCrew();
+  const { crewId, isCommercial } = useCrew();
+  const tier = useEffectiveTier();
   const supabase = useSupabase();
   const { showSuccess, showError } = useSnackbar();
   const [genOsha, setGenOsha] = useState(false);

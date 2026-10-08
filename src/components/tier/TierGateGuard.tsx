@@ -34,9 +34,10 @@ export function TierGateGuard({
     return <>{fallback}</>;
   }
 
-  // Feature flag check
-  if (requireFeature && settings?.features) {
-    const featureValue = settings.features[requireFeature as keyof typeof settings.features];
+  // Feature flag check — fails CLOSED: if the settings payload (or the flag
+  // itself) is missing, the feature stays hidden.
+  if (requireFeature) {
+    const featureValue = settings?.features?.[requireFeature as keyof NonNullable<typeof settings>['features']];
     if (!featureValue) {
       return <>{fallback}</>;
     }

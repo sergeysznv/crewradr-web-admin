@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useT } from '@/hooks/use-translations';
 import { useCrew } from '@/hooks/useCrew';
+import { useEffectiveTier } from '@/hooks/useTier';
 import { useSupabase } from '@/hooks/useSupabase';
 import { useRealtimeInvalidation } from '@/hooks/useRealtimeRefresh';
 import { useSnackbar } from '@/components/shared/Snackbar';
@@ -14,7 +15,8 @@ import type { ProvisioningLink } from '@/types/rpc';
 
 export function ProvisioningView() {
   const { t } = useT();
-  const { crewId, tier, isCommercial } = useCrew();
+  const { crewId, isCommercial } = useCrew();
+  const tier = useEffectiveTier();
   const supabase = useSupabase();
   const queryClient = useQueryClient();
   const { showSuccess, showError } = useSnackbar();

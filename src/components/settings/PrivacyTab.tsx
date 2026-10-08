@@ -6,6 +6,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useT } from '@/hooks/use-translations';
 import { useCrew } from '@/hooks/useCrew';
+import { useEffectiveTier } from '@/hooks/useTier';
 import { useAuth } from '@/hooks/use-auth';
 import { useSupabase } from '@/hooks/useSupabase';
 import { useSnackbar } from '@/components/shared/Snackbar';
@@ -59,7 +60,8 @@ function toCsv(data: PersonalExport): string {
 
 export function PrivacyTab() {
   const { t } = useT();
-  const { crewId, tier, role } = useCrew();
+  const { crewId, role } = useCrew();
+  const tier = useEffectiveTier();
   const { user, signOut } = useAuth();
   const supabase = useSupabase();
   const queryClient = useQueryClient();

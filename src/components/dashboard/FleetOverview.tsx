@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useT } from '@/hooks/use-translations';
 import { useCrew } from '@/hooks/useCrew';
+import { useEffectiveTier } from '@/hooks/useTier';
 import { useSupabase } from '@/hooks/useSupabase';
 import { getLivePositions } from '@/lib/rpc';
 import { tierRank } from '@/lib/utils';
@@ -16,7 +17,8 @@ interface FleetOverviewProps {
 
 export function FleetOverview({ dashboard }: FleetOverviewProps) {
   const { t } = useT();
-  const { crewId, tier } = useCrew();
+  const { crewId } = useCrew();
+  const tier = useEffectiveTier();
   const supabase = useSupabase();
   const router = useRouter();
   const isAdmiral = tierRank(tier) >= 3;

@@ -3,7 +3,7 @@
 
 import { useState, useMemo } from 'react';
 import { useT } from '@/hooks/use-translations';
-import { useCrew } from '@/hooks/useCrew';
+import { useEffectiveTier } from '@/hooks/useTier';
 import { useMeasurementSystem } from '@/hooks/useMeasurementSystem';
 import { tierRank } from '@/lib/utils';
 import { formatSpeedFromMph } from '@/lib/units';
@@ -42,7 +42,7 @@ export function CrashBlackboxModal({
   onClose,
 }: CrashBlackboxModalProps) {
   const { t } = useT();
-  const { tier } = useCrew();
+  const tier = useEffectiveTier();
   const { system } = useMeasurementSystem();
   const [selectedPointIndex, setSelectedPointIndex] = useState<number | null>(null);
 

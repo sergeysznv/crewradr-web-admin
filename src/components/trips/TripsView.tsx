@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useT, isImperial } from '@/hooks/use-translations';
 import { useCrew } from '@/hooks/useCrew';
+import { useEffectiveTier } from '@/hooks/useTier';
 import { useTripList } from '@/hooks/queries/useTripList';
 import { useTripDetail } from '@/hooks/queries/useTripDetail';
 import { TripTimeline } from '@/components/trips/TripTimeline';
@@ -18,7 +19,8 @@ import { Route, Lock, Loader2, TriangleAlert, MapPin, Gauge, Download } from 'lu
 
 export function TripsView() {
   const { t } = useT();
-  const { tier, crewId } = useCrew();
+  const { crewId } = useCrew();
+  const tier = useEffectiveTier();
   const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
   const { system } = useMeasurementSystem();
 
