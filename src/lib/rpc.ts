@@ -392,3 +392,28 @@ export async function updateComplianceSettings(
     .upsert(settings, { onConflict: 'crew_id' });
   if (error) throw error;
 }
+
+// ── Zero-knowledge web unlock (ECDH handoff from the captain's phone) ───────
+
+export async function createWebKeyHandoff(
+  supabase: SupabaseClient, crewId: string, browserPub: string
+): Promise<{ id: string; expires_at: string }> {
+  const { data, error } = await supabase.rpc('create_web_key_handoff', {
+    p_crew: crewId, p_browser_pub: browserPub
+  });
+  if (error) throw error;
+  return data as { id: string; expires_at: string };
+}
+
+export async function getWebKeyHandoff(
+  supabase: SupabaseClient, id: string
+): Promise<{ status: 'pending' | 'ready' | 'expired'; payload?: { v: number; pub: string; nonce: string; ct: string } }> {
+  const { data, error } = await supabase.rpc('get_web_key_handoff', { p_id: id });
+  if (error) throw error;
+  return data as { status: 'pending' | 'ready' | 'expired'; payload?: { v: number; pub: string; nonce: string; ct: string } };
+}
+
+export async function cancelWebKeyHandoff(supabase: SupabaseClient, id: string): Promise<void> {
+  const { error } = await supabase.rpc('cancel_web_key_handoff', { p_id: id });
+  if (error) throw error;
+}
