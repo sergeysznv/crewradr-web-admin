@@ -135,6 +135,11 @@ export interface GeofenceZone {
   category?: string;
   emoji?: string;
   weatherAlertsEnabled?: boolean;
+  scheduleEnabled?: boolean;
+  scheduleStart?: string;
+  scheduleEnd?: string;
+  scheduleDays?: number[];
+  deletedAt?: string | null;
 }
 
 export interface NwsHazardAlert {
@@ -162,6 +167,7 @@ export interface LiveMapProps {
   zones?: GeofenceZone[];
   showZones?: boolean;
   showRadar?: boolean;
+  showSatellite?: boolean;
   showHazards?: boolean;
   onHazardSelect?: (hazard: NwsHazardAlert | null) => void;
   onHazardCountChange?: (count: number) => void;
@@ -203,6 +209,7 @@ export default function LiveMap({
   zones = [],
   showZones = true,
   showRadar = false,
+  showSatellite = false,
   showHazards = true,
   onHazardSelect,
   onHazardCountChange,
@@ -215,6 +222,7 @@ export default function LiveMap({
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const radarLayerRef = useRef<google.maps.MapType | null>(null);
+  const satelliteLayerRef = useRef<google.maps.MapType | null>(null);
   const nwsDataRef = useRef<google.maps.Data | null>(null);
   const draftCircleRef = useRef<google.maps.Circle | null>(null);
   const draftMarkerRef = useRef<google.maps.Marker | null>(null);
@@ -358,12 +366,16 @@ export default function LiveMap({
         strokeWeight: 1.5,
       });
 
+      const scheduleInfo = z.scheduleEnabled && z.scheduleStart && z.scheduleEnd
+        ? ` [${z.scheduleStart}–${z.scheduleEnd}]`
+        : '';
+
       const marker = new google.maps.Marker({
         map,
         position: { lat: z.latitude, lng: z.longitude },
-        title: `${z.emoji ?? '📍'} ${z.name} (${z.radiusM}m)`,
+        title: `${z.emoji ?? '📍'} ${z.name} (${z.radiusM}m)${scheduleInfo}`,
         label: {
-          text: `${z.emoji ?? '📍'} ${z.name}`,
+          text: `${z.emoji ?? '📍'} ${z.name}${scheduleInfo ? ' 🕒' : ''}`,
           color: '#064e3b',
           fontSize: '11px',
           fontWeight: 'bold',
@@ -723,6 +735,210 @@ export default function LiveMap({
     };
   }, [showRadar]);
 
+  // Sync Live Satellite Cloud Cover (IR) Layer
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    let cancelled = false;
+
+    if (!showSatellite) {
+      if (satelliteLayerRef.current) {
+        const overlays = map.overlayMapTypes;
+        for (let i = overlays.getLength() - 1; i >= 0; i--) {
+          if (overlays.getAt(i) === satelliteLayerRef.current) {
+            overlays.removeAt(i);
+          }
+        }
+        satelliteLayerRef.current = null;
+      }
+      return;
+    }
+
+    const loadSatellite = () => {
+      fetch('https://api.rainviewer.com/public/weather-maps.json')
+        .then((res) => {
+          if (!res.ok) throw new Error(`RainViewer HTTP ${res.status}`);
+          return res.json();
+        })
+        .then((data) => {
+          if (cancelled || !mapRef.current) return;
+          const infrared = data?.satellite?.infrared;
+          const latestFrame = Array.isArray(infrared) && infrared.length > 0 ? infrared[infrared.length - 1] : null;
+          const rvPath = latestFrame?.path;
+
+          if (satelliteLayerRef.current) {
+            const overlays = map.overlayMapTypes;
+            for (let i = overlays.getLength() - 1; i >= 0; i--) {
+              if (overlays.getAt(i) === satelliteLayerRef.current) {
+                overlays.removeAt(i);
+              }
+            }
+          }
+
+          const MAX_NATIVE_ZOOM = 7;
+          const imageCache = new Map<string, HTMLImageElement>();
+          const pendingLoads = new Map<string, Promise<HTMLImageElement | null>>();
+
+          function fetchParentTile(url: string): Promise<HTMLImageElement | null> {
+            if (imageCache.has(url)) return Promise.resolve(imageCache.get(url)!);
+            if (pendingLoads.has(url)) return pendingLoads.get(url)!;
+
+            const promise = new Promise<HTMLImageElement | null>((resolve) => {
+              const img = new Image();
+              img.crossOrigin = 'anonymous';
+              img.onload = () => {
+                if (imageCache.size > 256) imageCache.clear();
+                imageCache.set(url, img);
+                pendingLoads.delete(url);
+                resolve(img);
+              };
+              img.onerror = () => {
+                pendingLoads.delete(url);
+                resolve(null);
+              };
+              img.src = url;
+            });
+            pendingLoads.set(url, promise);
+            return promise;
+          }
+
+          const satelliteMapType: google.maps.MapType = {
+            tileSize: new google.maps.Size(256, 256),
+            maxZoom: 20,
+            minZoom: 0,
+            name: 'SatelliteIR',
+            alt: 'Live Global Infrared Satellite Cloud Cover',
+            projection: null,
+            radius: 0,
+            getTile: (coord: google.maps.Point, zoom: number, ownerDocument: Document): HTMLElement => {
+              const numTiles = 1 << zoom;
+              const normX = ((coord.x % numTiles) + numTiles) % numTiles;
+              const y = coord.y;
+
+              if (y < 0 || y >= numTiles) {
+                return ownerDocument.createElement('div');
+              }
+
+              const buildTileUrl = (z: number, x: number, tileY: number) => {
+                if (rvPath && rvPath.startsWith('/v2/')) {
+                  return `https://tilecache.rainviewer.com${rvPath}/256/${z}/${x}/${tileY}/0/0_0.png`;
+                }
+                return `https://realearth.ssec.wisc.edu/tiles/globalir/${z}/${x}/${tileY}.png`;
+              };
+
+              if (zoom <= MAX_NATIVE_ZOOM) {
+                const img = ownerDocument.createElement('img');
+                img.width = 256;
+                img.height = 256;
+                img.style.width = '256px';
+                img.style.height = '256px';
+                img.style.opacity = '0.55';
+                img.style.pointerEvents = 'none';
+                img.src = buildTileUrl(zoom, normX, y);
+                img.onerror = () => {
+                  if (rvPath && !img.src.includes('realearth')) {
+                    img.src = `https://realearth.ssec.wisc.edu/tiles/globalir/${zoom}/${normX}/${y}.png`;
+                  } else {
+                    img.style.display = 'none';
+                  }
+                };
+                return img;
+              }
+
+              const canvas = ownerDocument.createElement('canvas');
+              canvas.width = 256;
+              canvas.height = 256;
+              canvas.style.width = '256px';
+              canvas.style.height = '256px';
+              canvas.style.opacity = '0.55';
+              canvas.style.pointerEvents = 'none';
+
+              const diff = zoom - MAX_NATIVE_ZOOM;
+              const scale = 1 << diff;
+              const parentX = Math.floor(normX / scale);
+              const parentY = Math.floor(y / scale);
+              const parentNumTiles = 1 << MAX_NATIVE_ZOOM;
+
+              if (parentY < 0 || parentY >= parentNumTiles) {
+                return canvas;
+              }
+
+              const subX = normX - parentX * scale;
+              const subY = y - parentY * scale;
+              const subW = 256 / scale;
+              const subH = 256 / scale;
+              const srcX = subX * subW;
+              const srcY = subY * subH;
+
+              const parentUrl = buildTileUrl(MAX_NATIVE_ZOOM, parentX, parentY);
+              fetchParentTile(parentUrl).then((parentImg) => {
+                if (!parentImg) {
+                  fetchParentTile(`https://realearth.ssec.wisc.edu/tiles/globalir/${MAX_NATIVE_ZOOM}/${parentX}/${parentY}.png`).then((reImg) => {
+                    if (!reImg) return;
+                    const ctx = canvas.getContext('2d');
+                    if (!ctx) return;
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.drawImage(reImg, srcX, srcY, subW, subH, 0, 0, 256, 256);
+                  });
+                  return;
+                }
+                const ctx = canvas.getContext('2d');
+                if (!ctx) return;
+                ctx.imageSmoothingEnabled = true;
+                ctx.drawImage(parentImg, srcX, srcY, subW, subH, 0, 0, 256, 256);
+              });
+
+              return canvas;
+            },
+            releaseTile: () => {},
+          };
+
+          satelliteLayerRef.current = satelliteMapType;
+          map.overlayMapTypes.push(satelliteMapType);
+        })
+        .catch((err) => {
+          console.warn('LiveMap: RainViewer satellite fetch failed, falling back to RealEarth', err);
+          if (cancelled || !mapRef.current) return;
+          const fallbackMapType: google.maps.MapType = {
+            tileSize: new google.maps.Size(256, 256),
+            maxZoom: 20,
+            minZoom: 0,
+            name: 'SatelliteIR',
+            alt: 'Live RealEarth Global Infrared Satellite Cloud Cover',
+            projection: null,
+            radius: 0,
+            getTile: (coord: google.maps.Point, zoom: number, ownerDocument: Document): HTMLElement => {
+              const numTiles = 1 << zoom;
+              const normX = ((coord.x % numTiles) + numTiles) % numTiles;
+              const y = coord.y;
+              if (y < 0 || y >= numTiles) return ownerDocument.createElement('div');
+              const img = ownerDocument.createElement('img');
+              img.width = 256;
+              img.height = 256;
+              img.style.width = '256px';
+              img.style.height = '256px';
+              img.style.opacity = '0.55';
+              img.style.pointerEvents = 'none';
+              img.src = `https://realearth.ssec.wisc.edu/tiles/globalir/${zoom}/${normX}/${y}.png`;
+              img.onerror = () => { img.style.display = 'none'; };
+              return img;
+            },
+            releaseTile: () => {},
+          };
+          satelliteLayerRef.current = fallbackMapType;
+          map.overlayMapTypes.push(fallbackMapType);
+        });
+    };
+
+    loadSatellite();
+    const satelliteInterval = setInterval(loadSatellite, 5 * 60 * 1000);
+
+    return () => {
+      cancelled = true;
+      clearInterval(satelliteInterval);
+    };
+  }, [showSatellite]);
+
   // Sync NWS Severe Weather Hazard Polygons
   useEffect(() => {
     const map = mapRef.current;
@@ -818,22 +1034,47 @@ export default function LiveMap({
   return (
     <div className="relative h-full w-full">
       <div ref={containerRef} style={{ width: '100%', height: '100%' }} />
-      {showRadar && (
-        <div className="pointer-events-none absolute bottom-3 right-3 z-[1100] flex flex-col gap-1.5 rounded-xl border border-outline/50 bg-surface/90 p-2.5 shadow-sm backdrop-blur-md">
-          <div className="flex items-center justify-between gap-4 text-[10px] font-bold uppercase tracking-wider text-primary">
-            <span>Precipitation Radar</span>
-            <span className="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
-              {mapZoom > 7 ? 'Live • Enhanced HD' : 'Live'}
-            </span>
-          </div>
-          <div className="h-2 w-48 rounded-full bg-gradient-to-r from-[#00E676] via-[#FFEA00] via-[#FF9100] via-[#FF1744] to-[#D500F9]" />
-          <div className="flex justify-between text-[9px] font-semibold text-on-surface-variant">
-            <span>Light</span>
-            <span>Moderate</span>
-            <span>Heavy</span>
-            <span>Hail</span>
-          </div>
+      {(showRadar || showSatellite) && (
+        <div className="pointer-events-none absolute bottom-3 right-3 z-[1100] flex flex-col gap-2 rounded-xl border border-outline/50 bg-surface/90 p-2.5 shadow-sm backdrop-blur-md">
+          {showRadar && (
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center justify-between gap-4 text-[10px] font-bold uppercase tracking-wider text-primary">
+                <span>Precipitation Radar</span>
+                <span className="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+                  {mapZoom > 7 ? 'Live • Enhanced HD' : 'Live'}
+                </span>
+              </div>
+              <div className="h-2 w-48 rounded-full bg-gradient-to-r from-[#00E676] via-[#FFEA00] via-[#FF9100] via-[#FF1744] to-[#D500F9]" />
+              <div className="flex justify-between text-[9px] font-semibold text-on-surface-variant">
+                <span>Light</span>
+                <span>Moderate</span>
+                <span>Heavy</span>
+                <span>Hail</span>
+              </div>
+            </div>
+          )}
+
+          {showRadar && showSatellite && <div className="border-t border-outline/30" />}
+
+          {showSatellite && (
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center justify-between gap-4 text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                <span>Satellite Cloud Cover (IR)</span>
+                <span className="inline-flex items-center gap-1 font-semibold text-indigo-600 dark:text-indigo-400">
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-indigo-500" />
+                  Live • Global IR
+                </span>
+              </div>
+              <div className="h-2 w-48 rounded-full bg-gradient-to-r from-[#000000]/20 via-[#4FC3F7]/60 via-[#E0E0E0] to-[#FF5252]" />
+              <div className="flex justify-between text-[9px] font-semibold text-on-surface-variant">
+                <span>Low Clouds</span>
+                <span>Mid-Level</span>
+                <span>Thick</span>
+                <span>Storm Tops</span>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -39,7 +39,7 @@ const TIERS: TierOption[] = [
     yearlyEffective: '$4.17/mo · Save 17%',
     description: 'Perfect for small teams and families',
     features: [
-      'Up to 20 crew members',
+      'Up to 15 crew members',
       '15-second live GPS tracking',
       '30-day location & trip history',
       'Safe Landing geofence zones',
@@ -55,7 +55,7 @@ const TIERS: TierOption[] = [
     description: 'For professional crews and active fleets',
     badge: 'Most Popular',
     features: [
-      'Up to 50 crew members',
+      'Up to 25 crew members',
       '15-second tracking & 90-day history',
       'Unlimited Safe Landing zones',
       'Speed & fatigue fleet policy',
@@ -72,7 +72,7 @@ const TIERS: TierOption[] = [
     description: 'Complete compliance & enterprise fleet tools',
     badge: 'Enterprise',
     features: [
-      'Up to 250 crew members',
+      'Unlimited crew members',
       'DOT & OSHA compliance reports',
       'Automated SOS & crash SMS dispatch',
       '365-day history & audit logs',

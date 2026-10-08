@@ -20,10 +20,14 @@ import {
   Lock,
   ShieldCheck,
   CloudRain,
+  Cloud,
   Plus,
   Trash2,
   Check,
   Unlock,
+  Clock,
+  RotateCcw,
+  Archive,
 } from 'lucide-react';
 import type { LivePosition, AccountProfile } from '@/types/rpc';
 import type { GeofenceZone, NwsHazardAlert, DraftZoneState } from '@/components/map/live-map';
@@ -44,6 +48,27 @@ const LiveMap = nextDynamic(() => import('@/components/map/live-map'), {
 });
 
 const STALE_AFTER_MS = 15 * 60 * 1000;
+
+const DAYS_OF_WEEK = [
+  { day: 1, label: 'M', full: 'Mon' },
+  { day: 2, label: 'T', full: 'Tue' },
+  { day: 3, label: 'W', full: 'Wed' },
+  { day: 4, label: 'T', full: 'Thu' },
+  { day: 5, label: 'F', full: 'Fri' },
+  { day: 6, label: 'S', full: 'Sat' },
+  { day: 7, label: 'S', full: 'Sun' },
+];
+
+function getRetentionRemaining(deletedAtIso: string): string {
+  const deletedAt = new Date(deletedAtIso).getTime();
+  const expiresAt = deletedAt + 7 * 24 * 60 * 60 * 1000;
+  const msRemaining = expiresAt - Date.now();
+  if (msRemaining <= 0) return 'Expiring now';
+  const days = Math.floor(msRemaining / (24 * 60 * 60 * 1000));
+  if (days >= 1) return `${days}d remaining`;
+  const hours = Math.floor(msRemaining / (60 * 60 * 1000));
+  return `${hours}h remaining`;
+}
 
 function getMovementMode(speedMs: number | null | undefined, eventType?: string | null): { mode: string; emoji: string; label: string } {
   if (eventType === 'flying') return { mode: 'flying', emoji: '✈️', label: 'Flying' };
@@ -81,8 +106,10 @@ export function MapView() {
   const { showSuccess, showError } = useSnackbar();
 
   const isPaidTier = tierRank(tier) >= 1;
+  const isCaptain = tierRank(tier) >= 2;
   const [showZones, setShowZones] = useState(true);
   const [showRadar, setShowRadar] = useState(false);
+  const [showSatellite, setShowSatellite] = useState(false);
   const [showHazards, setShowHazards] = useState(true);
   const [hazardCount, setHazardCount] = useState(0);
   const [selectedHazard, setSelectedHazard] = useState<NwsHazardAlert | null>(null);
@@ -98,6 +125,11 @@ export function MapView() {
   const [formEmoji, setFormEmoji] = useState('📍');
   const [formRadius, setFormRadius] = useState(100);
   const [formWeatherAlerts, setFormWeatherAlerts] = useState(true);
+  const [formScheduleEnabled, setFormScheduleEnabled] = useState(false);
+  const [formScheduleStart, setFormScheduleStart] = useState('08:00');
+  const [formScheduleEnd, setFormScheduleEnd] = useState('17:00');
+  const [formScheduleDays, setFormScheduleDays] = useState<number[]>([1, 2, 3, 4, 5]);
+  const [recycleBinOpen, setRecycleBinOpen] = useState(false);
   const [isSubmittingZone, setIsSubmittingZone] = useState(false);
   const { crewKey, hasCrewKey } = useCrewKey();
   const [zkModalOpen, setZkModalOpen] = useState(false);
@@ -115,7 +147,8 @@ export function MapView() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('saved_places')
-        .select('id, name, latitude, longitude, radius_m, category, emoji, weather_alerts_enabled')
+        .select('id, name, latitude, longitude, radius_m, category, emoji, weather_alerts_enabled, schedule_enabled, schedule_start, schedule_end, schedule_days, deleted_at')
+        .is('deleted_at', null)
         .order('name');
       if (error) return [];
       return (data ?? []).map((z) => ({
@@ -127,7 +160,37 @@ export function MapView() {
         category: z.category ? String(z.category) : undefined,
         emoji: z.emoji ? String(z.emoji) : undefined,
         weatherAlertsEnabled: Boolean(z.weather_alerts_enabled ?? true),
+        scheduleEnabled: Boolean(z.schedule_enabled ?? false),
+        scheduleStart: z.schedule_start ? String(z.schedule_start) : '08:00',
+        scheduleEnd: z.schedule_end ? String(z.schedule_end) : '17:00',
+        scheduleDays: Array.isArray(z.schedule_days) ? z.schedule_days : [1, 2, 3, 4, 5],
+        deletedAt: z.deleted_at ?? null,
       })) as GeofenceZone[];
+    },
+    enabled: !!crewId && isPaidTier,
+  });
+
+  const recycleBinQuery = useQuery({
+    queryKey: ['savedPlacesRecycleBin', crewId],
+    queryFn: async () => {
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      const { data, error } = await supabase
+        .from('saved_places')
+        .select('id, name, latitude, longitude, radius_m, category, emoji, deleted_at')
+        .not('deleted_at', 'is', null)
+        .gte('deleted_at', sevenDaysAgo)
+        .order('deleted_at', { ascending: false });
+      if (error) return [];
+      return (data ?? []) as Array<{
+        id: string;
+        name: string;
+        latitude: number;
+        longitude: number;
+        radius_m: number;
+        category?: string;
+        emoji?: string;
+        deleted_at: string;
+      }>;
     },
     enabled: !!crewId && isPaidTier,
   });
@@ -136,6 +199,7 @@ export function MapView() {
   const [mapLoadError, setMapLoadError] = useState<string | null>(null);
 
   const zones = zonesQuery.data ?? [];
+  const recycleBinItems = recycleBinQuery.data ?? [];
 
   useEffect(() => {
     let active = true;
@@ -355,6 +419,10 @@ export function MapView() {
     setFormEmoji('📍');
     setFormRadius(100);
     setFormWeatherAlerts(true);
+    setFormScheduleEnabled(false);
+    setFormScheduleStart('08:00');
+    setFormScheduleEnd('17:00');
+    setFormScheduleDays([1, 2, 3, 4, 5]);
     setZoneEditorMode('create');
     setSelectedZone(null);
     setZoneEditorOpen(true);
@@ -376,6 +444,10 @@ export function MapView() {
     setFormEmoji(zone.emoji || '📍');
     setFormRadius(zone.radiusM);
     setFormWeatherAlerts(zone.weatherAlertsEnabled ?? true);
+    setFormScheduleEnabled(Boolean(zone.scheduleEnabled));
+    setFormScheduleStart(zone.scheduleStart || '08:00');
+    setFormScheduleEnd(zone.scheduleEnd || '17:00');
+    setFormScheduleDays(zone.scheduleDays && zone.scheduleDays.length > 0 ? zone.scheduleDays : [1, 2, 3, 4, 5]);
     setZoneEditorMode('edit');
     setZoneEditorOpen(true);
   };
@@ -393,33 +465,38 @@ export function MapView() {
     setIsSubmittingZone(true);
 
     try {
+      const payload = {
+        name: formName.trim() || 'Safe Landing',
+        category: formCategory,
+        emoji: formEmoji,
+        latitude: draftZone.latitude,
+        longitude: draftZone.longitude,
+        radius_m: formRadius,
+        weather_alerts_enabled: formWeatherAlerts,
+        schedule_enabled: isCaptain ? formScheduleEnabled : false,
+        schedule_start: isCaptain && formScheduleEnabled ? formScheduleStart : '08:00',
+        schedule_end: isCaptain && formScheduleEnabled ? formScheduleEnd : '17:00',
+        schedule_days: isCaptain && formScheduleEnabled ? formScheduleDays : [1, 2, 3, 4, 5],
+        privacy_schedule_from: isCaptain && formScheduleEnabled ? formScheduleStart : null,
+        privacy_schedule_to: isCaptain && formScheduleEnabled ? formScheduleEnd : null,
+        privacy_behavior: isCaptain && formScheduleEnabled ? 'pause' : 'none',
+      };
+
       if (zoneEditorMode === 'create') {
         const { data: profile } = await supabase.rpc('get_web_account_profile').single<AccountProfile>();
         const userId = profile?.profile?.user_id;
         if (!userId) throw new Error('User account profile not found');
 
         const { error } = await supabase.from('saved_places').insert({
+          ...payload,
           user_id: userId,
-          name: formName.trim() || 'Safe Landing',
-          category: formCategory,
-          emoji: formEmoji,
-          latitude: draftZone.latitude,
-          longitude: draftZone.longitude,
-          radius_m: formRadius,
-          weather_alerts_enabled: formWeatherAlerts,
         });
         if (error) throw error;
         showSuccess('Safe Landing created successfully');
       } else {
         if (!selectedZone) return;
         const { error } = await supabase.from('saved_places').update({
-          name: formName.trim() || 'Safe Landing',
-          category: formCategory,
-          emoji: formEmoji,
-          latitude: draftZone.latitude,
-          longitude: draftZone.longitude,
-          radius_m: formRadius,
-          weather_alerts_enabled: formWeatherAlerts,
+          ...payload,
           updated_at: new Date().toISOString(),
         }).eq('id', selectedZone.id);
         if (error) throw error;
@@ -437,19 +514,62 @@ export function MapView() {
 
   const handleDeleteZone = async () => {
     if (!selectedZone) return;
-    if (!window.confirm(`Delete "${selectedZone.name}" Safe Landing?`)) return;
+    if (!window.confirm(`Move "${selectedZone.name}" to Recycle Bin? It will be retained for 7 days before permanent purge.`)) return;
 
     setIsSubmittingZone(true);
     try {
-      const { error } = await supabase.from('saved_places').delete().eq('id', selectedZone.id);
+      const { error } = await supabase.from('saved_places').update({
+        deleted_at: new Date().toISOString(),
+      }).eq('id', selectedZone.id);
       if (error) throw error;
-      showSuccess('Safe Landing removed');
+      showSuccess(`"${selectedZone.name}" moved to Recycle Bin (7-day retention)`);
       await queryClient.invalidateQueries({ queryKey: ['savedPlaces', crewId] });
+      await queryClient.invalidateQueries({ queryKey: ['savedPlacesRecycleBin', crewId] });
       cancelZoneEditor();
     } catch (err: unknown) {
       showError(err instanceof Error ? err.message : 'Failed to delete Safe Landing');
     } finally {
       setIsSubmittingZone(false);
+    }
+  };
+
+  const handleRestoreZone = async (placeId: string, name: string) => {
+    try {
+      const { error } = await supabase.from('saved_places').update({
+        deleted_at: null,
+      }).eq('id', placeId);
+      if (error) throw error;
+      showSuccess(`"${name}" restored to Safe Landings`);
+      await queryClient.invalidateQueries({ queryKey: ['savedPlaces', crewId] });
+      await queryClient.invalidateQueries({ queryKey: ['savedPlacesRecycleBin', crewId] });
+    } catch (err: unknown) {
+      showError(err instanceof Error ? err.message : 'Failed to restore Safe Landing');
+    }
+  };
+
+  const handlePermanentDelete = async (placeId: string, name: string) => {
+    if (!window.confirm(`Permanently delete "${name}"? This action cannot be undone.`)) return;
+    try {
+      const { error } = await supabase.from('saved_places').delete().eq('id', placeId);
+      if (error) throw error;
+      showSuccess(`"${name}" permanently deleted`);
+      await queryClient.invalidateQueries({ queryKey: ['savedPlacesRecycleBin', crewId] });
+    } catch (err: unknown) {
+      showError(err instanceof Error ? err.message : 'Failed to permanently delete');
+    }
+  };
+
+  const handleEmptyRecycleBin = async () => {
+    if (recycleBinItems.length === 0) return;
+    if (!window.confirm(`Permanently remove all ${recycleBinItems.length} items from the Recycle Bin? This action cannot be undone.`)) return;
+    try {
+      const ids = recycleBinItems.map((i) => i.id);
+      const { error } = await supabase.from('saved_places').delete().in('id', ids);
+      if (error) throw error;
+      showSuccess('Recycle Bin emptied');
+      await queryClient.invalidateQueries({ queryKey: ['savedPlacesRecycleBin', crewId] });
+    } catch (err: unknown) {
+      showError(err instanceof Error ? err.message : 'Failed to empty Recycle Bin');
     }
   };
 
@@ -461,7 +581,7 @@ export function MapView() {
           {t('webMapMembersTracked', { count: positions.length })}
         </span>
 
-        {/* Safe Landings toggle & add button */}
+        {/* Safe Landings toggle, add button & recycle bin button */}
         <div className="inline-flex items-center rounded-full border border-outline bg-surface p-0.5">
           <button
             type="button"
@@ -489,6 +609,19 @@ export function MapView() {
             <Plus className="h-3.5 w-3.5" />
             <span>{isPlacingZone ? 'Placing...' : 'Add'}</span>
           </button>
+          <button
+            type="button"
+            onClick={() => setRecycleBinOpen(true)}
+            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold transition-colors ${
+              recycleBinItems.length > 0
+                ? 'text-amber-700 dark:text-amber-400 hover:bg-amber-500/10'
+                : 'text-on-surface-variant hover:bg-surface-container'
+            }`}
+            title="View deleted Safe Landings (7-day retention)"
+          >
+            <Archive className="h-3.5 w-3.5" />
+            <span>Bin ({recycleBinItems.length})</span>
+          </button>
         </div>
 
         {/* Weather radar toggle */}
@@ -504,6 +637,21 @@ export function MapView() {
         >
           <CloudRain className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
           <span>Weather Radar</span>
+        </button>
+
+        {/* Satellite Cloud Cover toggle */}
+        <button
+          type="button"
+          onClick={() => setShowSatellite((v) => !v)}
+          className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors ${
+            showSatellite
+              ? 'border-indigo-500/30 bg-indigo-50 text-indigo-800 dark:bg-indigo-950/40 dark:text-indigo-300'
+              : 'border-outline text-on-surface-variant hover:bg-surface-container'
+          }`}
+          title="Live Infrared Satellite Cloud Cover (First Mate+)"
+        >
+          <Cloud className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+          <span>Satellite Clouds</span>
         </button>
 
         {/* Severe Weather Hazards toggle (NWS NOAA — US Only) */}
@@ -570,6 +718,7 @@ export function MapView() {
             zones={zones}
             showZones={showZones}
             showRadar={showRadar}
+            showSatellite={showSatellite}
             showHazards={isUS && showHazards}
             onHazardCountChange={setHazardCount}
             onHazardSelect={(h) => {
@@ -818,6 +967,101 @@ export function MapView() {
                 <span className="text-on-surface text-[11px]">Monitor for Severe Weather Warnings</span>
               </label>
 
+              {/* Zone Operating Hours Schedule (Captain+) */}
+              <div className="pt-2 border-t border-outline/40">
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-1.5">
+                    <Clock className="h-3.5 w-3.5 text-primary" />
+                    <span className="font-semibold text-on-surface text-xs">Operating Hours Schedule</span>
+                  </div>
+                  {isCaptain ? (
+                    <label className="flex items-center gap-1.5 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formScheduleEnabled}
+                        onChange={(e) => setFormScheduleEnabled(e.target.checked)}
+                        className="rounded border-outline accent-primary h-3.5 w-3.5"
+                      />
+                      <span className="text-[11px] text-on-surface-variant">Enforce schedule</span>
+                    </label>
+                  ) : (
+                    <span className="rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-bold text-amber-700 dark:text-amber-400 border border-amber-500/20">
+                      Captain Tier
+                    </span>
+                  )}
+                </div>
+                <p className="text-[10px] text-on-surface-variant mb-2">
+                  Only monitor or enforce privacy rules during set days and hours.
+                </p>
+
+                {isCaptain ? (
+                  formScheduleEnabled && (
+                    <div className="space-y-2.5 rounded-lg bg-surface-container/60 p-2.5 border border-outline/30 animate-fade-in">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-[10px] font-medium text-on-surface-variant mb-1">
+                            Start Time
+                          </label>
+                          <input
+                            type="time"
+                            value={formScheduleStart}
+                            onChange={(e) => setFormScheduleStart(e.target.value)}
+                            className="w-full rounded border border-outline bg-surface px-2 py-1 text-xs text-on-surface focus:border-primary focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-medium text-on-surface-variant mb-1">
+                            End Time
+                          </label>
+                          <input
+                            type="time"
+                            value={formScheduleEnd}
+                            onChange={(e) => setFormScheduleEnd(e.target.value)}
+                            className="w-full rounded border border-outline bg-surface px-2 py-1 text-xs text-on-surface focus:border-primary focus:outline-none"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] font-medium text-on-surface-variant mb-1">
+                          Active Days
+                        </label>
+                        <div className="flex gap-1">
+                          {DAYS_OF_WEEK.map(({ day, label, full }) => {
+                            const active = formScheduleDays.includes(day);
+                            return (
+                              <button
+                                key={day}
+                                type="button"
+                                onClick={() => {
+                                  setFormScheduleDays((prev) =>
+                                    prev.includes(day)
+                                      ? prev.filter((d) => d !== day)
+                                      : [...prev, day].sort()
+                                  );
+                                }}
+                                title={full}
+                                className={`flex h-6 w-6 items-center justify-center rounded text-[11px] font-bold transition-colors ${
+                                  active
+                                    ? 'bg-primary text-on-primary'
+                                    : 'border border-outline/40 text-on-surface-variant hover:bg-surface-container'
+                                }`}
+                              >
+                                {label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  )
+                ) : (
+                  <div className="rounded-lg bg-amber-500/10 p-2 border border-amber-500/20 text-[11px] text-amber-800 dark:text-amber-300">
+                    Zone schedule windows require a <strong>Captain</strong> tier subscription.
+                  </div>
+                )}
+              </div>
+
               <div className="flex items-center gap-2 pt-2 border-t border-outline/40">
                 {zoneEditorMode === 'edit' && (
                   <button
@@ -855,6 +1099,101 @@ export function MapView() {
               </div>
             </form>
           </aside>
+        )}
+
+        {/* Safe Landings Recycle Bin Modal */}
+        {recycleBinOpen && (
+          <div className="fixed inset-0 z-[1200] flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs animate-fade-in">
+            <div className="w-full max-w-lg rounded-2xl border border-outline bg-surface p-6 shadow-2xl space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-outline/40">
+                <div className="flex items-center gap-2">
+                  <Archive className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                  <div>
+                    <h3 className="text-base font-bold text-on-surface">Safe Landings Recycle Bin</h3>
+                    <p className="text-xs text-on-surface-variant">
+                      Deleted zones are retained for 7 days before permanent purge.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setRecycleBinOpen(false)}
+                  className="rounded p-1.5 text-on-surface-variant hover:bg-surface-container"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {recycleBinItems.length === 0 ? (
+                <div className="py-8 text-center text-xs text-on-surface-variant">
+                  <Archive className="mx-auto h-8 w-8 opacity-40 mb-2" />
+                  No items in recycle bin.
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+                  {recycleBinItems.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-between rounded-xl border border-outline/50 bg-surface-container/40 p-3"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-xl">{item.emoji || '📍'}</span>
+                        <div>
+                          <p className="text-sm font-semibold text-on-surface">{item.name}</p>
+                          <p className="text-[11px] text-on-surface-variant">
+                            Deleted {new Date(item.deleted_at).toLocaleDateString()} ·{' '}
+                            <span className="text-amber-700 dark:text-amber-300 font-medium">
+                              {getRetentionRemaining(item.deleted_at)}
+                            </span>
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleRestoreZone(item.id, item.name)}
+                          className="flex items-center gap-1 rounded-lg border border-primary/40 px-2.5 py-1 text-xs font-semibold text-primary hover:bg-primary/10 transition-colors"
+                          title="Restore to Safe Landings"
+                        >
+                          <RotateCcw className="h-3.5 w-3.5" />
+                          <span>Restore</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handlePermanentDelete(item.id, item.name)}
+                          className="flex items-center gap-1 rounded-lg border border-error/40 px-2.5 py-1 text-xs font-semibold text-error hover:bg-error/10 transition-colors"
+                          title="Delete permanently"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                          <span>Delete</span>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex items-center justify-between pt-2 border-t border-outline/40">
+                {recycleBinItems.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleEmptyRecycleBin}
+                    className="flex items-center gap-1 text-xs font-semibold text-error hover:underline"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    <span>Empty Bin</span>
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setRecycleBinOpen(false)}
+                  className="ml-auto rounded-lg bg-surface-container px-4 py-2 text-xs font-semibold text-on-surface hover:bg-surface-container-high transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
 

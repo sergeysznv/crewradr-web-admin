@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Moon, Clock } from 'lucide-react';
 import { useT } from '@/hooks/use-translations';
 import { useCrew } from '@/hooks/useCrew';
 import { useMeasurementSystem } from '@/hooks/useMeasurementSystem';
@@ -28,6 +28,11 @@ export function FleetPolicyTab() {
   const [phonePolicy, setPhonePolicy] = useState<string>(current.phone_policy);
   const [scoringMode, setScoringMode] = useState<string>(current.scoring_mode);
   const [retentionDays, setRetentionDays] = useState(current.audit_retention_days);
+  const [curfewEnabled, setCurfewEnabled] = useState(Boolean(current.curfew_enabled));
+  const [curfewStart, setCurfewStart] = useState(current.curfew_start || '22:00');
+  const [curfewEnd, setCurfewEnd] = useState(current.curfew_end || '06:00');
+  const [inactivityAlertEnabled, setInactivityAlertEnabled] = useState(Boolean(current.inactivity_alert_enabled));
+  const [inactivityThresholdMin, setInactivityThresholdMin] = useState(current.inactivity_threshold_min || 30);
 
   const [prevSync, setPrevSync] = useState({ policy, system });
   if (prevSync.policy !== policy || prevSync.system !== system) {
@@ -38,6 +43,11 @@ export function FleetPolicyTab() {
       setPhonePolicy(policy.phone_policy);
       setScoringMode(policy.scoring_mode);
       setRetentionDays(policy.audit_retention_days);
+      setCurfewEnabled(Boolean(policy.curfew_enabled));
+      setCurfewStart(policy.curfew_start || '22:00');
+      setCurfewEnd(policy.curfew_end || '06:00');
+      setInactivityAlertEnabled(Boolean(policy.inactivity_alert_enabled));
+      setInactivityThresholdMin(policy.inactivity_threshold_min || 30);
     }
   }
 
@@ -50,6 +60,11 @@ export function FleetPolicyTab() {
         phone_policy: phonePolicy as FleetPolicy['phone_policy'],
         scoring_mode: scoringMode as FleetPolicy['scoring_mode'],
         audit_retention_days: retentionDays,
+        curfew_enabled: curfewEnabled,
+        curfew_start: curfewStart,
+        curfew_end: curfewEnd,
+        inactivity_alert_enabled: inactivityAlertEnabled,
+        inactivity_threshold_min: inactivityThresholdMin,
       },
       {
         onSuccess: () => showSuccess(t('webFleetPolicySaved')),
@@ -179,6 +194,95 @@ export function FleetPolicyTab() {
             <option value={180}>180 {t('webFleetPolicyDays')}</option>
             <option value={365}>365 {t('webFleetPolicyDays')}</option>
           </select>
+        </div>
+      </div>
+
+      {/* Curfew Driving Hours */}
+      <div>
+        <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
+          {t('webFleetPolicyCurfewTitle')}
+        </label>
+        <p className="mt-0.5 text-xs text-on-surface-variant">{t('webFleetPolicyCurfewDesc')}</p>
+        <div className="mt-2 space-y-3">
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={curfewEnabled}
+              onChange={(e) => setCurfewEnabled(e.target.checked)}
+              className="mt-0.5 rounded border-outline text-primary focus:ring-primary/30"
+            />
+            <span className="text-xs font-medium text-on-surface">
+              {t('webFleetPolicyCurfewEnable')}
+            </span>
+          </label>
+          {curfewEnabled && (
+            <div className="flex flex-wrap items-center gap-4 pl-6 pt-1">
+              <div>
+                <label htmlFor="fleet-curfew-start" className="block text-[11px] font-medium text-on-surface-variant mb-1">
+                  {t('webFleetPolicyCurfewStart')}
+                </label>
+                <input
+                  id="fleet-curfew-start"
+                  type="time"
+                  value={curfewStart}
+                  onChange={(e) => setCurfewStart(e.target.value)}
+                  className="rounded-lg border border-outline bg-surface px-3 py-1.5 text-sm text-on-surface focus:border-primary/50 focus:outline-none"
+                />
+              </div>
+              <div>
+                <label htmlFor="fleet-curfew-end" className="block text-[11px] font-medium text-on-surface-variant mb-1">
+                  {t('webFleetPolicyCurfewEnd')}
+                </label>
+                <input
+                  id="fleet-curfew-end"
+                  type="time"
+                  value={curfewEnd}
+                  onChange={(e) => setCurfewEnd(e.target.value)}
+                  className="rounded-lg border border-outline bg-surface px-3 py-1.5 text-sm text-on-surface focus:border-primary/50 focus:outline-none"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Driver Inactivity Alerts */}
+      <div>
+        <label className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
+          {t('webFleetPolicyInactivityTitle')}
+        </label>
+        <p className="mt-0.5 text-xs text-on-surface-variant">{t('webFleetPolicyInactivityDesc')}</p>
+        <div className="mt-2 space-y-3">
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={inactivityAlertEnabled}
+              onChange={(e) => setInactivityAlertEnabled(e.target.checked)}
+              className="mt-0.5 rounded border-outline text-primary focus:ring-primary/30"
+            />
+            <span className="text-xs font-medium text-on-surface">
+              {t('webFleetPolicyInactivityEnable')}
+            </span>
+          </label>
+          {inactivityAlertEnabled && (
+            <div className="pl-6 pt-1">
+              <label htmlFor="fleet-inactivity" className="block text-[11px] font-medium text-on-surface-variant mb-1">
+                {t('webFleetPolicyInactivityThreshold')}
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  id="fleet-inactivity"
+                  type="number"
+                  min={5}
+                  max={480}
+                  value={inactivityThresholdMin}
+                  onChange={(e) => setInactivityThresholdMin(Number(e.target.value))}
+                  className="w-24 rounded-lg border border-outline bg-surface px-4 py-2 text-sm text-on-surface focus:border-primary/50 focus:outline-none"
+                />
+                <span className="text-sm text-on-surface-variant">{t('webFleetPolicyMinutes')}</span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

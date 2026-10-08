@@ -111,6 +111,11 @@ export interface FleetPolicy {
   phone_policy: 'warn' | 'penalize';
   scoring_mode: 'consumer' | 'enterprise';
   audit_retention_days: number;
+  curfew_enabled?: boolean;
+  curfew_start?: string;
+  curfew_end?: string;
+  inactivity_alert_enabled?: boolean;
+  inactivity_threshold_min?: number;
 }
 
 export const FLEET_POLICY_DEFAULTS: FleetPolicy = {
@@ -120,6 +125,11 @@ export const FLEET_POLICY_DEFAULTS: FleetPolicy = {
   phone_policy: 'warn',
   scoring_mode: 'consumer',
   audit_retention_days: 365,
+  curfew_enabled: false,
+  curfew_start: '22:00',
+  curfew_end: '06:00',
+  inactivity_alert_enabled: false,
+  inactivity_threshold_min: 30,
 };
 
 export interface ReportTemplate {

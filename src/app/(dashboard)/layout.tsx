@@ -24,7 +24,7 @@ import { LanguageSelect } from '@/components/shared/LanguageSelect';
 import { useTabFocus } from '@/hooks/useTabFocus';
 import { supabase } from '@/lib/supabase/client';
 import { tierOnColor } from '@/lib/tier';
-import { tierColor, tierLabel } from '@/lib/utils';
+import { tierColor, tierLabel, tierRank } from '@/lib/utils';
 import {
   LayoutDashboard, Users, Settings, ShieldCheck, FileText, Link, MapPin, LogOut,
   Loader2, ChevronLeft, ChevronRight, Menu, X, Sparkles, Crown, ArrowUp, Plug,
@@ -127,8 +127,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       if (!activeCrewId && c.length > 0) {
         setActiveCrewId(c[0].crew_id);
         setCrew(c[0]);
-        const tierRank = c[0].tier === 'admiral' ? 3 : c[0].tier === 'captain' ? 2 : c[0].tier === 'first_mate' ? 1 : 0;
-        setUserTier(tierRank);
+        setUserTier(tierRank(c[0].tier));
       }
       const profile = data?.profile;
       if (profile?.avatar_url) setAvatarUrl(profile.avatar_url as string);
@@ -171,8 +170,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     if (!c) return;
     setActiveCrewId(crewId);
     setCrew(c);
-    const rank = c.tier === 'admiral' ? 3 : c.tier === 'captain' ? 2 : c.tier === 'first_mate' ? 1 : 0;
-    setUserTier(rank);
+    setUserTier(tierRank(c.tier));
     router.push('/fleet');
   }
 

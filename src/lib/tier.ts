@@ -8,6 +8,51 @@ export const TIER_RANKS: Record<CrewTier, number> = {
   admiral: 4,
 };
 
+/**
+ * Normalizes any raw tier string (e.g. from RPCs, legacy database columns, or query params)
+ * into a typed CrewTier ('deckhand' | 'firstMate' | 'captain' | 'admiral').
+ */
+export function normalizeTier(raw: string | null | undefined): CrewTier {
+  const v = raw?.trim().toLowerCase();
+  switch (v) {
+    case 'first_mate':
+    case 'firstmate':
+    case 'shield':
+    case 'crew_shared':
+    case 'crewshared':
+    case 'shared':
+    case 'premium':
+      return 'firstMate';
+    case 'captain':
+    case 'command':
+    case 'gold':
+      return 'captain';
+    case 'admiral':
+    case 'enterprise':
+      return 'admiral';
+    case 'deckhand':
+    case 'free':
+    default:
+      return 'deckhand';
+  }
+}
+
+/**
+ * Maximum member capacity defined in the tier system.
+ * Returns -1 for unlimited.
+ */
+export function tierMaxCapacity(tier: CrewTier | string): number {
+  const norm = normalizeTier(tier);
+  switch (norm) {
+    case 'deckhand': return 6;
+    case 'firstMate': return 15;
+    case 'captain': return 25;
+    case 'admiral': return -1;
+    default: return 6;
+  }
+}
+
+
 export function tierOnColor(tier: CrewTier | ApiCrewTier): string {
   if (tier === 'captain') return '#2A1A00'; // dark ink on gold #D4A017 (7.1:1)
   if (tier === 'first_mate' || tier === 'firstMate') return '#0B1F33'; // dark ink on blue #4A90D9 (5.1:1)
