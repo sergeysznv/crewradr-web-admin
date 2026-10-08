@@ -1,0 +1,48 @@
+name: PR Checks
+
+# Gates on every pull request into main:
+#   * the PR title is a Conventional Commit (it becomes the squash-merge commit)
+#   * package.json's version only moves forward
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-checks-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  pr-title:
+    name: PR title
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Conventional Commit title
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          RE='^(feat|fix|chore|docs|test|refactor|perf|ci|build|style|revert)(\([a-z0-9._/-]+\))?!?: .{3,}$'
+          if [[ "$TITLE" =~ $RE ]]; then
+            echo "OK: $TITLE"
+          else
+            echo "::error::PR title must look like 'feat(scope): summary' (types: feat fix chore docs test refactor perf ci build style revert)."
+            echo "Got: $TITLE"
+            exit 1
+          fi
+
+  version:
+    name: Version check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Version only moves forward
+        run: node scripts/check-version-bump.js "origin/${{ github.base_ref }}"

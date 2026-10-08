@@ -1,10 +1,20 @@
 name: Web Admin CI
 
+# Required check on pull requests into main. Deployment is done by Cloudflare
+# Pages (project crewradr-admin) on every push to main; do not deploy from here.
+
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test-and-build:
@@ -22,8 +32,25 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npm run lint
+
       - name: Run unit & component tests
         run: npm test
 
       - name: Build Next.js app
+        env:
+          # Placeholders: the build only needs the variables to exist so pages prerender.
+          NEXT_PUBLIC_SUPABASE_URL: https://ci-placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder-anon-key
+          NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ci-placeholder
+          NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID: ci-placeholder
         run: npm run build
+
+      - name: Check version files were generated
+        run: |
+          test -s public/version.txt
+          node -e "const v=require('./public/version.json'); if(!v.version||!v.sha) process.exit(1); console.log(v)"

@@ -1,0 +1,39 @@
+name: Release tag
+
+# When a merge to main carries a package.json version with no tag yet, tag it
+# (release-X.Y.Z) and publish a GitHub Release with generated notes.
+# Deployment itself is done by Cloudflare Pages on every push to main.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-tag
+  cancel-in-progress: false
+
+jobs:
+  tag:
+    name: Tag release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create tag and release if new
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          TAG="release-${VERSION}"
+          if git rev-parse -q --verify "refs/tags/${TAG}" >/dev/null; then
+            echo "Tag ${TAG} already exists; nothing to do."
+            exit 0
+          fi
+          git tag "${TAG}" "${GITHUB_SHA}"
+          git push origin "${TAG}"
+          gh release create "${TAG}" --title "${VERSION}" --generate-notes
