@@ -221,6 +221,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const userInitial = (displayName || user.email || '?').charAt(0).toUpperCase();
 
   return (
+    <CurrencyProvider>
     <div className="flex h-screen flex-col overflow-hidden bg-[var(--brand-surface)] text-zinc-900 dark:text-zinc-100">
       {/* ── Offline status bar ── */}
       <OfflineBanner />
@@ -415,9 +416,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="p-sz-lg md:p-sz-xl max-w-[1400px] w-full">
               <FontScaleProvider>
                 <MeasurementProvider>
-                  <CurrencyProvider>
-                    <ShellErrorBoundary>{children}</ShellErrorBoundary>
-                  </CurrencyProvider>
+                  <ShellErrorBoundary>{children}</ShellErrorBoundary>
                 </MeasurementProvider>
               </FontScaleProvider>
             </div>
@@ -546,5 +545,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* ── Idle warning ── */}
       {idleWarning && <IdleWarningOverlay staySignedIn={staySignedIn} onSignOut={handleSignOut} />}
     </div>
+    </CurrencyProvider>
   );
 }
