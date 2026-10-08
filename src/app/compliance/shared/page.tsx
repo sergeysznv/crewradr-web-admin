@@ -23,7 +23,26 @@ interface SafetyAlert {
   target_user_id?: string | null;
 }
 
+interface OshaIncident {
+  incident_date: string;
+  incident_type: string;
+  description: string;
+  location?: string | null;
+  involved_personnel?: string[] | null;
+  was_fatality?: boolean;
+  was_hospitalization?: boolean;
+  days_away?: number | null;
+  restricted_days?: number | null;
+}
+
+interface DotSession extends TripSession {
+  nighttime_seconds?: number;
+  max_speed_ms?: number;
+  weather_risk_level?: string;
+}
+
 interface TripSession {
+  driver_name?: string;
   user_id: string;
   started_at: string;
   driving_seconds?: number;
@@ -50,11 +69,17 @@ function ComplianceContent() {
   const { t } = useT();
   const { system } = useMeasurementSystem();
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [oshaData, setOshaData] = useState<any[] | null>(null);
+  const [loaded, setLoaded] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const reportType = params.get('type');
+  const reportCrew = params.get('crew');
+  const reportSince = params.get('since');
+  const paramsInvalid = !reportType || !reportCrew || !reportSince;
+  const loading = !paramsInvalid && !loaded;
+  const error = paramsInvalid ? t('webComplianceReportInvalidParams') : loadError;
+  const [oshaData, setOshaData] = useState<OshaIncident[] | null>(null);
   const [eldData, setEldData] = useState<TripSession[] | null>(null);
-  const [dotData, setDotData] = useState<any[] | null>(null);
+  const [dotData, setDotData] = useState<DotSession[] | null>(null);
   const [reportLabel, setReportLabel] = useState('');
 
   useEffect(() => {
@@ -62,11 +87,7 @@ function ComplianceContent() {
     const crew = params.get('crew');
     const since = params.get('since');
 
-    if (!type || !crew || !since) {
-      setError(t('webComplianceReportInvalidParams'));
-      setLoading(false);
-      return;
-    }
+    if (!type || !crew || !since) return;
     async function load() {
       try {
         const { data, error: rpcErr } = await supabase.rpc('get_shared_compliance_report', {
@@ -76,24 +97,24 @@ function ComplianceContent() {
         });
         if (rpcErr) throw rpcErr;
 
-        const dataArray = (data ?? []) as any[];
+        const dataArray = (data ?? []) as unknown[];
 
         if (type === 'osha') {
           setReportLabel(t('webComplianceReportOshaLogTitle'));
-          setOshaData(dataArray);
+          setOshaData(dataArray as OshaIncident[]);
         } else if (type === 'eld') {
           setReportLabel(t('webComplianceReportEldTitle'));
           setEldData(dataArray as TripSession[]);
         } else if (type === 'dot') {
           setReportLabel(t('webComplianceReportDotTitle'));
-          setDotData(dataArray);
+          setDotData(dataArray as DotSession[]);
         } else {
-          setError(t('webComplianceReportUnknownType'));
+          setLoadError(t('webComplianceReportUnknownType'));
         }
       } catch (e) {
-        setError(e instanceof Error ? e.message : t('webComplianceReportLoadFailed'));
+        setLoadError(e instanceof Error ? e.message : t('webComplianceReportLoadFailed'));
       }
-      setLoading(false);
+      setLoaded(true);
     }
 
     load();
@@ -136,7 +157,7 @@ function ComplianceContent() {
     if (!eldData) return [];
     return eldData.map((s) => ({
       userId: s.user_id,
-      driverName: (s as any).driver_name as string | undefined,
+      driverName: s.driver_name,
       startedAt: s.started_at,
       hours: ((s.driving_seconds ?? 0) / 3600).toFixed(1),
       distanceM: s.distance_m ?? 0,
@@ -153,7 +174,7 @@ function ComplianceContent() {
       const dotCompliant = durationMin <= 660 && fatigueWarnings === 0;
       return {
         userId: s.user_id,
-        driverName: (s as any).driver_name as string | undefined,
+        driverName: s.driver_name,
         startedAt: s.started_at,
         distanceM: s.distance_m ?? 0,
         durationMin,
@@ -193,7 +214,7 @@ function ComplianceContent() {
         t('webComplianceReportCsvColRestrictedDays'),
         t('webComplianceReportCsvColCaseClassification')
       ];
-      const rows = oshaData.map((r: any, index: number) => {
+      const rows = oshaData.map((r, index: number) => {
         const fatality = r.was_fatality ? t('webComplianceReportCsvYes') : t('webComplianceReportCsvNo');
         let classification = t('webComplianceReportOshaClassOther');
         if (r.was_fatality) classification = t('webComplianceReportOshaClassFatality');

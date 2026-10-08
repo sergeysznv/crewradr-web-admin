@@ -1,7 +1,7 @@
 // src/components/settings/PrivacyTab.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useT } from '@/hooks/use-translations';
@@ -88,12 +88,8 @@ export function PrivacyTab() {
     retry: false,
   });
 
-  // Seed the retention slider once the policy loads
-  useEffect(() => {
-    if (privacyQuery.data && retentionDraft === null) {
-      setRetentionDraft(privacyQuery.data.retentionDays);
-    }
-  }, [privacyQuery.data, retentionDraft]);
+  // Retention slider value: user draft, else the loaded policy
+  const retentionValue = retentionDraft ?? privacyQuery.data?.retentionDays ?? null;
 
   const retentionDenied =
     !privacyQuery.isLoading && !privacyQuery.isSuccess &&
@@ -125,10 +121,10 @@ export function PrivacyTab() {
   }
 
   async function handleSaveRetention() {
-    if (!crewId || retentionDraft === null) return;
+    if (!crewId || retentionValue === null) return;
     setSavingRetention(true);
     try {
-      await updateRetentionDays(supabase, crewId, retentionDraft);
+      await updateRetentionDays(supabase, crewId, retentionValue);
       showSuccess(t('webPrivacyRetentionSaved'));
       queryClient.invalidateQueries({ queryKey: ['privacySettings', crewId] });
     } catch {
@@ -167,9 +163,9 @@ export function PrivacyTab() {
       queryClient.clear();
       await signOut();
       router.push('/');
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error('Delete account failed:', e);
-      showError(e?.message || t('webSettingsDeleteAccountFailed'));
+      showError((e as { message?: string } | null)?.message || t('webSettingsDeleteAccountFailed'));
       setDeleting(false);
       setShowDelete(false);
     }
@@ -258,7 +254,7 @@ export function PrivacyTab() {
 
               <button
                 onClick={handleSaveRetention}
-                disabled={savingRetention || retentionDraft === policy.retentionDays}
+                disabled={savingRetention || retentionValue === policy.retentionDays}
                 className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary text-on-primary hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {savingRetention && <Loader2 className="h-3.5 w-3.5 animate-spin" />}

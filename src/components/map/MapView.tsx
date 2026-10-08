@@ -118,7 +118,7 @@ export function MapView() {
         .select('id, name, latitude, longitude, radius_m, category, emoji, weather_alerts_enabled')
         .order('name');
       if (error) return [];
-      return (data ?? []).map((z: any) => ({
+      return (data ?? []).map((z) => ({
         id: String(z.id),
         name: String(z.name || 'Safe Landing'),
         latitude: Number(z.latitude),

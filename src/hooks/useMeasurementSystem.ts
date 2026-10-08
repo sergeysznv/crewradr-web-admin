@@ -90,14 +90,16 @@ export function useMeasurementSystem(): MeasurementSystemResult {
 
   // Hydration reconciliation: if SSR defaulted to 'metric' but browser locale
   // or localStorage says 'imperial', correct it on mount.
-  useEffect(() => {
+  const [prevProfileSystem, setPrevProfileSystem] = useState(profile?.measurement_system);
+  if (prevProfileSystem !== profile?.measurement_system) {
+    setPrevProfileSystem(profile?.measurement_system);
     if (!profile?.measurement_system && typeof window !== 'undefined') {
       const cached = window.localStorage.getItem(STORAGE_KEY);
       if (!cached) {
         setSystem(deriveSystemFromLocale(window.navigator.language));
       }
     }
-  }, [profile?.measurement_system]);
+  }
 
   // Mid-session sync via Supabase Realtime. The channel itself lives at
   // module level; this effect only (un)registers this consumer's listener so

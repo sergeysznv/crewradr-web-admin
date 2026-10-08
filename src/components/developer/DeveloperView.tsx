@@ -20,6 +20,35 @@ interface SupportGrant {
   expires_at: string;
 }
 
+interface DevRow {
+  id: string;
+  created_at: string;
+  started_at: string;
+  ended_at?: string | null;
+  log_level?: string;
+  message?: string;
+  user_id?: string;
+  install_id?: string | null;
+  kind?: string;
+  email?: string | null;
+  event_type?: string;
+  severity?: number | null;
+  speed_ms: number;
+  speed_limit_ms?: number | null;
+  g_force?: number | null;
+  location_lat?: number | null;
+  location_lng?: number | null;
+  distance_m?: number | null;
+  avg_speed_ms?: number | null;
+  max_speed_ms?: number | null;
+  score_before?: number | null;
+  score_after?: number | null;
+  event_count?: number | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  speed?: number | null;
+}
+
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const isSupportTab = (tab: Tab) => tab === 'telemetry' || tab === 'trips' || tab === 'locations';
 
@@ -33,12 +62,12 @@ export function DeveloperView() {
   
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(25);
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<DevRow[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [clearing, setClearing] = useState(false);
   const [showConfirmClear, setShowConfirmClear] = useState(false);
-  const [selectedRow, setSelectedRow] = useState<any | null>(null);
+  const [selectedRow, setSelectedRow] = useState<DevRow | null>(null);
 
   // Audited support access (location / trip / telemetry data). Staff have NO
   // standing read access to these tables; each crew needs a reasoned,
@@ -252,7 +281,7 @@ export function DeveloperView() {
           {
             key: 'time',
             header: t('webDevColTimestamp'),
-            render: (row: any) => (
+            render: (row: DevRow) => (
               <span className="text-xs text-on-surface-variant font-mono">
                 {new Date(row.created_at).toLocaleString()}
               </span>
@@ -261,7 +290,7 @@ export function DeveloperView() {
           {
             key: 'level',
             header: t('webDevColLevel'),
-            render: (row: any) => {
+            render: (row: DevRow) => {
               const lvl = String(row.log_level).toUpperCase();
               let color = 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300';
               if (lvl === 'ERROR' || lvl === 'FATAL') color = 'bg-error-container text-error';
@@ -277,7 +306,7 @@ export function DeveloperView() {
           {
             key: 'message',
             header: t('webDevColMessage'),
-            render: (row: any) => (
+            render: (row: DevRow) => (
               <span className="text-sm font-medium text-on-surface block max-w-md truncate">
                 {row.message}
               </span>
@@ -286,7 +315,7 @@ export function DeveloperView() {
           {
             key: 'user',
             header: t('webDevColUserId'),
-            render: (row: any) => (
+            render: (row: DevRow) => (
               <span className="text-xs text-on-surface-variant font-mono block max-w-[150px] truncate" title={row.user_id || t('webAuditSystem')}>
                 {row.user_id || t('webAuditSystem')}
               </span>
@@ -295,7 +324,7 @@ export function DeveloperView() {
           {
             key: 'install',
             header: t('webDevColInstallId'),
-            render: (row: any) => (
+            render: (row: DevRow) => (
               <span className="text-xs text-on-surface-variant font-mono block max-w-[100px] truncate" title={row.install_id || t('webDeveloperNa')}>
                 {row.install_id || t('webDeveloperNa')}
               </span>
@@ -308,7 +337,7 @@ export function DeveloperView() {
           {
             key: 'time',
             header: t('webDevColTimestamp'),
-            render: (row: any) => (
+            render: (row: DevRow) => (
               <span className="text-xs text-on-surface-variant font-mono">
                 {new Date(row.created_at).toLocaleString()}
               </span>
@@ -317,7 +346,7 @@ export function DeveloperView() {
           {
             key: 'kind',
             header: t('webDevColType'),
-            render: (row: any) => (
+            render: (row: DevRow) => (
               <span className="px-2 py-0.5 rounded-xl bg-primary-container text-primary text-2xs font-semibold capitalize">
                 {row.kind}
               </span>
@@ -326,7 +355,7 @@ export function DeveloperView() {
           {
             key: 'message',
             header: t('webDevColFeedbackMessage'),
-            render: (row: any) => (
+            render: (row: DevRow) => (
               <span className="text-sm text-on-surface block max-w-lg truncate">
                 {row.message}
               </span>
@@ -335,14 +364,14 @@ export function DeveloperView() {
           {
             key: 'contact',
             header: t('webDevColContactEmail'),
-            render: (row: any) => (
+            render: (row: DevRow) => (
               <span className="text-xs text-on-surface font-medium">{row.email || t('webDeveloperAnonymous')}</span>
             ),
           },
           {
             key: 'user',
             header: t('webDevColUserId'),
-            render: (row: any) => (
+            render: (row: DevRow) => (
               <span className="text-xs text-on-surface-variant font-mono block max-w-[120px] truncate" title={row.user_id}>
                 {row.user_id || t('webDeveloperAnonymous')}
               </span>
@@ -355,7 +384,7 @@ export function DeveloperView() {
           {
             key: 'time',
             header: t('webDevColTimestamp'),
-            render: (row: any) => (
+            render: (row: DevRow) => (
               <span className="text-xs text-on-surface-variant font-mono">
                 {new Date(row.created_at).toLocaleString()}
               </span>
@@ -364,7 +393,7 @@ export function DeveloperView() {
           {
             key: 'type',
             header: t('webDevColEventType'),
-            render: (row: any) => (
+            render: (row: DevRow) => (
               <span className="px-2 py-0.5 rounded-xl bg-warning-container text-warning text-2xs font-semibold uppercase">
                 {row.event_type}
               </span>
@@ -373,14 +402,14 @@ export function DeveloperView() {
           {
             key: 'severity',
             header: t('webDevColSeverity'),
-            render: (row: any) => (
+            render: (row: DevRow) => (
               <span className="text-xs font-semibold text-on-surface">{row.severity?.toFixed(2) || '0.00'}</span>
             ),
           },
           {
             key: 'speed',
             header: t('webDevColSpeedLimit'),
-            render: (row: any) => (
+            render: (row: DevRow) => (
               <span className="text-xs text-on-surface-variant">
                 {(row.speed_ms * 2.23694).toFixed(0)} / {row.speed_limit_ms ? (row.speed_limit_ms * 2.23694).toFixed(0) : t('webDeveloperNa')} {t('webSpeedMph')}
               </span>
@@ -389,14 +418,14 @@ export function DeveloperView() {
           {
             key: 'g',
             header: t('webDevColGForce'),
-            render: (row: any) => (
+            render: (row: DevRow) => (
               <span className="text-xs text-on-surface-variant">{row.g_force?.toFixed(2) || '0.0'} {t('webDeveloperG')}</span>
             ),
           },
           {
             key: 'loc',
             header: t('webDevColCoordinates'),
-            render: (row: any) => (
+            render: (row: DevRow) => (
               <span className="text-xs text-on-surface-variant font-mono">
                 {row.location_lat?.toFixed(5)}, {row.location_lng?.toFixed(5)}
               </span>
@@ -409,7 +438,7 @@ export function DeveloperView() {
           {
             key: 'started',
             header: t('webDevColStartedAt'),
-            render: (row: any) => (
+            render: (row: DevRow) => (
               <span className="text-xs text-on-surface-variant font-mono">
                 {new Date(row.started_at).toLocaleString()}
               </span>
@@ -418,7 +447,7 @@ export function DeveloperView() {
           {
             key: 'ended',
             header: t('webDevColEndedAt'),
-            render: (row: any) => (
+            render: (row: DevRow) => (
               <span className="text-xs text-on-surface-variant font-mono">
                 {row.ended_at ? new Date(row.ended_at).toLocaleString() : t('webMembersStatusActive')}
               </span>
@@ -427,7 +456,7 @@ export function DeveloperView() {
           {
             key: 'distance',
             header: t('webDevColDistance'),
-            render: (row: any) => (
+            render: (row: DevRow) => (
               <span className="text-xs text-on-surface font-semibold">
                 {((row.distance_m || 0) * 0.000621371).toFixed(1)} {t('webDeveloperMiles')}
               </span>
@@ -436,7 +465,7 @@ export function DeveloperView() {
           {
             key: 'avg_speed',
             header: t('webDevColAvgMaxSpeed'),
-            render: (row: any) => (
+            render: (row: DevRow) => (
               <span className="text-xs text-on-surface-variant">
                 {((row.avg_speed_ms || 0) * 2.23694).toFixed(0)} / {((row.max_speed_ms || 0) * 2.23694).toFixed(0)} {t('webSpeedMph')}
               </span>
@@ -445,7 +474,7 @@ export function DeveloperView() {
           {
             key: 'score',
             header: t('webDevColScoreDelta'),
-            render: (row: any) => (
+            render: (row: DevRow) => (
               <span className="text-xs text-on-surface-variant font-mono">
                 {row.score_before?.toFixed(0) || '100'} → {row.score_after?.toFixed(0) || '100'}
               </span>
@@ -454,8 +483,8 @@ export function DeveloperView() {
           {
             key: 'alerts',
             header: t('webDevColAlerts'),
-            render: (row: any) => (
-              <span className={`text-xs font-bold ${row.event_count > 0 ? 'text-error' : 'text-zinc-400'}`}>
+            render: (row: DevRow) => (
+              <span className={`text-xs font-bold ${(row.event_count ?? 0) > 0 ? 'text-error' : 'text-zinc-400'}`}>
                 {t('webDeveloperIncidents', { count: row.event_count || 0 })}
               </span>
             ),
@@ -467,7 +496,7 @@ export function DeveloperView() {
           {
             key: 'time',
             header: t('webDevColTimestamp'),
-            render: (row: any) => (
+            render: (row: DevRow) => (
               <span className="text-xs text-on-surface-variant font-mono">
                 {new Date(row.created_at).toLocaleString()}
               </span>
@@ -476,7 +505,7 @@ export function DeveloperView() {
           {
             key: 'user',
             header: t('webDevColUserId'),
-            render: (row: any) => (
+            render: (row: DevRow) => (
               <span className="text-xs text-on-surface-variant font-mono block max-w-[150px] truncate" title={row.user_id}>
                 {row.user_id}
               </span>
@@ -485,21 +514,21 @@ export function DeveloperView() {
           {
             key: 'latitude',
             header: t('webDevColLatitude'),
-            render: (row: any) => (
+            render: (row: DevRow) => (
               <span className="text-xs font-mono">{row.latitude?.toFixed(7)}</span>
             ),
           },
           {
             key: 'longitude',
             header: t('webDevColLongitude'),
-            render: (row: any) => (
+            render: (row: DevRow) => (
               <span className="text-xs font-mono">{row.longitude?.toFixed(7)}</span>
             ),
           },
           {
             key: 'speed',
             header: t('webDevColSpeed'),
-            render: (row: any) => (
+            render: (row: DevRow) => (
               <span className="text-xs font-semibold">
                 {((row.speed || 0) * 2.23694).toFixed(0)} {t('webSpeedMph')}
               </span>

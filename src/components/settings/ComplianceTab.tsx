@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Loader2, ShieldAlert } from 'lucide-react';
 import { useT } from '@/hooks/use-translations';
 import { useCrew } from '@/hooks/useCrew';
@@ -34,7 +34,9 @@ export function ComplianceTab() {
   const [shiftStart, setShiftStart] = useState('08:00');
   const [shiftEnd, setShiftEnd] = useState('17:00');
 
-  useEffect(() => {
+  const [prevSettings, setPrevSettings] = useState(settings);
+  if (prevSettings !== settings) {
+    setPrevSettings(settings);
     if (settings) {
       setDotOshaMode(settings.dot_osha_mode);
       setDotEld(settings.dot_eld_enabled);
@@ -52,7 +54,7 @@ export function ComplianceTab() {
       setShiftStart(settings.shift_hours_start);
       setShiftEnd(settings.shift_hours_end);
     }
-  }, [settings]);
+  }
 
   const handleSave = () => {
     saveMutation.mutate(

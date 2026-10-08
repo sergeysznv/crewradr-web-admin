@@ -51,7 +51,9 @@ export function TierProvider({ children }: { children: ReactNode }) {
   // Latest active crew id, readable inside the async fetch (which closes over
   // the crewId from the moment the fetch was started).
   const crewIdRef = useRef<string | null>(crewId);
-  crewIdRef.current = crewId;
+  useEffect(() => {
+    crewIdRef.current = crewId;
+  }, [crewId]);
   // Crew whose settings are currently staged; reset on change so stale
   // settings from a previously active crew never render.
   const settingsCrewRef = useRef<string | null>(null);

@@ -1,7 +1,7 @@
 // src/components/settings/FleetPolicyTab.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useT } from '@/hooks/use-translations';
 import { useCrew } from '@/hooks/useCrew';
@@ -29,7 +29,9 @@ export function FleetPolicyTab() {
   const [scoringMode, setScoringMode] = useState<string>(current.scoring_mode);
   const [retentionDays, setRetentionDays] = useState(current.audit_retention_days);
 
-  useEffect(() => {
+  const [prevSync, setPrevSync] = useState({ policy, system });
+  if (prevSync.policy !== policy || prevSync.system !== system) {
+    setPrevSync({ policy, system });
     if (policy) {
       setFatigueLimit(policy.fatigue_limit_hours);
       setExtremeSpeed(mphToDisplaySpeed(policy.extreme_speed_mph, system));
@@ -37,7 +39,7 @@ export function FleetPolicyTab() {
       setScoringMode(policy.scoring_mode);
       setRetentionDays(policy.audit_retention_days);
     }
-  }, [policy, system]);
+  }
 
   const handleSave = () => {
     const extremeSpeedMph = displaySpeedToMph(extremeSpeed, system);

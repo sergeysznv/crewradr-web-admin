@@ -60,3 +60,34 @@ export async function startStripeCheckout(
     return { error: message };
   }
 }
+
+/**
+ * Opens the Stripe Customer Portal ("Manage billing") for a crew billed
+ * through Stripe. Crews billed through the App Store / Google Play get an error
+ * message from the server instead.
+ */
+export async function openStripePortal(crewId: string | null): Promise<{ url?: string; error?: string }> {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+    if (!token) return { error: 'Please sign in to manage billing.' };
+    if (!crewId) return { error: 'Select a crew first.' };
+
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    if (!supabaseUrl) return { error: 'Supabase configuration missing.' };
+
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const res = await fetch(`${supabaseUrl}/functions/v1/create_stripe_portal_session`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ crew_id: crewId, return_url: `${origin}/settings` }),
+    });
+    const json = await res.json().catch(() => ({ error: 'Invalid response from billing service' }));
+    if (!res.ok) return { error: json.error || 'Failed to open billing portal.' };
+
+    if (json.url && typeof window !== 'undefined') window.location.href = json.url;
+    return { url: json.url };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Billing network error' };
+  }
+}

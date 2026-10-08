@@ -6,7 +6,7 @@ import { useT } from '@/hooks/use-translations';
 import { useCrew } from '@/hooks/useCrew';
 import { useEffectiveTier } from '@/hooks/useTier';
 import { tierLabel, tierColor, tierRank } from '@/lib/utils';
-import { startStripeCheckout, type StripeTier, type StripePeriod } from '@/lib/stripe';
+import { startStripeCheckout, openStripePortal, type StripeTier, type StripePeriod } from '@/lib/stripe';
 import type { CrewSettings } from '@/types/rpc';
 import {
   CreditCard,
@@ -102,6 +102,7 @@ export function GeneralTab({
       const params = new URLSearchParams(window.location.search);
       const status = params.get('checkout');
       if (status === 'success' || status === 'cancel') {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time mount read of the Stripe return URL (external system, unavailable during SSR) followed by URL cleanup
         setCheckoutStatus(status);
         // Clean URL search query without triggering full reload
         const newUrl = window.location.pathname;
@@ -109,6 +110,12 @@ export function GeneralTab({
       }
     }
   }, []);
+
+  async function handleManageBilling() {
+    setCheckoutError(null);
+    const res = await openStripePortal(crewId);
+    if (res.error) setCheckoutError(res.error);
+  }
 
   async function handleCheckout(tierId: StripeTier) {
     setLoadingTier(tierId);
@@ -237,6 +244,15 @@ export function GeneralTab({
                 ? 'Your crew is currently on the free Deckhand tier. You can subscribe directly below using Stripe to unlock high-frequency live tracking and fleet management tools.'
                 : 'Your crew can be billed via Apple App Store, Google Play, or directly through Stripe Web Billing. You can upgrade or switch plans anytime using Stripe secure checkout below.'}
             </p>
+            {currentRank > 0 && (
+              <button
+                type="button"
+                onClick={handleManageBilling}
+                className="mt-3 rounded-lg border border-outline px-3 py-1.5 text-xs font-semibold text-on-surface hover:bg-surface-container-high"
+              >
+                Manage billing (Stripe)
+              </button>
+            )}
           </div>
         </div>
       </div>

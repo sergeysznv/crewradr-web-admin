@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useT } from '@/hooks/use-translations';
 import { useTier } from '@/hooks/useTier';
@@ -26,9 +26,11 @@ export function AlertRuleBuilder() {
   const [durationMin, setDurationMin] = useState<number>(5);
 
   // Sync default speed when fleet policy loads or unit system changes
-  useEffect(() => {
+  const [prevSpeedKey, setPrevSpeedKey] = useState(`${defaultSpeed}|${system}`);
+  if (prevSpeedKey !== `${defaultSpeed}|${system}`) {
+    setPrevSpeedKey(`${defaultSpeed}|${system}`);
     setSpeedInput(mphToDisplaySpeed(defaultSpeed, system));
-  }, [defaultSpeed, system]);
+  }
 
   const { data: rules = [], isError } = useAlertRules(crewId);
   const saveMutation = useSaveAlertRule(crewId);

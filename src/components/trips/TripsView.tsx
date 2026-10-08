@@ -1,6 +1,6 @@
 // src/components/trips/TripsView.tsx
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import { useT, isImperial } from '@/hooks/use-translations';
 import { useCrew } from '@/hooks/useCrew';
 import { useEffectiveTier } from '@/hooks/useTier';
@@ -17,22 +17,21 @@ import { tierHistoryDays } from '@/lib/tier';
 import type { CrewTier } from '@/types/tier';
 import { Route, Lock, Loader2, TriangleAlert, MapPin, Gauge, Download } from 'lucide-react';
 
+const subscribeNoop = () => () => {};
+
 export function TripsView() {
   const { t } = useT();
   const { crewId } = useCrew();
   const tier = useEffectiveTier();
-  const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
+  const urlTripId = useSyncExternalStore(
+    subscribeNoop,
+    () => new URLSearchParams(window.location.search).get('tripId') || null,
+    () => null,
+  );
+  const [tripOverride, setTripOverride] = useState<string | null | undefined>(undefined);
+  const selectedTripId = tripOverride !== undefined ? tripOverride : urlTripId;
+  const setSelectedTripId = setTripOverride;
   const { system } = useMeasurementSystem();
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      const tripId = params.get('tripId');
-      if (tripId) {
-        setSelectedTripId(tripId);
-      }
-    }
-  }, []);
 
   // Days requested = the tier's full history window; the RPC clamps it
   // server-side (7/30/90/365) in case of pending downgrades.

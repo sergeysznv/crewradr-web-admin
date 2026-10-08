@@ -1,33 +1,43 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useSyncExternalStore, useCallback } from 'react';
 import { useCrew } from '@/hooks/useCrew';
 import { parseCrewKey } from '@/lib/crypto';
 
+const keyListeners = new Set<() => void>();
+
+function subscribeKey(fn: () => void) {
+  keyListeners.add(fn);
+  return () => {
+    keyListeners.delete(fn);
+  };
+}
+
+function notifyKey() {
+  keyListeners.forEach((fn) => fn());
+}
+
+const subscribeNoop = () => () => {};
+
+function readKey(crewId: string | null | undefined): string | null {
+  if (!crewId) return null;
+  try {
+    const stored = sessionStorage.getItem(`crewradr_crew_key_${crewId}`);
+    return stored && parseCrewKey(stored) ? stored : null;
+  } catch (_) {
+    return null;
+  }
+}
+
 export function useCrewKey() {
   const { crewId } = useCrew();
-  const [crewKey, setCrewKeyState] = useState<string | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-    if (!crewId) {
-      setCrewKeyState(null);
-      setIsLoaded(true);
-      return;
-    }
-
-    try {
-      const stored = sessionStorage.getItem(`crewradr_crew_key_${crewId}`);
-      if (stored && parseCrewKey(stored)) {
-        setCrewKeyState(stored);
-      } else {
-        setCrewKeyState(null);
-      }
-    } catch (_) {
-      setCrewKeyState(null);
-    }
-    setIsLoaded(true);
-  }, [crewId]);
+  const crewKey = useSyncExternalStore(
+    subscribeKey,
+    () => readKey(crewId),
+    () => null,
+  );
+  // False during SSR/hydration, true once mounted on the client.
+  const isLoaded = useSyncExternalStore(subscribeNoop, () => true, () => false);
 
   const setCrewKey = useCallback((key: string): boolean => {
     if (!crewId) return false;
@@ -36,7 +46,7 @@ export function useCrewKey() {
 
     try {
       sessionStorage.setItem(`crewradr_crew_key_${crewId}`, key.trim());
-      setCrewKeyState(key.trim());
+      notifyKey();
       return true;
     } catch (_) {
       return false;
@@ -48,7 +58,7 @@ export function useCrewKey() {
     try {
       sessionStorage.removeItem(`crewradr_crew_key_${crewId}`);
     } catch (_) {}
-    setCrewKeyState(null);
+    notifyKey();
   }, [crewId]);
 
   return {

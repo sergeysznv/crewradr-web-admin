@@ -121,6 +121,11 @@ function updateMarkerContent(
   el.replaceChildren(...Array.from(newEl.childNodes));
 }
 
+interface NwsFeature {
+  geometry?: { type?: string } | null;
+  [key: string]: unknown;
+}
+
 export interface GeofenceZone {
   id: string;
   name: string;
@@ -214,7 +219,9 @@ export default function LiveMap({
   const draftCircleRef = useRef<google.maps.Circle | null>(null);
   const draftMarkerRef = useRef<google.maps.Marker | null>(null);
   const isPlacingRef = useRef(isPlacingZone);
-  isPlacingRef.current = isPlacingZone;
+  useEffect(() => {
+    isPlacingRef.current = isPlacingZone;
+  }, [isPlacingZone]);
   const [mapZoom, setMapZoom] = useState<number>(4);
 
   const markersRef = useRef<Map<string, google.maps.marker.AdvancedMarkerElement>>(new Map());
@@ -225,7 +232,9 @@ export default function LiveMap({
   // Stable ref for the currently selected user — keeps gmp-click handler
   // closures from re-registering on every render.
   const selectedRef = useRef<string | null>(selectedUserId);
-  selectedRef.current = selectedUserId;
+  useEffect(() => {
+    selectedRef.current = selectedUserId;
+  }, [selectedUserId]);
 
   function fitAllMarkers(map: google.maps.Map) {
     const markers = markersRef.current;
@@ -737,7 +746,7 @@ export default function LiveMap({
           if (!res.ok) throw new Error(`NWS HTTP ${res.status}`);
           return res.json();
         })
-        .then((geojson) => {
+        .then((geojson: { features?: NwsFeature[] }) => {
           if (cancelled || !mapRef.current) return;
 
           if (nwsDataRef.current) {
@@ -746,7 +755,7 @@ export default function LiveMap({
           }
 
           const validFeatures = (geojson?.features || []).filter(
-            (f: any) => f.geometry && (f.geometry.type === 'Polygon' || f.geometry.type === 'MultiPolygon')
+            (f) => f.geometry && (f.geometry.type === 'Polygon' || f.geometry.type === 'MultiPolygon')
           );
 
           onHazardCountChange?.(validFeatures.length);

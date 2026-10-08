@@ -57,6 +57,12 @@ interface TripSession {
   fatigue_warnings?: number;
 }
 
+interface DotSession extends TripSession {
+  nighttime_seconds?: number;
+  max_speed_ms?: number;
+  weather_risk_level?: string;
+}
+
 export function ComplianceView() {
   const { t } = useT();
   const { system } = useMeasurementSystem();
@@ -71,7 +77,7 @@ export function ComplianceView() {
 
   const [oshaData, setOshaData] = useState<OshaIncidentReport[] | null>(null);
   const [eldData, setEldData] = useState<TripSession[] | null>(null);
-  const [dotData, setDotData] = useState<any[] | null>(null);
+  const [dotData, setDotData] = useState<DotSession[] | null>(null);
   const [showOshaPreview, setShowOshaPreview] = useState(false);
   const [showEldPreview, setShowEldPreview] = useState(false);
   const [showDotPreview, setShowDotPreview] = useState(false);
@@ -235,7 +241,7 @@ export function ComplianceView() {
       t('webComplianceReportCsvColRestrictedDays'),
       t('webComplianceReportCsvColCaseClassification')
     ];
-    const rows = (oshaData ?? []).map((r: any, index: number) => {
+    const rows = (oshaData ?? []).map((r, index) => {
       const fatality = r.was_fatality ? t('webComplianceReportCsvYes') : t('webComplianceReportCsvNo');
       let classification = t('webComplianceReportOshaClassOther');
       if (r.was_fatality) classification = t('webComplianceReportOshaClassFatality');

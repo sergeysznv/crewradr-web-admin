@@ -42,9 +42,14 @@ export function ConfirmDialog({
   const [verifyInput, setVerifyInput] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const [prevOpen, setPrevOpen] = useState(open);
+  if (prevOpen !== open) {
+    setPrevOpen(open);
+    if (open) setVerifyInput('');
+  }
+
   useEffect(() => {
     if (open) {
-      setVerifyInput('');
       // Focus the verify input after the dialog renders.
       setTimeout(() => inputRef.current?.focus(), 50);
     }

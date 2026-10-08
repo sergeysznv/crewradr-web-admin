@@ -85,7 +85,9 @@ export function useFontScale(): FontScaleResult {
   });
 
   // Hydrate from localStorage if profile had no value
-  useEffect(() => {
+  const [prevProfileScale, setPrevProfileScale] = useState(profile?.font_scale);
+  if (prevProfileScale !== profile?.font_scale) {
+    setPrevProfileScale(profile?.font_scale);
     if (
       !isValidFontScale(profile?.font_scale) &&
       typeof window !== 'undefined'
@@ -96,7 +98,7 @@ export function useFontScale(): FontScaleResult {
         setScale(parsed);
       }
     }
-  }, [profile?.font_scale]);
+  }
 
   // Mid-session sync via Realtime
   useEffect(() => {

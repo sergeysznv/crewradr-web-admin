@@ -96,7 +96,7 @@ export function useResolveSafetyAlert(crewId: string) {
       qc.invalidateQueries({ queryKey: ['fleetDashboard', crewId] });
       showSuccess(t('webAlertResolved'));
     },
-    onError: (e: any) => {
+    onError: (e: Error) => {
       showError(t('webAlertResolveFailed', { message: e.message }));
     },
   });

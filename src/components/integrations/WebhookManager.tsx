@@ -143,6 +143,23 @@ export function WebhookManager() {
   }
 
   // Toggle visible secret key
+  async function handleSendTest(webhook: WebhookEndpoint) {
+    try {
+      const { data, error: fnErr } = await supabase.functions.invoke('send-webhook-test', {
+        body: { crew_id: crewId, webhook_id: webhook.id },
+      });
+      if (fnErr) throw fnErr;
+      const res = data as { ok?: boolean; status?: number; error?: string };
+      if (res?.ok) {
+        showSuccess(`Test event delivered (HTTP ${res.status}).`);
+      } else {
+        showError(res?.error ?? `Endpoint responded with HTTP ${res?.status ?? 'error'}.`);
+      }
+    } catch (err) {
+      showError(err instanceof Error ? err.message : 'Failed to send test event.');
+    }
+  }
+
   function toggleRevealSecret(id: string) {
     setRevealedSecrets((prev) => ({ ...prev, [id]: !prev[id] }));
   }
@@ -314,6 +331,13 @@ export function WebhookManager() {
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => handleSendTest(wh)}
+                    className="px-2 py-1 rounded-lg text-xs font-semibold text-on-surface-variant hover:bg-surface-container hover:text-primary"
+                    title="Send a signed test event to this endpoint"
+                  >
+                    Send test
+                  </button>
                   <button
                     onClick={() => toggleStatus(wh)}
                     className="p-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary"
