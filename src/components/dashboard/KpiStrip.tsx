@@ -1,6 +1,7 @@
 // src/components/dashboard/KpiStrip.tsx
 'use client';
 
+import { getStitchedTrips } from '@/lib/rpc';
 import { useQuery } from '@tanstack/react-query';
 import { useCrew } from '@/hooks/useCrew';
 import { useSupabase } from '@/hooks/useSupabase';
@@ -26,13 +27,13 @@ export function KpiStrip({ data }: { data: FleetDashboard }) {
       if (!crewId) return 0;
       const now = new Date();
       const startOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-      const { count, error } = await supabase
-        .from('crew_trip_sessions')
-        .select('*', { count: 'exact', head: true })
-        .eq('crew_id', crewId)
-        .gte('started_at', startOfDay.toISOString());
-      if (error) throw error;
-      return count ?? 0;
+      // A→B trips, not raw recorder segments (fragments would inflate this).
+      const trips = await getStitchedTrips(supabase, {
+        crewId,
+        since: startOfDay,
+        limit: 200,
+      });
+      return trips.length;
     },
     enabled: !!crewId,
     refetchInterval: 60_000,

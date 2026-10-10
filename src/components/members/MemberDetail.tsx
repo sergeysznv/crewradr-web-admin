@@ -1,6 +1,7 @@
 // src/components/members/MemberDetail.tsx
 'use client';
 
+import { getStitchedTrips } from '@/lib/rpc';
 import type { CrewMember } from '@/types/rpc';
 import { useQuery } from '@tanstack/react-query';
 import { useUpdateMemberRole, useRemoveMember } from '@/hooks/queries/useMutations';
@@ -73,15 +74,11 @@ export function MemberDetail({ member, onClose }: { member: CrewMember; onClose:
     queryKey: ['memberTrips', crewId, member.user_id],
     queryFn: async () => {
       if (!crewId) return [];
-      const { data, error } = await supabase
-        .from('crew_trip_sessions')
-        .select('started_at, driving_seconds, distance_m')
-        .eq('crew_id', crewId)
-        .eq('user_id', member.user_id)
-        .order('started_at', { ascending: false })
-        .limit(5);
-      if (error) throw error;
-      return (data ?? []) as MemberTrip[];
+      return (await getStitchedTrips(supabase, {
+        crewId,
+        userId: member.user_id,
+        limit: 5,
+      })) as MemberTrip[];
     },
     enabled: !!crewId,
   });
