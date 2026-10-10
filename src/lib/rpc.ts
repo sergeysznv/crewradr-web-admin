@@ -417,3 +417,36 @@ export async function cancelWebKeyHandoff(supabase: SupabaseClient, id: string):
   const { error } = await supabase.rpc('cancel_web_key_handoff', { p_id: id });
   if (error) throw error;
 }
+
+/** A stop this long ends a trip (matches the mobile app and the server). */
+export const TRIP_STOP_MAX_GAP_SECONDS = 300;
+
+export interface StitchedTrip {
+  id: string;
+  user_id: string;
+  started_at: string;
+  ended_at: string | null;
+  distance_m: number;
+  driving_seconds: number;
+}
+
+/**
+ * A→B trips derived server-side by `stitch_trip_sessions`: segments split by
+ * stops shorter than {@link TRIP_STOP_MAX_GAP_SECONDS} are joined into one.
+ * Raw `crew_trip_sessions` rows include every recorder fragment, so counts and
+ * lists of "trips" must come from here.
+ */
+export async function getStitchedTrips(
+  supabase: SupabaseClient,
+  opts: { crewId: string; userId?: string; since?: Date; limit?: number },
+): Promise<StitchedTrip[]> {
+  const { data, error } = await supabase.rpc('stitch_trip_sessions', {
+    p_crew_id: opts.crewId,
+    p_user_id: opts.userId ?? null,
+    p_since: opts.since ? opts.since.toISOString() : null,
+    p_limit: opts.limit ?? 20,
+    p_max_gap_seconds: TRIP_STOP_MAX_GAP_SECONDS,
+  });
+  if (error) throw error;
+  return (data ?? []) as StitchedTrip[];
+}
