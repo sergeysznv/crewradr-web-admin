@@ -314,7 +314,7 @@ export function ComplianceView() {
       if (qErr) throw qErr;
       setDotData(data ?? []);
       setLastGen(new Date().toLocaleString());
-      showSuccess(t('webComplianceDotSuccess') || 'DOT compliance report generated successfully.');
+      showSuccess(t('webComplianceDotSuccess') || 'Driving summary generated successfully.');
     } catch (e) {
       showError(e instanceof Error ? e.message : t('webComplianceDotFailed'));
     }
