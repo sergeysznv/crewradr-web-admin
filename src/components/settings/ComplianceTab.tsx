@@ -239,7 +239,7 @@ export function ComplianceTab() {
               {t('complianceDotOshaMaster') || 'DOT/OSHA Compliance (United States)'}
             </h3>
             <p className="mt-1 text-xs text-on-surface-variant">
-              {t('complianceDotOshaDesc') || 'Enable FMCSA-compliant HOS tracking, vehicle inspections, and drug testing for regulated drivers.'}
+              {t('complianceDotOshaDesc') || 'Enable hours-of-service tracking, vehicle inspections, and drug-testing records for regulated drivers. Informational; this does not make CrewRadr an FMCSA-certified system.'}
             </p>
           </div>
 
@@ -256,7 +256,7 @@ export function ComplianceTab() {
                   {t('enableDotOshaMode') || 'Enable DOT/OSHA Compliance Mode'}
                 </span>
                 <p className="text-[10px] text-on-surface-variant">
-                  {t('enableDotOshaModeDesc') || 'Master toggle for FMCSA and OSHA compliance workflows.'}
+                  {t('enableDotOshaModeDesc') || 'Master toggle for driving-hours and OSHA record-keeping workflows.'}
                 </p>
               </div>
             </label>
@@ -272,7 +272,7 @@ export function ComplianceTab() {
                   />
                   <div>
                     <span className="text-xs font-semibold text-on-surface">
-                      {t('complianceDotEld') || 'ELD / Hours of Service'}
+                      {t('complianceDotEld') || 'Hours of service tracking (not an ELD)'}
                     </span>
                     <p className="text-[10px] text-on-surface-variant">{t('dotEldDesc')}</p>
                   </div>
